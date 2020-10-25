@@ -198,4 +198,12 @@ By default, Remora.Commands provides builtin parsers for the following types:
   * `DateTimeOffset`
 
 ## Installation
-Get it on [NuGet](http://nuget.org/packages/Remora.Commands)!
+Get it on [NuGet][1]!
+
+## Thanks
+Heavily inspired by [CommandLineParser][2], a great library for parsing *nix
+getopts-style arguments from the command line itself.
+
+
+[1]: http://nuget.org/packages/Remora.Commands
+[2]: https://github.com/commandlineparser/commandline
