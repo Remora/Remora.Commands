@@ -43,7 +43,7 @@ namespace Remora.Commands.Extensions
         /// <typeparam name="TCommandModule">The command module to register.</typeparam>
         /// <param name="serviceCollection">The service collection.</param>
         /// <returns>The service collection, with the configured modules.</returns>
-        public static IServiceCollection AddCommandModule<TCommandModule>
+        public static IServiceCollection AddCommandGroup<TCommandModule>
         (
             this IServiceCollection serviceCollection
         )
