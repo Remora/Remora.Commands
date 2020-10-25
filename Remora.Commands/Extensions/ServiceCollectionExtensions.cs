@@ -120,7 +120,7 @@ namespace Remora.Commands.Extensions
             this IServiceCollection serviceCollection
         )
             where TType : notnull
-            where TParser : class, ITypeParser<TType>
+            where TParser : AbstractTypeParser<TType>
         {
             serviceCollection.TryAddSingleton<ITypeParser<TType>, TParser>();
             return serviceCollection;
@@ -138,7 +138,7 @@ namespace Remora.Commands.Extensions
             this IServiceCollection serviceCollection
         )
             where TType : notnull
-            where TParser : class, ITypeParser<TType>
+            where TParser : AbstractTypeParser<TType>
         {
             serviceCollection.TryAddScoped<ITypeParser<TType>, TParser>();
             return serviceCollection;
