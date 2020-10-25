@@ -6,6 +6,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remora.Commands.Tests", "Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{69F39D4E-EA11-4291-AAE6-AD1E40A97EAD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "meta", "meta", "{5724BC99-30EE-44A4-A69F-EE95DF06B6AE}"
+ProjectSection(SolutionItems) = preProject
+	LICENSE = LICENSE
+	stylecop.json = stylecop.json
+	stylecop.ruleset = stylecop.ruleset
+	Directory.Build.props = Directory.Build.props
+	README.md = README.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
