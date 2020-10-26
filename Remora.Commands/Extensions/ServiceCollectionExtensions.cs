@@ -51,7 +51,7 @@ namespace Remora.Commands.Extensions
         )
             where TCommandModule : CommandGroup
         {
-            serviceCollection.AddScoped<TCommandModule>();
+            serviceCollection.AddTransient<TCommandModule>();
             serviceCollection.Configure<CommandTreeBuilder>
             (
                 builder => builder.RegisterModule<TCommandModule>()
