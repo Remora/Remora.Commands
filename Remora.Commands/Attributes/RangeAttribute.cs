@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Attributes
 {
@@ -30,6 +31,7 @@ namespace Remora.Commands.Attributes
     /// collection-like parameters (such as <see cref="IEnumerable{T}"/>.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
+    [PublicAPI]
     public class RangeAttribute : Attribute
     {
         private ulong? _min;

@@ -27,8 +27,7 @@ namespace Remora.Commands.Tokenization
     /// <summary>
     /// Enumerates token types.
     /// </summary>
-    [PublicAPI]
-    public enum TokenType
+    internal enum TokenType
     {
         /// <summary>
         /// The token is a value.

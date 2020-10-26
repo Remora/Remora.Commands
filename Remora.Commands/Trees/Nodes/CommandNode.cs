@@ -34,8 +34,7 @@ namespace Remora.Commands.Trees.Nodes
     /// <summary>
     /// Represents a command in a command group.
     /// </summary>
-    [PublicAPI]
-    public class CommandNode : IChildNode
+    internal class CommandNode : IChildNode
     {
         /// <summary>
         /// Gets the module type that the command is in.

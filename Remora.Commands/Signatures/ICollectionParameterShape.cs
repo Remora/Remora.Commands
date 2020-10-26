@@ -25,7 +25,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents the shape of a collection of parameters.
     /// </summary>
-    public interface ICollectionParameterShape
+    internal interface ICollectionParameterShape
     {
         /// <summary>
         /// Gets the minimum number of elements in the collection. If no minimum is set, the collection is allowed to

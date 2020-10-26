@@ -33,7 +33,7 @@ namespace Remora.Commands.Extensions
     /// <summary>
     /// Defines extensions to the <see cref="Type"/> class.
     /// </summary>
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         /// <summary>
         /// Attempts to get an annotated group name from the given type.

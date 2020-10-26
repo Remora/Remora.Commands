@@ -27,7 +27,7 @@ namespace Remora.Commands.Tokenization
     /// <summary>
     /// Holds a set of valid start and end quotation pairs.
     /// </summary>
-    public static class Quotations
+    internal static class Quotations
     {
         /// <summary>
         /// Gets the quotation pairs.

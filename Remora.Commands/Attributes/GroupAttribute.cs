@@ -21,6 +21,7 @@
 //
 
 using System;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Attributes
 {
@@ -28,6 +29,7 @@ namespace Remora.Commands.Attributes
     /// Represents the name of a command group.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
+    [PublicAPI]
     public class GroupAttribute : Attribute
     {
         /// <summary>

@@ -22,6 +22,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -30,6 +31,7 @@ namespace Remora.Commands.Parsers
     /// Represents an abstract type parser.
     /// </summary>
     /// <typeparam name="TType">The type to parse.</typeparam>
+    [PublicAPI]
     public abstract class AbstractTypeParser<TType> : ITypeParser<TType>, ITypeParser
         where TType : notnull
     {

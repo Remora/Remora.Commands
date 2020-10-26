@@ -30,6 +30,7 @@ namespace Remora.Commands.Attributes
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     [MeansImplicitUse]
+    [PublicAPI]
     public class CommandAttribute : Attribute
     {
         /// <summary>

@@ -40,7 +40,7 @@ namespace Remora.Commands.Parsers
             return new ValueTask<RetrieveEntityResult<BigInteger>>
             (
                 !BigInteger.TryParse(value, out var result)
-                ? RetrieveEntityResult<BigInteger>.FromError($"Failed to parse \"{value}\" as a bigInteger.")
+                ? RetrieveEntityResult<BigInteger>.FromError($"Failed to parse \"{value}\" as a BigInteger.")
                 : RetrieveEntityResult<BigInteger>.FromSuccess(result)
             );
         }

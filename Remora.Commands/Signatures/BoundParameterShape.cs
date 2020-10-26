@@ -27,7 +27,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a parameter shape that has been bound to a sequence of matching tokens.
     /// </summary>
-    public class BoundParameterShape
+    internal class BoundParameterShape
     {
         /// <summary>
         /// Gets the parameter shape.

@@ -28,8 +28,7 @@ namespace Remora.Commands.Trees.Nodes
     /// <summary>
     /// Represents the root of a command tree.
     /// </summary>
-    [PublicAPI]
-    public class RootNode : IParentNode
+    internal class RootNode : IParentNode
     {
         /// <inheritdoc/>
         public IReadOnlyList<IChildNode> Children { get; }

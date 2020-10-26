@@ -28,8 +28,7 @@ namespace Remora.Commands.Tokenization
     /// <summary>
     /// Represents a single token in a sequence.
     /// </summary>
-    [PublicAPI]
-    public readonly ref struct Token
+    internal readonly ref struct Token
     {
         /// <summary>
         /// Gets the type of the token.

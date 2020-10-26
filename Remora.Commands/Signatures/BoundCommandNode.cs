@@ -28,7 +28,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a command node that has been bound to a set of tokens.
     /// </summary>
-    public class BoundCommandNode
+    internal class BoundCommandNode
     {
         /// <summary>
         /// Gets the base node.

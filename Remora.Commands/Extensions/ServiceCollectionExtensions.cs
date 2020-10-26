@@ -22,6 +22,7 @@
 
 using System;
 using System.Numerics;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -35,6 +36,7 @@ namespace Remora.Commands.Extensions
     /// <summary>
     /// Defines extension methods for the <see cref="IServiceCollection"/> interface.
     /// </summary>
+    [PublicAPI]
     public static class ServiceCollectionExtensions
     {
         /// <summary>
@@ -82,7 +84,7 @@ namespace Remora.Commands.Extensions
                 services =>
                 {
                     var tree = services.GetRequiredService<CommandTree>();
-                    return new CommandService(tree, services);
+                    return new CommandService(tree);
                 }
             );
 

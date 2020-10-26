@@ -29,7 +29,7 @@ namespace Remora.Commands.Signatures
     /// Represents the "shape" of a single parameter. This type is used to determine whether a sequence of tokens could
     /// fit the associated parameter.
     /// </summary>
-    public interface IParameterShape
+    internal interface IParameterShape
     {
         /// <summary>
         /// Gets the matching parameter.

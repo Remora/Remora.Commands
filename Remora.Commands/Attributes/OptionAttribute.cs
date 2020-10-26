@@ -21,6 +21,7 @@
 //
 
 using System;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Attributes
 {
@@ -28,6 +29,7 @@ namespace Remora.Commands.Attributes
     /// Marks a parameter as being a named option.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter)]
+    [PublicAPI]
     public class OptionAttribute : Attribute
     {
         /// <summary>

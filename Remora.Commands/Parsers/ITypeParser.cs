@@ -33,7 +33,6 @@ namespace Remora.Commands.Parsers
     /// Represents the public API of a specialized type parser.
     /// </summary>
     /// <typeparam name="TType">The type to parse.</typeparam>
-    [PublicAPI]
     internal interface ITypeParser<TType> where TType : notnull
     {
         /// <summary>

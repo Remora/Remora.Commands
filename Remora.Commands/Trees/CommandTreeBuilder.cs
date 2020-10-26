@@ -58,7 +58,7 @@ namespace Remora.Commands.Trees
         /// Builds a command tree from the registered types.
         /// </summary>
         /// <returns>The command tree.</returns>
-        public CommandTree Build()
+        internal CommandTree Build()
         {
             var rootChildren = new List<IChildNode>();
             var rootNode = new RootNode(rootChildren);

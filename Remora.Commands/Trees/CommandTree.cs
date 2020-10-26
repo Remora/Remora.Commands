@@ -31,7 +31,7 @@ namespace Remora.Commands.Trees
     /// <summary>
     /// Represents a tree view of the available commands.
     /// </summary>
-    public class CommandTree
+    internal class CommandTree
     {
         /// <summary>
         /// Gets the root of the command tree.

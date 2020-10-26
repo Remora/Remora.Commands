@@ -29,7 +29,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a named parameter with a single value.
     /// </summary>
-    public class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
+    internal class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
     {
         /// <inheritdoc />
         public ulong? Min { get; }

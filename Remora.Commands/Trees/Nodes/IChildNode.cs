@@ -27,8 +27,7 @@ namespace Remora.Commands.Trees.Nodes
     /// <summary>
     /// Defines the public interface of a child node.
     /// </summary>
-    [PublicAPI]
-    public interface IChildNode
+    internal interface IChildNode
     {
         /// <summary>
         /// Gets the parent of this node.

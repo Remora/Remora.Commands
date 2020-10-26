@@ -29,7 +29,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a single value without a name.
     /// </summary>
-    public class PositionalCollectionParameterShape : PositionalParameterShape, ICollectionParameterShape
+    internal class PositionalCollectionParameterShape : PositionalParameterShape, ICollectionParameterShape
     {
         /// <inheritdoc />
         public ulong? Min { get; }

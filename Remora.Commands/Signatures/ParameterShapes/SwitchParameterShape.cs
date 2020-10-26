@@ -29,7 +29,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a switch parameter that maps to a boolean value.
     /// </summary>
-    public class SwitchParameterShape : IParameterShape
+    internal class SwitchParameterShape : IParameterShape
     {
         /// <summary>
         /// Gets the short name of the parameter, if any. At least one of <see cref="ShortName"/> and

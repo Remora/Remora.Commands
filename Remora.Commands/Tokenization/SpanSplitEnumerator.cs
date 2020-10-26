@@ -34,8 +34,7 @@ namespace Remora.Commands.Tokenization
     /// <see cref="string.Split(char, StringSplitOptions)"/> method, in that it mimics a command-line string splitting
     /// function by default - that is, it respects quotations and discards empty results.
     /// </remarks>
-    [PublicAPI]
-    public ref struct SpanSplitEnumerator
+    internal ref struct SpanSplitEnumerator
     {
         private readonly ReadOnlySpan<char> _delimiter;
         private readonly bool _ignoreEmpty;

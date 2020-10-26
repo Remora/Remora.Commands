@@ -20,11 +20,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
+
 namespace Remora.Commands.Results
 {
     /// <summary>
     /// Enumerates the resulting statuses an execution might have.
     /// </summary>
+    [PublicAPI]
     public enum ExecutionStatus
     {
         /// <summary>

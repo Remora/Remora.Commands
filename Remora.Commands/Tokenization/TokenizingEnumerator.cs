@@ -28,8 +28,7 @@ namespace Remora.Commands.Tokenization
     /// <summary>
     /// Tokenizes a char-containing <see cref="ReadOnlySpan{T}"/> into a set of names and values.
     /// </summary>
-    [PublicAPI]
-    public ref struct TokenizingEnumerator
+    internal ref struct TokenizingEnumerator
     {
         private ReadOnlySpan<char> _segment;
         private SpanSplitEnumerator _splitEnumerator;

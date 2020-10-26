@@ -34,7 +34,7 @@ namespace Remora.Commands.Signatures
     /// Represents the general "shape" of a command. This type is used to determine whether a sequence of tokens could
     /// fit the associated command, provided all other things hold true.
     /// </summary>
-    public class CommandShape
+    internal class CommandShape
     {
         /// <summary>
         /// Gets the parameters for this command shape.

@@ -31,8 +31,7 @@ namespace Remora.Commands.Trees.Nodes
     /// <remarks>
     /// Command groups may contain either other groups for deeper nesting, or leaf nodes in the form of commands.
     /// </remarks>
-    [PublicAPI]
-    public class GroupNode : IParentNode, IChildNode
+    internal class GroupNode : IParentNode, IChildNode
     {
         /// <inheritdoc/>
         public IReadOnlyList<IChildNode> Children { get; }
