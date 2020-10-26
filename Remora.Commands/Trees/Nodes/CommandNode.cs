@@ -39,7 +39,7 @@ namespace Remora.Commands.Trees.Nodes
         /// <summary>
         /// Gets the module type that the command is in.
         /// </summary>
-        public Type ModuleType { get; }
+        public Type GroupType { get; }
 
         /// <summary>
         /// Gets the method that the command invokes.
@@ -65,13 +65,13 @@ namespace Remora.Commands.Trees.Nodes
         /// </summary>
         /// <param name="parent">The parent node.</param>
         /// <param name="key">The key value of the command node.</param>
-        /// <param name="moduleType">The module type that the command is in.</param>
+        /// <param name="groupType">The module type that the command is in.</param>
         /// <param name="commandMethod">The method that the command invokes.</param>
-        public CommandNode(IParentNode parent, string key, Type moduleType, MethodInfo commandMethod)
+        public CommandNode(IParentNode parent, string key, Type groupType, MethodInfo commandMethod)
         {
             this.Parent = parent;
             this.Key = key;
-            this.ModuleType = moduleType;
+            this.GroupType = groupType;
             this.CommandMethod = commandMethod;
             this.Shape = CommandShape.FromMethod(this.CommandMethod);
         }

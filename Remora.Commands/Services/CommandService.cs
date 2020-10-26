@@ -60,13 +60,17 @@ namespace Remora.Commands.Services
         /// </summary>
         /// <param name="commandString">The command string.</param>
         /// <param name="services">The services available to the invocation.</param>
+        /// <param name="additionalParameters">
+        /// Any additional parameters that should be available during instantiation of the command group.
+        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
         public async Task<CommandExecutionResult> TryExecuteAsync
         (
             string commandString,
             IServiceProvider services,
-            CancellationToken ct
+            object[]? additionalParameters = null,
+            CancellationToken ct = default
         )
         {
             var searchResults = _tree.Search(commandString).ToList();
@@ -77,7 +81,7 @@ namespace Remora.Commands.Services
 
             foreach (var boundCommandShape in searchResults)
             {
-                var executeResult = await TryExecuteAsync(boundCommandShape, services, ct);
+                var executeResult = await TryExecuteAsync(boundCommandShape, services, additionalParameters, ct);
                 if (executeResult.IsSuccess)
                 {
                     return executeResult;
@@ -109,7 +113,8 @@ namespace Remora.Commands.Services
         (
             BoundCommandNode boundCommandNode,
             IServiceProvider services,
-            CancellationToken ct
+            object[]? additionalParameters = null,
+            CancellationToken ct = default
         )
         {
             var materializeResult = await MaterializeParametersAsync(boundCommandNode, services, ct);
@@ -121,14 +126,20 @@ namespace Remora.Commands.Services
             var materializedParameters = materializeResult.Entity;
 
             var method = boundCommandNode.Node.CommandMethod;
-            var moduleType = boundCommandNode.Node.ModuleType;
+            var groupType = boundCommandNode.Node.GroupType;
 
-            var moduleInstance = (CommandGroup)services.GetRequiredService(moduleType);
-            moduleInstance.SetCancellationToken(ct);
+            var groupInstance = (CommandGroup)ActivatorUtilities.CreateInstance
+            (
+                services,
+                groupType,
+                additionalParameters
+            );
+
+            groupInstance.SetCancellationToken(ct);
 
             try
             {
-                var returnValue = (Task<IResult>)method.Invoke(moduleInstance, materializedParameters);
+                var returnValue = (Task<IResult>)method.Invoke(groupInstance, materializedParameters);
                 var result = await returnValue;
                 if (!result.IsSuccess)
                 {
@@ -143,12 +154,12 @@ namespace Remora.Commands.Services
             }
             finally
             {
-                if (moduleInstance is IDisposable d)
+                if (groupInstance is IDisposable d)
                 {
                     d.Dispose();
                 }
 
-                if (moduleInstance is IAsyncDisposable a)
+                if (groupInstance is IAsyncDisposable a)
                 {
                     await a.DisposeAsync();
                 }
