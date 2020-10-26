@@ -55,7 +55,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test parameterless", default);
+                var executionResult = await commandService.TryExecuteAsync("test parameterless", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -73,7 +73,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test single-positional booga", default);
+                var executionResult = await commandService.TryExecuteAsync("test single-positional booga", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -91,7 +91,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test single-optional-positional", default);
+                var executionResult = await commandService.TryExecuteAsync("test single-optional-positional", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -109,7 +109,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test single-named --value booga", default);
+                var executionResult = await commandService.TryExecuteAsync("test single-named --value booga", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -127,7 +127,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test single-optional-named", default);
+                var executionResult = await commandService.TryExecuteAsync("test single-optional-named", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -148,6 +148,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test single-named-with-short-name -v booga",
+                    services,
                     default
                 );
 
@@ -170,6 +171,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test single-named-with-long-and-short-name -v booga",
+                    services,
                     default
                 );
 
@@ -178,6 +180,7 @@ namespace Remora.Commands.Tests.Services
                 executionResult = await commandService.TryExecuteAsync
                 (
                     "test single-named-with-long-and-short-name --value booga",
+                    services,
                     default
                 );
 
@@ -203,7 +206,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test bool true", default);
+                var executionResult = await commandService.TryExecuteAsync("test bool true", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -221,7 +224,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test char 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test char 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -239,7 +242,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test sbyte 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test sbyte 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -257,7 +260,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test byte 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test byte 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -275,7 +278,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test short 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test short 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -293,7 +296,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test ushort 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test ushort 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -311,7 +314,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test int 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test int 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -329,7 +332,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test uint 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test uint 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -347,7 +350,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test long 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test long 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -365,7 +368,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test ulong 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test ulong 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -383,7 +386,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test float 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test float 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -401,7 +404,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test double 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test double 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -419,7 +422,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test decimal 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test decimal 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -437,7 +440,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test big-integer 1", default);
+                var executionResult = await commandService.TryExecuteAsync("test big-integer 1", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -455,7 +458,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test date-time-offset \"2020/09/1\"", default);
+                var executionResult = await commandService.TryExecuteAsync("test date-time-offset \"2020/09/1\"", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -474,7 +477,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test enum wooga", default);
+                var executionResult = await commandService.TryExecuteAsync("test enum wooga", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -499,11 +502,11 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test switch --enable", default);
+                var executionResult = await commandService.TryExecuteAsync("test switch --enable", services, default);
 
                 Assert.True(executionResult.IsSuccess);
 
-                executionResult = await commandService.TryExecuteAsync("test switch", default);
+                executionResult = await commandService.TryExecuteAsync("test switch", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -522,7 +525,7 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test switch-short-name -e", default);
+                var executionResult = await commandService.TryExecuteAsync("test switch-short-name -e", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -541,11 +544,11 @@ namespace Remora.Commands.Tests.Services
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
-                var executionResult = await commandService.TryExecuteAsync("test switch-short-and-long-name -e", default);
+                var executionResult = await commandService.TryExecuteAsync("test switch-short-and-long-name -e", services, default);
 
                 Assert.True(executionResult.IsSuccess);
 
-                executionResult = await commandService.TryExecuteAsync("test switch-short-and-long-name --enable", default);
+                executionResult = await commandService.TryExecuteAsync("test switch-short-and-long-name --enable", services, default);
 
                 Assert.True(executionResult.IsSuccess);
             }
@@ -572,6 +575,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test positional-and-named booga --another wooga",
+                    services,
                     default
                 );
 
@@ -594,6 +598,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test named-and-positional --first wooga booga ",
+                    services,
                     default
                 );
 
@@ -616,6 +621,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test mixed --first wooga booga --third dooga --enable",
+                    services,
                     default
                 );
 
@@ -639,6 +645,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test mixed booga --enable --third dooga --first wooga",
+                    services,
                     default
                 );
 
@@ -667,6 +674,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test positional-collection ra ra rasputin",
+                    services,
                     default
                 );
 
@@ -689,6 +697,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test named-collection --values ra ra rasputin",
+                    services,
                     default
                 );
 
@@ -711,6 +720,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test positional-collection-and-named-value ra rasputin --named ra",
+                    services,
                     default
                 );
 
@@ -733,6 +743,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test positional-collection-and-named-value --named ra ra rasputin ",
+                    services,
                     default
                 );
 
@@ -755,6 +766,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test collection-with-min-count ra",
+                    services,
                     default
                 );
 
@@ -763,6 +775,7 @@ namespace Remora.Commands.Tests.Services
                 executionResult = await commandService.TryExecuteAsync
                 (
                     "test collection-with-min-count",
+                    services,
                     default
                 );
 
@@ -785,6 +798,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test collection-with-max-count",
+                    services,
                     default
                 );
 
@@ -793,6 +807,7 @@ namespace Remora.Commands.Tests.Services
                 executionResult = await commandService.TryExecuteAsync
                 (
                     "test collection-with-max-count ra ra rasputin",
+                    services,
                     default
                 );
 
@@ -815,6 +830,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test collection-with-min-and-max-count ra",
+                    services,
                     default
                 );
 
@@ -823,6 +839,7 @@ namespace Remora.Commands.Tests.Services
                 executionResult = await commandService.TryExecuteAsync
                 (
                     "test collection-with-min-and-max-count",
+                    services,
                     default
                 );
 
@@ -831,6 +848,7 @@ namespace Remora.Commands.Tests.Services
                 executionResult = await commandService.TryExecuteAsync
                 (
                     "test collection-with-min-and-max-count ra ra rasputin",
+                    services,
                     default
                 );
 
@@ -854,6 +872,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test constrained-collection-with-positional-value ra ra rasputin",
+                    services,
                     default
                 );
 
@@ -862,6 +881,7 @@ namespace Remora.Commands.Tests.Services
                 executionResult = await commandService.TryExecuteAsync
                 (
                     "test constrained-collection-with-positional-value ra ra",
+                    services,
                     default
                 );
 
@@ -890,6 +910,7 @@ namespace Remora.Commands.Tests.Services
                 var executionResult = await commandService.TryExecuteAsync
                 (
                     "test overload",
+                    services,
                     default
                 );
 
@@ -899,6 +920,7 @@ namespace Remora.Commands.Tests.Services
                 executionResult = await commandService.TryExecuteAsync
                 (
                     "test overload booga",
+                    services,
                     default
                 );
 
@@ -908,6 +930,7 @@ namespace Remora.Commands.Tests.Services
                 executionResult = await commandService.TryExecuteAsync
                 (
                     "test overload --value-2 booga wooga",
+                    services,
                     default
                 );
 

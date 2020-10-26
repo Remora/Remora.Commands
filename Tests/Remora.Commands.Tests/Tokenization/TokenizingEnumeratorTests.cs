@@ -52,7 +52,7 @@ namespace Remora.Commands.Tests.Tokenization
         [InlineData("--b \"booga wooga\"", new[] { LongName, Value }, new[] { "b", "booga wooga" })]
         [InlineData("--b=\"booga wooga\"", new[] { LongName, Value }, new[] { "b", "booga wooga" })]
         [InlineData("aa bb --b=\"booga wooga\"", new[] { Value, Value, LongName, Value }, new[] { "aa", "bb", "b", "booga wooga" })]
-        public void TokenizesStringCorrectly
+        internal void TokenizesStringCorrectly
         (
             string value,
             IEnumerable<TokenType> expectedTokenTypes,
