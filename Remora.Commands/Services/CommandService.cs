@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
@@ -40,29 +41,33 @@ namespace Remora.Commands.Services
     /// <summary>
     /// Handles search and dispatch of commands.
     /// </summary>
+    [PublicAPI]
     public class CommandService
     {
         private readonly CommandTree _tree;
-        private readonly IServiceProvider _services;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandService"/> class.
         /// </summary>
         /// <param name="tree">The command tree.</param>
-        /// <param name="services">The service provider.</param>
-        public CommandService(CommandTree tree, IServiceProvider services)
+        internal CommandService(CommandTree tree)
         {
             _tree = tree;
-            _services = services;
         }
 
         /// <summary>
         /// Attempts to find and execute a command that matches the given command string.
         /// </summary>
         /// <param name="commandString">The command string.</param>
+        /// <param name="services">The services available to the invocation.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
-        public async Task<CommandExecutionResult> TryExecuteAsync(string commandString, CancellationToken ct)
+        public async Task<CommandExecutionResult> TryExecuteAsync
+        (
+            string commandString,
+            IServiceProvider services,
+            CancellationToken ct
+        )
         {
             var searchResults = _tree.Search(commandString).ToList();
             if (searchResults.Count == 0)
@@ -72,7 +77,7 @@ namespace Remora.Commands.Services
 
             foreach (var boundCommandShape in searchResults)
             {
-                var executeResult = await TryExecuteAsync(boundCommandShape, ct);
+                var executeResult = await TryExecuteAsync(boundCommandShape, services, ct);
                 if (executeResult.IsSuccess)
                 {
                     return executeResult;
@@ -103,10 +108,11 @@ namespace Remora.Commands.Services
         private async Task<CommandExecutionResult> TryExecuteAsync
         (
             BoundCommandNode boundCommandNode,
+            IServiceProvider services,
             CancellationToken ct
         )
         {
-            var materializeResult = await MaterializeParametersAsync(boundCommandNode, ct);
+            var materializeResult = await MaterializeParametersAsync(boundCommandNode, services, ct);
             if (!materializeResult.IsSuccess)
             {
                 return CommandExecutionResult.FromError(materializeResult);
@@ -117,7 +123,7 @@ namespace Remora.Commands.Services
             var method = boundCommandNode.Node.CommandMethod;
             var moduleType = boundCommandNode.Node.ModuleType;
 
-            var moduleInstance = (CommandGroup)_services.GetRequiredService(moduleType);
+            var moduleInstance = (CommandGroup)services.GetRequiredService(moduleType);
             moduleInstance.SetCancellationToken(ct);
 
             try
@@ -152,6 +158,7 @@ namespace Remora.Commands.Services
         private async Task<RetrieveEntityResult<object[]>> MaterializeParametersAsync
         (
             BoundCommandNode boundCommandNode,
+            IServiceProvider services,
             CancellationToken ct
         )
         {
@@ -182,7 +189,7 @@ namespace Remora.Commands.Services
                 }
 
                 var parserType = typeof(ITypeParser<>).MakeGenericType(typeToParse);
-                if (!(_services.GetService(parserType) is ITypeParser parser))
+                if (!(services.GetService(parserType) is ITypeParser parser))
                 {
                     // We can't parse this type
                     return RetrieveEntityResult<object[]>.FromError
