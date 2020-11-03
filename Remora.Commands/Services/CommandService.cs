@@ -24,10 +24,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
 using Remora.Commands.Parsers;
@@ -73,6 +75,8 @@ namespace Remora.Commands.Services
             CancellationToken ct = default
         )
         {
+            additionalParameters ??= Array.Empty<object>();
+
             var searchResults = _tree.Search(commandString).ToList();
             if (searchResults.Count == 0)
             {
@@ -113,10 +117,18 @@ namespace Remora.Commands.Services
         (
             BoundCommandNode boundCommandNode,
             IServiceProvider services,
-            object[]? additionalParameters = null,
+            object[]? additionalParameters,
             CancellationToken ct = default
         )
         {
+            // Check method-level conditions, if any
+            var method = boundCommandNode.Node.CommandMethod;
+            var methodConditionsResult = await CheckConditionsAsync(services, method, ct);
+            if (!methodConditionsResult.IsSuccess)
+            {
+                return CommandExecutionResult.Failed(methodConditionsResult);
+            }
+
             var materializeResult = await MaterializeParametersAsync(boundCommandNode, services, ct);
             if (!materializeResult.IsSuccess)
             {
@@ -125,9 +137,18 @@ namespace Remora.Commands.Services
 
             var materializedParameters = materializeResult.Entity;
 
-            var method = boundCommandNode.Node.CommandMethod;
-            var groupType = boundCommandNode.Node.GroupType;
+            // Check parameter-level conditions, if any
+            var methodParameters = method.GetParameters();
+            foreach (var (parameter, value) in methodParameters.Zip(materializedParameters, (info, o) => (info, o)))
+            {
+                var parameterConditionResult = await CheckConditionsAsync(services, parameter, value, ct);
+                if (!parameterConditionResult.IsSuccess)
+                {
+                    return CommandExecutionResult.Failed(parameterConditionResult);
+                }
+            }
 
+            var groupType = boundCommandNode.Node.GroupType;
             var groupInstance = (CommandGroup)ActivatorUtilities.CreateInstance
             (
                 services,
@@ -166,6 +187,118 @@ namespace Remora.Commands.Services
             }
         }
 
+        /// <summary>
+        /// Checks the user-provided conditions of the given method. If a condition does not pass, the command will
+        /// not execute.
+        /// </summary>
+        /// <param name="services">The available services.</param>
+        /// <param name="method">The method.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>A condition result which may or may not have succeeded.</returns>
+        private async Task<DetermineConditionResult> CheckConditionsAsync
+        (
+            IServiceProvider services,
+            MethodInfo method,
+            CancellationToken ct
+        )
+        {
+            var conditionAttributes = method.GetCustomAttributes(typeof(ConditionAttribute), false);
+            if (!conditionAttributes.Any())
+            {
+                return DetermineConditionResult.FromSuccess();
+            }
+
+            foreach (var conditionAttribute in conditionAttributes)
+            {
+                var conditionType = typeof(ICondition<>).MakeGenericType(conditionAttribute.GetType());
+                var conditionMethod = conditionType.GetMethod(nameof(ICondition<ConditionAttribute>.CheckAsync));
+                if (conditionMethod is null)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                var conditions = services.GetServices(conditionType);
+                foreach (var condition in conditions)
+                {
+                    var result = await (ValueTask<DetermineConditionResult>)conditionMethod.Invoke
+                    (
+                        condition,
+                        new[] { conditionAttribute, ct }
+                    );
+
+                    if (!result.IsSuccess)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return DetermineConditionResult.FromSuccess();
+        }
+
+        /// <summary>
+        /// Checks the user-provided conditions of the given parameter. If a condition does not pass, the command will
+        /// not execute.
+        /// </summary>
+        /// <param name="services">The available services.</param>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="value">The materialized value of the parameter.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>A condition result which may or may not have succeeded.</returns>
+        private async Task<DetermineConditionResult> CheckConditionsAsync
+        (
+            IServiceProvider services,
+            ParameterInfo parameter,
+            object value,
+            CancellationToken ct
+        )
+        {
+            var conditionAttributes = parameter.GetCustomAttributes(typeof(ConditionAttribute), false);
+            if (!conditionAttributes.Any())
+            {
+                return DetermineConditionResult.FromSuccess();
+            }
+
+            foreach (var conditionAttribute in conditionAttributes)
+            {
+                var conditionType = typeof(ICondition<,>).MakeGenericType
+                (
+                    conditionAttribute.GetType(),
+                    value.GetType()
+                );
+
+                var conditionMethod = conditionType.GetMethod(nameof(ICondition<ConditionAttribute>.CheckAsync));
+                if (conditionMethod is null)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                var conditions = services.GetServices(conditionType);
+                foreach (var condition in conditions)
+                {
+                    var result = await (ValueTask<DetermineConditionResult>)conditionMethod.Invoke
+                    (
+                        condition,
+                        new[] { conditionAttribute, value, ct }
+                    );
+
+                    if (!result.IsSuccess)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return DetermineConditionResult.FromSuccess();
+        }
+
+        /// <summary>
+        /// Converts a set of parameter-bound strings into their corresponding CLR types.
+        /// </summary>
+        /// <param name="boundCommandNode">The bound command node.</param>
+        /// <param name="services">The available services.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>A sorted array of materialized parameters.</returns>
         private async Task<RetrieveEntityResult<object[]>> MaterializeParametersAsync
         (
             BoundCommandNode boundCommandNode,
