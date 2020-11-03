@@ -70,12 +70,5 @@ namespace Remora.Commands.Attributes
         /// </summary>
         /// <returns>The maximum number of elements.</returns>
         public ulong? GetMax() => _max;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RangeAttribute"/> class.
-        /// </summary>
-        public RangeAttribute()
-        {
-        }
     }
 }
