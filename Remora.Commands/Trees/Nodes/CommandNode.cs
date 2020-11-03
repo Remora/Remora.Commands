@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Annotations;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;
 

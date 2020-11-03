@@ -26,7 +26,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
-using Remora.Commands.Tests.Data.Attributes;
 using Remora.Commands.Tests.Data.Conditions;
 using Remora.Commands.Tests.Data.Modules;
 using Remora.Results;

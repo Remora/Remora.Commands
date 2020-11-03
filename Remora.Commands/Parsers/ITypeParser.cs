@@ -22,7 +22,6 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Remora.Results;
 
 #pragma warning disable CS1591, SA1402

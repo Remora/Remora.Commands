@@ -21,7 +21,6 @@
 //
 
 using Remora.Commands.Tests.Data.DummyModules;
-using Remora.Commands.Tests.Data.Modules;
 using Remora.Commands.Trees;
 using Xunit;
 

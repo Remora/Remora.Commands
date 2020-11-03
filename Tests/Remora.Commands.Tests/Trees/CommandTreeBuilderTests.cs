@@ -22,7 +22,6 @@
 
 using System.Linq;
 using Remora.Commands.Tests.Data.DummyModules;
-using Remora.Commands.Tests.Data.Modules;
 using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
 using Xunit;
