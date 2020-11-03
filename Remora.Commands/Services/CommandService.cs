@@ -217,7 +217,15 @@ namespace Remora.Commands.Services
                     throw new InvalidOperationException();
                 }
 
-                var conditions = services.GetServices(conditionType);
+                var conditions = services.GetServices(conditionType).ToList();
+                if (conditions.Count == 0)
+                {
+                    throw new InvalidOperationException
+                    (
+                        "Condition attributes were applied, but no matching condition was registered."
+                    );
+                }
+
                 foreach (var condition in conditions)
                 {
                     var result = await (ValueTask<DetermineConditionResult>)conditionMethod.Invoke
@@ -273,7 +281,15 @@ namespace Remora.Commands.Services
                     throw new InvalidOperationException();
                 }
 
-                var conditions = services.GetServices(conditionType);
+                var conditions = services.GetServices(conditionType).ToList();
+                if (conditions.Count == 0)
+                {
+                    throw new InvalidOperationException
+                    (
+                        "Condition attributes were applied, but no matching condition was registered."
+                    );
+                }
+
                 foreach (var condition in conditions)
                 {
                     var result = await (ValueTask<DetermineConditionResult>)conditionMethod.Invoke

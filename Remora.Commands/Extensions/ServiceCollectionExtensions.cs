@@ -21,11 +21,13 @@
 //
 
 using System;
+using System.Linq;
 using System.Numerics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Remora.Commands.Conditions;
 using Remora.Commands.Groups;
 using Remora.Commands.Parsers;
 using Remora.Commands.Services;
@@ -143,6 +145,48 @@ namespace Remora.Commands.Extensions
             where TParser : AbstractTypeParser<TType>
         {
             serviceCollection.TryAddScoped<ITypeParser<TType>, TParser>();
+            return serviceCollection;
+        }
+
+        /// <summary>
+        /// Adds a condition to the service container.
+        /// </summary>
+        /// <param name="serviceCollection">The service collection.</param>
+        /// <typeparam name="TCondition">The condition type.</typeparam>
+        /// <returns>The collection, with the condition.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the type <typeparamref name="TCondition"/> does not implement any versions of either
+        /// <see cref="ICondition{TAttribute}"/> or <see cref="ICondition{TAttribute,TData}"/>.
+        /// </exception>
+        public static IServiceCollection AddCondition<TCondition>
+        (
+            this IServiceCollection serviceCollection
+        ) where TCondition : class
+        {
+            var conditionInterfaces = typeof(TCondition).GetInterfaces()
+                .Where(i => i.IsGenericType)
+                .Where
+                (
+                    i => i.GetGenericTypeDefinition() == typeof(ICondition<>) ||
+                         i.GetGenericTypeDefinition() == typeof(ICondition<,>)
+                )
+                .ToList();
+
+            if (conditionInterfaces.Count == 0)
+            {
+                throw new InvalidOperationException
+                (
+                    $"The type \"{typeof(TCondition).Name}\" did not implement any condition interfaces."
+                );
+            }
+
+            foreach (var conditionInterface in conditionInterfaces)
+            {
+                serviceCollection.TryAddScoped(conditionInterface, typeof(TCondition));
+            }
+
+            serviceCollection.TryAddScoped<TCondition>();
+
             return serviceCollection;
         }
     }
