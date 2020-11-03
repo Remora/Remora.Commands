@@ -175,11 +175,13 @@ namespace Remora.Commands.Services
             }
             finally
             {
+                // ReSharper disable once SuspiciousTypeConversion.Global
                 if (groupInstance is IDisposable d)
                 {
                     d.Dispose();
                 }
 
+                // ReSharper disable once SuspiciousTypeConversion.Global
                 if (groupInstance is IAsyncDisposable a)
                 {
                     await a.DisposeAsync();
