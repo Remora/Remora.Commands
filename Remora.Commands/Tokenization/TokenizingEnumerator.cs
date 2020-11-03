@@ -53,7 +53,7 @@ namespace Remora.Commands.Tokenization
         /// Gets the enumerator for this type.
         /// </summary>
         /// <returns>The instance itself.</returns>
-        public TokenizingEnumerator GetEnumerator() => this;
+        public readonly TokenizingEnumerator GetEnumerator() => this;
 
         /// <summary>
         /// Attempts to advance the enumerator.

@@ -65,7 +65,7 @@ namespace Remora.Commands.Tokenization
         /// Gets the enumerator for this type.
         /// </summary>
         /// <returns>The instance itself.</returns>
-        public SpanSplitEnumerator GetEnumerator() => this;
+        public readonly SpanSplitEnumerator GetEnumerator() => this;
 
         /// <summary>
         /// Attempts to advance the enumerator.
