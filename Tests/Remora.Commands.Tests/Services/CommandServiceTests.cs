@@ -26,6 +26,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
+using Remora.Commands.Tests.Data.Attributes;
+using Remora.Commands.Tests.Data.Conditions;
 using Remora.Commands.Tests.Data.Modules;
 using Remora.Results;
 using Xunit;
@@ -936,6 +938,69 @@ namespace Remora.Commands.Tests.Services
 
                 Assert.True(executionResult.IsSuccess);
                 Assert.Equal("overload-3", ((RetrieveEntityResult<string>)executionResult.InnerResult!).Entity);
+            }
+        }
+
+        /// <summary>
+        /// Tests conditional commands.
+        /// </summary>
+        public class Conditions
+        {
+            /// <summary>
+            /// Tests whether the command service can execute a command with a method condition.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteCommandWithMethodCondition()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandGroup<ConditionalCommandGroup>()
+                    .AddCondition<MethodCondition>()
+                    .BuildServiceProvider();
+
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test method-condition",
+                    services,
+                    default
+                );
+
+                Assert.True(executionResult.IsSuccess);
+            }
+
+            /// <summary>
+            /// Tests whether the command service can execute a command with a parameter condition.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteCommandWithParameterCondition()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandGroup<ConditionalCommandGroup>()
+                    .AddCondition<ParameterCondition>()
+                    .BuildServiceProvider();
+
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test parameter-condition booga",
+                    services,
+                    default
+                );
+
+                Assert.True(executionResult.IsSuccess);
+
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test parameter-condition wooga",
+                    services,
+                    default
+                );
+
+                Assert.False(executionResult.IsSuccess);
             }
         }
     }
