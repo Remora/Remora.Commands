@@ -61,6 +61,9 @@ namespace Remora.Commands.Trees.Nodes
         /// </remarks>
         public string Key { get; }
 
+        /// <inheritdoc />
+        public IReadOnlyList<string> Aliases { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandNode"/> class.
         /// </summary>
@@ -68,12 +71,21 @@ namespace Remora.Commands.Trees.Nodes
         /// <param name="key">The key value of the command node.</param>
         /// <param name="groupType">The module type that the command is in.</param>
         /// <param name="commandMethod">The method that the command invokes.</param>
-        public CommandNode(IParentNode parent, string key, Type groupType, MethodInfo commandMethod)
+        /// <param name="aliases">Additional key aliases, if any.</param>
+        public CommandNode
+        (
+            IParentNode parent,
+            string key,
+            Type groupType,
+            MethodInfo commandMethod,
+            IReadOnlyList<string>? aliases = null
+        )
         {
             this.Parent = parent;
             this.Key = key;
             this.GroupType = groupType;
             this.CommandMethod = commandMethod;
+            this.Aliases = aliases ?? Array.Empty<string>();
             this.Shape = CommandShape.FromMethod(this.CommandMethod);
         }
 

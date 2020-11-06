@@ -112,10 +112,29 @@ namespace Remora.Commands.Trees
                 {
                     // Nest these commands and groups under a subgroup
                     var groupChildren = new List<IChildNode>();
-                    var groupNode = new GroupNode(groupChildren, parent, group.Key);
+                    var groupAliases = new List<string>();
+
+                    var groupNode = new GroupNode(groupChildren, parent, group.Key, groupAliases);
 
                     foreach (var groupType in group)
                     {
+                        // Union the aliases of the groups under this key
+                        var groupAttribute = groupType.GetCustomAttribute<GroupAttribute>();
+                        if (groupAttribute is null)
+                        {
+                            throw new InvalidOperationException();
+                        }
+
+                        foreach (var alias in groupAttribute.Aliases)
+                        {
+                            if (groupAliases.Contains(alias))
+                            {
+                                continue;
+                            }
+
+                            groupAliases.Add(alias);
+                        }
+
                         var subgroups = groupType.GetNestedTypes().Where(t => typeof(CommandGroup).IsAssignableFrom(t));
 
                         // Extract submodules and commands
@@ -153,7 +172,14 @@ namespace Remora.Commands.Trees
                     );
                 }
 
-                yield return new CommandNode(parent, commandAttribute.Name, moduleType, method);
+                yield return new CommandNode
+                (
+                    parent,
+                    commandAttribute.Name,
+                    moduleType,
+                    method,
+                    commandAttribute.Aliases
+                );
             }
         }
     }

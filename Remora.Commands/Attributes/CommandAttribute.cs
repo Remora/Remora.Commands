@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace Remora.Commands.Attributes
@@ -39,12 +40,19 @@ namespace Remora.Commands.Attributes
         public string Name { get; }
 
         /// <summary>
+        /// Gets the aliases for the command.
+        /// </summary>
+        public IReadOnlyList<string> Aliases { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CommandAttribute"/> class.
         /// </summary>
         /// <param name="name">The name of the command.</param>
-        public CommandAttribute(string name)
+        /// <param name="aliases">Additional aliases for the command.</param>
+        public CommandAttribute(string name, params string[] aliases)
         {
             this.Name = name;
+            this.Aliases = aliases;
         }
     }
 }

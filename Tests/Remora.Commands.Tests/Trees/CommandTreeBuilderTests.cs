@@ -346,5 +346,98 @@ namespace Remora.Commands.Tests.Trees
             Assert.Equal("c", command3.Key);
             Assert.Equal("d", command4.Key);
         }
+
+        /// <summary>
+        /// Tests whether a <see cref="AliasedGroupWithAliasedCommand"/> can be correctly parsed into a tree.
+        /// </summary>
+        [Fact]
+        public void ParsesAliasedGroupWithAliasedCommandCorrectly()
+        {
+            var builder = new CommandTreeBuilder();
+            builder.RegisterModule<AliasedGroupWithAliasedCommand>();
+
+            var tree = builder.Build();
+            var root = tree.Root;
+
+            Assert.Single(root.Children);
+
+            var firstChild = root.Children[0];
+            Assert.IsType<GroupNode>(firstChild);
+
+            var group = (GroupNode)firstChild;
+            Assert.Equal("test", group.Key);
+            Assert.Collection(group.Aliases, a => Assert.Equal("t", a));
+
+            Assert.Single(group.Children);
+
+            var firstGroupChild = group.Children[0];
+            Assert.IsType<CommandNode>(firstGroupChild);
+
+            var command = (CommandNode)firstGroupChild;
+            Assert.Equal("command", command.Key);
+            Assert.Collection(command.Aliases, a => Assert.Equal("c", a));
+        }
+
+        /// <summary>
+        /// Tests whether a <see cref="GroupWithAliasedCommand"/> can be correctly parsed into a tree.
+        /// </summary>
+        [Fact]
+        public void ParsesGroupWithAliasedCommandCorrectly()
+        {
+            var builder = new CommandTreeBuilder();
+            builder.RegisterModule<GroupWithAliasedCommand>();
+
+            var tree = builder.Build();
+            var root = tree.Root;
+
+            Assert.Single(root.Children);
+
+            var firstChild = root.Children[0];
+            Assert.IsType<GroupNode>(firstChild);
+
+            var group = (GroupNode)firstChild;
+            Assert.Equal("test", group.Key);
+            Assert.Empty(group.Aliases);
+
+            Assert.Single(group.Children);
+
+            var firstGroupChild = group.Children[0];
+            Assert.IsType<CommandNode>(firstGroupChild);
+
+            var command = (CommandNode)firstGroupChild;
+            Assert.Equal("command", command.Key);
+            Assert.Collection(command.Aliases, a => Assert.Equal("c", a));
+        }
+
+        /// <summary>
+        /// Tests whether a <see cref="AliasedGroupWithCommand"/> can be correctly parsed into a tree.
+        /// </summary>
+        [Fact]
+        public void ParsesAliasedGroupWithCommandCorrectly()
+        {
+            var builder = new CommandTreeBuilder();
+            builder.RegisterModule<AliasedGroupWithCommand>();
+
+            var tree = builder.Build();
+            var root = tree.Root;
+
+            Assert.Single(root.Children);
+
+            var firstChild = root.Children[0];
+            Assert.IsType<GroupNode>(firstChild);
+
+            var group = (GroupNode)firstChild;
+            Assert.Equal("test", group.Key);
+            Assert.Collection(group.Aliases, a => Assert.Equal("t", a));
+
+            Assert.Single(group.Children);
+
+            var firstGroupChild = group.Children[0];
+            Assert.IsType<CommandNode>(firstGroupChild);
+
+            var command = (CommandNode)firstGroupChild;
+            Assert.Equal("command", command.Key);
+            Assert.Empty(command.Aliases);
+        }
     }
 }

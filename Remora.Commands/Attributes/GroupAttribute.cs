@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace Remora.Commands.Attributes
@@ -38,12 +39,19 @@ namespace Remora.Commands.Attributes
         public string Name { get; }
 
         /// <summary>
+        /// Gets the aliases for the group.
+        /// </summary>
+        public IReadOnlyList<string> Aliases { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GroupAttribute"/> class.
         /// </summary>
         /// <param name="name">The name of the group.</param>
-        public GroupAttribute(string name)
+        /// <param name="aliases">Additional aliases for the group.</param>
+        public GroupAttribute(string name, params string[] aliases)
         {
             this.Name = name;
+            this.Aliases = aliases;
         }
     }
 }

@@ -32,33 +32,93 @@ namespace Remora.Commands.Tests.Trees
     public class CommandTreeTests
     {
         /// <summary>
-        /// Tests whether the tree can be successfully searched.
+        /// Tests basic requirements.
         /// </summary>
-        [Fact]
-        public void SearchIsSuccessfulIfAMatchingCommandExists()
+        public class Basic
         {
-            var builder = new CommandTreeBuilder();
-            builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
+            /// <summary>
+            /// Tests whether the tree can be successfully searched.
+            /// </summary>
+            [Fact]
+            public void SearchIsSuccessfulIfAMatchingCommandExists()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
 
-            var tree = builder.Build();
+                var tree = builder.Build();
 
-            var result = tree.Search("a c d");
-            Assert.NotEmpty(result);
+                var result = tree.Search("a c d");
+                Assert.NotEmpty(result);
+            }
+
+            /// <summary>
+            /// Tests whether the tree can be successfully searched.
+            /// </summary>
+            [Fact]
+            public void SearchIsUnsuccessfulIfNoMatchingCommandExists()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
+
+                var tree = builder.Build();
+
+                var result = tree.Search("a d c");
+                Assert.Empty(result);
+            }
         }
 
         /// <summary>
-        /// Tests whether the tree can be successfully searched.
+        /// Tests aliasing behaviour.
         /// </summary>
-        [Fact]
-        public void SearchIsUnsuccessfulIfNoMatchingCommandExists()
+        public class Aliasing
         {
-            var builder = new CommandTreeBuilder();
-            builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
+            /// <summary>
+            /// Tests whether a command can be found by searching for its primary key and one of the aliases of the
+            /// group it is contained within.
+            /// </summary>
+            [Fact]
+            public void CanFindCommandByCommandPrimaryKeyAndGroupAlias()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<AliasedGroupWithAliasedCommand>();
 
-            var tree = builder.Build();
+                var tree = builder.Build();
 
-            var result = tree.Search("a d c");
-            Assert.Empty(result);
+                var result = tree.Search("t command");
+                Assert.NotEmpty(result);
+            }
+
+            /// <summary>
+            /// Tests whether a command can be found by searching for one of its aliases and the primary key of the
+            /// group it is contained within.
+            /// </summary>
+            [Fact]
+            public void CanFindCommandByCommandAliasAndGroupPrimaryKey()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<AliasedGroupWithAliasedCommand>();
+
+                var tree = builder.Build();
+
+                var result = tree.Search("test c");
+                Assert.NotEmpty(result);
+            }
+
+            /// <summary>
+            /// Tests whether a command can be found by searching for one of its aliases and one of the aliases of the
+            /// group it is contained within.
+            /// </summary>
+            [Fact]
+            public void CanFindCommandByCommandAliasAndGroupAlias()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<AliasedGroupWithAliasedCommand>();
+
+                var tree = builder.Build();
+
+                var result = tree.Search("t c");
+                Assert.NotEmpty(result);
+            }
         }
     }
 }

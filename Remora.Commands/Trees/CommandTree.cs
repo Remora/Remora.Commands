@@ -131,7 +131,20 @@ namespace Remora.Commands.Trees
                 return false;
             }
 
-            return tokenizer.Current.Value.Equals(node.Key, StringComparison.Ordinal);
+            if (tokenizer.Current.Value.Equals(node.Key, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            foreach (var alias in node.Aliases)
+            {
+                if (tokenizer.Current.Value.Equals(alias, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

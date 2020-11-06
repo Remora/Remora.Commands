@@ -1,5 +1,5 @@
 //
-//  IChildNode.cs
+//  GroupWithAliasedCommand.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,30 +20,23 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
-using JetBrains.Annotations;
+using System;
+using System.Threading.Tasks;
+using Remora.Commands.Attributes;
+using Remora.Commands.Groups;
+using Remora.Results;
 
-namespace Remora.Commands.Trees.Nodes
+#pragma warning disable CS1591, SA1600
+
+namespace Remora.Commands.Tests.Data.DummyModules
 {
-    /// <summary>
-    /// Defines the public interface of a child node.
-    /// </summary>
-    [PublicAPI]
-    public interface IChildNode
+    [Group("test")]
+    public class GroupWithAliasedCommand : CommandGroup
     {
-        /// <summary>
-        /// Gets the parent of this node.
-        /// </summary>
-        IParentNode Parent { get; }
-
-        /// <summary>
-        /// Gets the key value of this node. This value is not guaranteed to be unique among its siblings.
-        /// </summary>
-        string Key { get; }
-
-        /// <summary>
-        /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
-        /// </summary>
-        IReadOnlyList<string> Aliases { get; }
+        [Command("command", "c")]
+        public Task<IResult> Command()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
