@@ -20,12 +20,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
+
 namespace Remora.Commands.Trees.Nodes
 {
     /// <summary>
     /// Defines the public interface of a child node.
     /// </summary>
-    internal interface IChildNode
+    [PublicAPI]
+    public interface IChildNode
     {
         /// <summary>
         /// Gets the parent of this node.

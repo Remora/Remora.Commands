@@ -21,13 +21,15 @@
 //
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Signatures
 {
     /// <summary>
     /// Represents a parameter shape that has been bound to a sequence of matching tokens.
     /// </summary>
-    internal class BoundParameterShape
+    [PublicAPI]
+    public class BoundParameterShape
     {
         /// <summary>
         /// Gets the parameter shape.

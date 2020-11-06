@@ -21,13 +21,15 @@
 //
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Tokenization
 {
     /// <summary>
     /// Holds a set of valid start and end quotation pairs.
     /// </summary>
-    internal static class Quotations
+    [PublicAPI]
+    public static class Quotations
     {
         /// <summary>
         /// Gets the quotation pairs.

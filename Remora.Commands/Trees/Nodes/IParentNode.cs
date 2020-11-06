@@ -21,13 +21,15 @@
 //
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Trees.Nodes
 {
     /// <summary>
     /// Defines the public interface of a parent node.
     /// </summary>
-    internal interface IParentNode
+    [PublicAPI]
+    public interface IParentNode
     {
         /// <summary>
         /// Gets the children of this node.

@@ -20,12 +20,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
+
 namespace Remora.Commands.Signatures
 {
     /// <summary>
     /// Represents the shape of a collection of parameters.
     /// </summary>
-    internal interface ICollectionParameterShape
+    [PublicAPI]
+    public interface ICollectionParameterShape
     {
         /// <summary>
         /// Gets the minimum number of elements in the collection. If no minimum is set, the collection is allowed to

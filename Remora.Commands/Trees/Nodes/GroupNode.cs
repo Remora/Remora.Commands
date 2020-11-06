@@ -21,6 +21,7 @@
 //
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Trees.Nodes
 {
@@ -30,7 +31,8 @@ namespace Remora.Commands.Trees.Nodes
     /// <remarks>
     /// Command groups may contain either other groups for deeper nesting, or leaf nodes in the form of commands.
     /// </remarks>
-    internal class GroupNode : IParentNode, IChildNode
+    [PublicAPI]
+    public class GroupNode : IParentNode, IChildNode
     {
         /// <inheritdoc/>
         public IReadOnlyList<IChildNode> Children { get; }

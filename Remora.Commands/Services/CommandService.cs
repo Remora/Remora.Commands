@@ -46,7 +46,10 @@ namespace Remora.Commands.Services
     [PublicAPI]
     public class CommandService
     {
-        private readonly CommandTree _tree;
+        /// <summary>
+        /// Gets the tree of registered commands.
+        /// </summary>
+        public CommandTree Tree { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandService"/> class.
@@ -54,7 +57,7 @@ namespace Remora.Commands.Services
         /// <param name="tree">The command tree.</param>
         internal CommandService(CommandTree tree)
         {
-            _tree = tree;
+            this.Tree = tree;
         }
 
         /// <summary>
@@ -77,7 +80,7 @@ namespace Remora.Commands.Services
         {
             additionalParameters ??= Array.Empty<object>();
 
-            var searchResults = _tree.Search(commandString).ToList();
+            var searchResults = this.Tree.Search(commandString).ToList();
             if (searchResults.Count == 0)
             {
                 return CommandExecutionResult.NotFound();

@@ -21,13 +21,15 @@
 //
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Trees.Nodes
 {
     /// <summary>
     /// Represents the root of a command tree.
     /// </summary>
-    internal class RootNode : IParentNode
+    [PublicAPI]
+    public class RootNode : IParentNode
     {
         /// <inheritdoc/>
         public IReadOnlyList<IChildNode> Children { get; }

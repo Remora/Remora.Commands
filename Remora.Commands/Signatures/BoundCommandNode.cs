@@ -21,6 +21,7 @@
 //
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Remora.Commands.Trees.Nodes;
 
 namespace Remora.Commands.Signatures
@@ -28,7 +29,8 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a command node that has been bound to a set of tokens.
     /// </summary>
-    internal class BoundCommandNode
+    [PublicAPI]
+    public class BoundCommandNode
     {
         /// <summary>
         /// Gets the base node.

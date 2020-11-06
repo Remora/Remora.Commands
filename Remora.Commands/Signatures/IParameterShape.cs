@@ -21,6 +21,7 @@
 //
 
 using System.Reflection;
+using JetBrains.Annotations;
 using Remora.Commands.Tokenization;
 
 namespace Remora.Commands.Signatures
@@ -29,7 +30,8 @@ namespace Remora.Commands.Signatures
     /// Represents the "shape" of a single parameter. This type is used to determine whether a sequence of tokens could
     /// fit the associated parameter.
     /// </summary>
-    internal interface IParameterShape
+    [PublicAPI]
+    public interface IParameterShape
     {
         /// <summary>
         /// Gets the matching parameter.

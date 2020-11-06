@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;
 
@@ -33,7 +34,8 @@ namespace Remora.Commands.Trees.Nodes
     /// <summary>
     /// Represents a command in a command group.
     /// </summary>
-    internal class CommandNode : IChildNode
+    [PublicAPI]
+    public class CommandNode : IChildNode
     {
         /// <summary>
         /// Gets the module type that the command is in.

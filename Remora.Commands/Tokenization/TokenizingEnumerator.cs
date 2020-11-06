@@ -21,13 +21,15 @@
 //
 
 using System;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Tokenization
 {
     /// <summary>
     /// Tokenizes a char-containing <see cref="ReadOnlySpan{T}"/> into a set of names and values.
     /// </summary>
-    internal ref struct TokenizingEnumerator
+    [PublicAPI]
+    public ref struct TokenizingEnumerator
     {
         private ReadOnlySpan<char> _segment;
         private SpanSplitEnumerator _splitEnumerator;

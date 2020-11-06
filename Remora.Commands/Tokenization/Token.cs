@@ -21,13 +21,15 @@
 //
 
 using System;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Tokenization
 {
     /// <summary>
     /// Represents a single token in a sequence.
     /// </summary>
-    internal readonly ref struct Token
+    [PublicAPI]
+    public readonly ref struct Token
     {
         /// <summary>
         /// Gets the type of the token.
