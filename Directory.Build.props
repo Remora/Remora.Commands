@@ -42,14 +42,14 @@
         <IncludeSymbols>true</IncludeSymbols>
         <IncludeSource>true</IncludeSource>
 
-        <RepositoryUrl>https://github.com/Nihlus/Remora.Discord</RepositoryUrl>
+        <RepositoryUrl>https://github.com/Nihlus/Remora.Commands</RepositoryUrl>
         <RepositoryBranch>master</RepositoryBranch>
         <PackageOutputPath>$(SolutionDir)/nuget</PackageOutputPath>
-        <PackageProjectUrl>https://github.com/Nihlus/Remora.Discord</PackageProjectUrl>
-        <PackageTags>discord;bot;api;</PackageTags>
+        <PackageProjectUrl>https://github.com/Nihlus/Remora.Commands</PackageProjectUrl>
+        <PackageTags>commands;parsing;span;performance;getopts;command-line;</PackageTags>
 
         <BaseDescription>
-            Remora.Discord is a .NET library for the Discord API, built for performance, reliability, and concurrency.
+            Remora.Commands is a platform-agnostic command library that handles parsing and dispatch of typical *nix getopts-style command invocations.
         </BaseDescription>
     </PropertyGroup>
 
