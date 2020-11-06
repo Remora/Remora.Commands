@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>1.0.0-beta3</Version>
+        <Version>1.0.0-beta4</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>Added a way to conditionally execute commands.</PackageReleaseNotes>
     </PropertyGroup>
