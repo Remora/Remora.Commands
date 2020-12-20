@@ -149,7 +149,7 @@ namespace Remora.Commands.Trees.Nodes
                 if (matchedParameters.Count == 0)
                 {
                     // Check if all remaining parameters are optional
-                    if (!parametersToCheck.All(p => p.Parameter.IsOptional))
+                    if (!parametersToCheck.All(p => p.IsOmissible()))
                     {
                         return false;
                     }
@@ -166,6 +166,85 @@ namespace Remora.Commands.Trees.Nodes
 
             // if there are more tokens to come, we don't match
             if (tokenizer.MoveNext())
+            {
+                return false;
+            }
+
+            boundCommandShape = new BoundCommandNode(this, boundParameters);
+            return true;
+        }
+
+        /// <summary>
+        /// Attempts to bind the command shape to the given named parameters, matching values to its parameters.
+        /// </summary>
+        /// <param name="namedParameters">The named parameters.</param>
+        /// <param name="boundCommandShape">The resulting shape, if any.</param>
+        /// <returns>true if the shape matches; otherwise, false.</returns>
+        public bool TryBind
+        (
+            IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
+            [NotNullWhen(true)] out BoundCommandNode? boundCommandShape
+        )
+        {
+            boundCommandShape = null;
+
+            using var enumerator = namedParameters.GetEnumerator();
+
+            // The return value of MoveNext is ignored, because empty collections are allowed
+            _ = enumerator.MoveNext();
+
+            var parametersToCheck = new List<IParameterShape>(this.Shape.Parameters);
+
+            var boundParameters = new List<BoundParameterShape>();
+            while (parametersToCheck.Count > 0)
+            {
+                var matchedParameters = new List<IParameterShape>();
+                foreach (var parameterToCheck in parametersToCheck)
+                {
+                    // Because the current enumerator might be invalid or ended, we'll fix up the key-value pair here
+                    var current = enumerator.Current;
+                    if (current.Equals(default(KeyValuePair<string, IReadOnlyList<string>>)))
+                    {
+                        current = new KeyValuePair<string, IReadOnlyList<string>>(string.Empty, Array.Empty<string>());
+                    }
+
+                    if (!parameterToCheck.Matches(current, out var isFatal))
+                    {
+                        if (isFatal)
+                        {
+                            return false;
+                        }
+
+                        continue;
+                    }
+
+                    matchedParameters.Add(parameterToCheck);
+                    boundParameters.Add(new BoundParameterShape(parameterToCheck, current.Value ));
+
+                    // We ignore the return value of MoveNext here as well
+                    _ = enumerator.MoveNext();
+                }
+
+                if (matchedParameters.Count == 0)
+                {
+                    // Check if all remaining parameters are optional
+                    if (!parametersToCheck.All(p => p.IsOmissible()))
+                    {
+                        return false;
+                    }
+
+                    boundCommandShape = new BoundCommandNode(this, boundParameters);
+                    return true;
+                }
+
+                foreach (var matchedParameter in matchedParameters)
+                {
+                    parametersToCheck.Remove(matchedParameter);
+                }
+            }
+
+            // if there are more tokens to come, we don't match
+            if (enumerator.MoveNext())
             {
                 return false;
             }

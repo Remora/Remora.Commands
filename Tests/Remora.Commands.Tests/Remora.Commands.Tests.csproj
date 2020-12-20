@@ -12,4 +12,16 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Trees\CommandTreeTests.Preparsed.cs">
+        <DependentUpon>CommandTreeTests.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Trees\CommandTreeTests.Raw.cs">
+        <DependentUpon>CommandTreeTests.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.cs">
+        <DependentUpon>CommandServiceTests.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

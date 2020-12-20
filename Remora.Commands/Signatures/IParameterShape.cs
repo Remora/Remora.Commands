@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
 using Remora.Commands.Tokenization;
@@ -39,11 +40,31 @@ namespace Remora.Commands.Signatures
         ParameterInfo Parameter { get; }
 
         /// <summary>
+        /// Gets the default value, if any.
+        /// </summary>
+        object? DefaultValue { get; }
+
+        /// <summary>
         /// Determines whether the given token sequence matches the parameter shape.
         /// </summary>
         /// <param name="tokenizer">The token sequence.</param>
         /// <param name="consumedTokens">The number of tokens that would be consumed by this parameter.</param>
         /// <returns>true if the shape matches; otherwise, false.</returns>
         public bool Matches(TokenizingEnumerator tokenizer, out ulong consumedTokens);
+
+        /// <summary>
+        /// Determines whether the given named value matches the parameter shape.
+        /// </summary>
+        /// <param name="namedValue">The named value.</param>
+        /// <param name="isFatal">Whether the mismatch was fatal, and the entire command should be rejected.</param>
+        /// <returns>true if the shape matches; otherwise, false.</returns>
+        public bool Matches(KeyValuePair<string, IReadOnlyList<string>> namedValue, out bool isFatal);
+
+        /// <summary>
+        /// Determines whether the parameter is omissible; that is, it is either optional or has a well-established
+        /// default value.
+        /// </summary>
+        /// <returns>true if the parameter is omissible; otherwise, false.</returns>
+        public bool IsOmissible();
     }
 }

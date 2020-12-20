@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Remora.Commands.Tokenization;
 
@@ -45,6 +46,9 @@ namespace Remora.Commands.Signatures
 
         /// <inheritdoc />
         public ParameterInfo Parameter { get; }
+
+        /// <inheritdoc/>
+        public virtual object? DefaultValue => this.Parameter.DefaultValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SwitchParameterShape"/> class.
@@ -139,5 +143,31 @@ namespace Remora.Commands.Signatures
             consumedTokens = 1;
             return true;
         }
+
+        /// <inheritdoc/>
+        public virtual bool Matches(KeyValuePair<string, IReadOnlyList<string>> namedValue, out bool isFatal)
+        {
+            isFatal = false;
+            var (name, value) = namedValue;
+
+            var nameMatches = name.Equals(this.LongName, StringComparison.Ordinal) ||
+                              (this.ShortName is not null && name.Length == 1 && name[0] == this.ShortName);
+
+            if (!nameMatches)
+            {
+                return false;
+            }
+
+            if (value.Count == 0)
+            {
+                return true;
+            }
+
+            isFatal = true;
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public virtual bool IsOmissible() => this.Parameter.IsOptional;
     }
 }

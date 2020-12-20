@@ -21,7 +21,10 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 
 namespace Remora.Commands.Signatures
@@ -31,11 +34,39 @@ namespace Remora.Commands.Signatures
     /// </summary>
     internal class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
     {
+        private static readonly MethodInfo EmptyArrayMethod;
+        private readonly object _emptyCollection;
+
         /// <inheritdoc />
         public ulong? Min { get; }
 
         /// <inheritdoc />
         public ulong? Max { get; }
+
+        /// <inheritdoc/>
+        public override object? DefaultValue
+        {
+            get
+            {
+                if (this.Parameter.IsOptional)
+                {
+                    return this.Parameter.DefaultValue;
+                }
+
+                if (this.Min is null or 0)
+                {
+                    return _emptyCollection;
+                }
+
+                throw new InvalidOperationException();
+            }
+        }
+
+        static NamedCollectionParameterShape()
+        {
+            var emptyArrayMethod = typeof(Array).GetMethod(nameof(Array.Empty));
+            EmptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
@@ -57,6 +88,11 @@ namespace Remora.Commands.Signatures
         {
             this.Min = min;
             this.Max = max;
+
+            var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+
+            var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+            _emptyCollection = emptyArrayMethod.Invoke(null, null);
         }
 
         /// <summary>
@@ -77,6 +113,11 @@ namespace Remora.Commands.Signatures
         {
             this.Min = min;
             this.Max = max;
+
+            var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+
+            var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+            _emptyCollection = emptyArrayMethod.Invoke(null, null);
         }
 
         /// <summary>
@@ -97,6 +138,11 @@ namespace Remora.Commands.Signatures
         {
             this.Min = min;
             this.Max = max;
+
+            var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+
+            var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+            _emptyCollection = emptyArrayMethod.Invoke(null, null);
         }
 
         /// <inheritdoc/>
@@ -180,6 +226,57 @@ namespace Remora.Commands.Signatures
 
             consumedTokens = itemCount + 1;
             return true;
+        }
+
+        /// <inheritdoc/>
+        public override bool Matches(KeyValuePair<string, IReadOnlyList<string>> namedValue, out bool isFatal)
+        {
+            isFatal = false;
+
+            var (name, value) = namedValue;
+            var nameMatches = name.Equals(this.LongName, StringComparison.Ordinal) ||
+                              (this.ShortName is not null && name.Length == 1 && name[0] == this.ShortName);
+
+            if (!nameMatches)
+            {
+                return false;
+            }
+
+            var count = (ulong)value.LongCount();
+            if (count < this.Min)
+            {
+                isFatal = true;
+                return false;
+            }
+
+            if (this.Max is null)
+            {
+                return true;
+            }
+
+            if (count <= this.Max)
+            {
+                return true;
+            }
+
+            isFatal = true;
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public override bool IsOmissible()
+        {
+            if (this.Parameter.IsOptional)
+            {
+                return true;
+            }
+
+            if (this.Min is null or 0)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

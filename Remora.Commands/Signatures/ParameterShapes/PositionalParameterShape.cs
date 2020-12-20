@@ -20,6 +20,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Remora.Commands.Tokenization;
 using static Remora.Commands.Tokenization.TokenType;
@@ -33,6 +35,9 @@ namespace Remora.Commands.Signatures
     {
         /// <inheritdoc />
         public ParameterInfo Parameter { get; }
+
+        /// <inheritdoc/>
+        public virtual object? DefaultValue => this.Parameter.DefaultValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PositionalParameterShape"/> class.
@@ -61,5 +66,31 @@ namespace Remora.Commands.Signatures
             consumedTokens = 1;
             return true;
         }
+
+        /// <inheritdoc/>
+        public virtual bool Matches(KeyValuePair<string, IReadOnlyList<string>> namedValue, out bool isFatal)
+        {
+            isFatal = false;
+
+            // This one is a bit of a special case. Since all parameters are named in the case of pre-bound parameters,
+            // we'll use the actual parameter name as a hint to match against.
+            var (name, value) = namedValue;
+
+            if (!name.Equals(this.Parameter.Name, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            if (value.Count == 1)
+            {
+                return true;
+            }
+
+            isFatal = true;
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public virtual bool IsOmissible() => this.Parameter.IsOptional;
     }
 }

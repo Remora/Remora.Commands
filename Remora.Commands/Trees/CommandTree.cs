@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees.Nodes;
@@ -56,6 +57,93 @@ namespace Remora.Commands.Trees
         {
             var tokenizer = new TokenizingEnumerator(commandString);
             return Search(this.Root, tokenizer);
+        }
+
+        /// <summary>
+        /// Searches the command tree for a command that matches the shape of the given command name string, and its
+        /// named parameters. In this case, positional parameters are not supported; they are matched against their
+        /// in-source names instead.
+        /// </summary>
+        /// <param name="commandNameString">The named command string.</param>
+        /// <param name="namedParameters">The named parameters.</param>
+        /// <returns>The matching command nodes.</returns>
+        public IEnumerable<BoundCommandNode> Search
+        (
+            ReadOnlySpan<char> commandNameString,
+            IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters
+        )
+        {
+            var splitEnumerator = new SpanSplitEnumerator(commandNameString, " ");
+
+            var matchingNodes = Search(this.Root, splitEnumerator);
+            var boundNodes = matchingNodes
+                .Select
+                (
+                    c =>
+                    (
+                        IsSuccess: c.TryBind(namedParameters, out var boundCommandNode),
+                        BoundCommandNode: boundCommandNode
+                    )
+                )
+                .Where(kvp => kvp.IsSuccess)
+                .Select(kvp => kvp.BoundCommandNode!);
+
+            return boundNodes;
+        }
+
+        /// <summary>
+        /// Performs a depth-first search of the given node.
+        /// </summary>
+        /// <param name="parentNode">The node.</param>
+        /// <param name="enumerator">The splitting enumerator.</param>
+        /// <returns>The matching nodes.</returns>
+        private IEnumerable<CommandNode> Search
+        (
+            IParentNode parentNode,
+            SpanSplitEnumerator enumerator
+        )
+        {
+            var commandNodes = new List<CommandNode>();
+
+            foreach (var child in parentNode.Children)
+            {
+                if (!IsNodeMatch(child, enumerator))
+                {
+                    continue;
+                }
+
+                switch (child)
+                {
+                    case CommandNode commandNode:
+                    {
+                        commandNodes.Add(commandNode);
+                        break;
+                    }
+                    case IParentNode groupNode:
+                    {
+                        // Consume the token
+                        if (!enumerator.MoveNext())
+                        {
+                            // No more tokens, so we can't continue searching
+                            return commandNodes;
+                        }
+
+                        var nestedResults = Search(groupNode, enumerator);
+                        commandNodes.AddRange(nestedResults);
+
+                        continue;
+                    }
+                    default:
+                    {
+                        throw new InvalidOperationException
+                        (
+                            "Unknown node type encountered; tree is invalid and the search cannot continue."
+                        );
+                    }
+                }
+            }
+
+            return commandNodes;
         }
 
         /// <summary>
@@ -111,6 +199,35 @@ namespace Remora.Commands.Trees
             }
 
             return boundCommandNodes;
+        }
+
+        /// <summary>
+        /// Determines whether a node matches the current state of the enumerator.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <param name="enumerator">The tokenizer.</param>
+        /// <returns>true if the node matches; otherwise, false.</returns>
+        private bool IsNodeMatch(IChildNode node, SpanSplitEnumerator enumerator)
+        {
+            if (!enumerator.MoveNext())
+            {
+                return false;
+            }
+
+            if (enumerator.Current.Equals(node.Key, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            foreach (var alias in node.Aliases)
+            {
+                if (enumerator.Current.Equals(alias, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
