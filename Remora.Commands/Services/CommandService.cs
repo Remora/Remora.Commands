@@ -165,7 +165,7 @@ namespace Remora.Commands.Services
         (
             BoundCommandNode boundCommandNode,
             IServiceProvider services,
-            object[]? additionalParameters,
+            object[] additionalParameters,
             CancellationToken ct = default
         )
         {
