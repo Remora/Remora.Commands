@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>1.0.0-beta5</Version>
+        <Version>1.0.0-beta6</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
-        <PackageReleaseNotes>Implement support for preparsed name-value pairs.</PackageReleaseNotes>
+        <PackageReleaseNotes>Implement support for descriptions.</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
