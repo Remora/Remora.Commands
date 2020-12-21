@@ -50,17 +50,47 @@ namespace Remora.Commands.Signatures
         /// <inheritdoc/>
         public virtual object? DefaultValue => this.Parameter.DefaultValue;
 
+        /// <inheritdoc/>
+        public string HintName
+        {
+            get
+            {
+                if (this.LongName is not null)
+                {
+                    return this.LongName;
+                }
+
+                if (this.ShortName is not null)
+                {
+                    return this.ShortName.ToString();
+                }
+
+                return this.Parameter.Name;
+            }
+        }
+
+        /// <inheritdoc/>
+        public string Description { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedParameterShape"/> class.
         /// </summary>
         /// <param name="parameter">The underlying parameter.</param>
         /// <param name="shortName">The short name.</param>
         /// <param name="longName">The long name.</param>
-        public NamedParameterShape(ParameterInfo parameter, char shortName, string longName)
+        /// <param name="description">The description of the parameter.</param>
+        public NamedParameterShape
+        (
+            ParameterInfo parameter,
+            char shortName,
+            string longName,
+            string description = "No description set."
+        )
         {
             this.Parameter = parameter;
             this.ShortName = shortName;
             this.LongName = longName;
+            this.Description = description;
         }
 
         /// <summary>
@@ -68,10 +98,17 @@ namespace Remora.Commands.Signatures
         /// </summary>
         /// <param name="parameter">The underlying parameter.</param>
         /// <param name="longName">The long name.</param>
-        public NamedParameterShape(ParameterInfo parameter, string longName)
+        /// <param name="description">The description of the parameter.</param>
+        public NamedParameterShape
+        (
+            ParameterInfo parameter,
+            string longName,
+            string description = "No description set."
+        )
         {
             this.Parameter = parameter;
             this.LongName = longName;
+            this.Description = description;
         }
 
         /// <summary>
@@ -79,10 +116,17 @@ namespace Remora.Commands.Signatures
         /// </summary>
         /// <param name="parameter">The underlying parameter.</param>
         /// <param name="shortName">The short name.</param>
-        public NamedParameterShape(ParameterInfo parameter, char shortName)
+        /// <param name="description">The description of the parameter.</param>
+        public NamedParameterShape
+        (
+            ParameterInfo parameter,
+            char shortName,
+            string description = "No description set."
+        )
         {
             this.Parameter = parameter;
             this.ShortName = shortName;
+            this.Description = description;
         }
 
         /// <inheritdoc/>

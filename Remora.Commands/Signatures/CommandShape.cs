@@ -43,12 +43,19 @@ namespace Remora.Commands.Signatures
         public IReadOnlyList<IParameterShape> Parameters { get; }
 
         /// <summary>
+        /// Gets a user-configured description of the command.
+        /// </summary>
+        public string Description { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CommandShape"/> class.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        public CommandShape(IReadOnlyList<IParameterShape> parameters)
+        /// <param name="description">The description of the command.</param>
+        public CommandShape(IReadOnlyList<IParameterShape> parameters, string description = "No description set.")
         {
             this.Parameters = parameters;
+            this.Description = description;
         }
 
         /// <summary>
@@ -89,7 +96,8 @@ namespace Remora.Commands.Signatures
                 }
             }
 
-            return new CommandShape(namedParameters.Concat(positionalParameters).ToList());
+            var description = method.GetDescriptionOrDefault();
+            return new CommandShape(namedParameters.Concat(positionalParameters).ToList(), description);
         }
 
         private static IParameterShape CreateNamedParameterShape
@@ -125,6 +133,8 @@ namespace Remora.Commands.Signatures
             ParameterInfo parameter
         )
         {
+            var description = parameter.GetDescriptionOrDefault();
+
             IParameterShape newNamedParameter;
             if (optionAttribute.ShortName is null)
             {
@@ -133,7 +143,8 @@ namespace Remora.Commands.Signatures
                     parameter,
                     optionAttribute.LongName ?? throw new InvalidOperationException(),
                     rangeAttribute?.GetMin(),
-                    rangeAttribute?.GetMax()
+                    rangeAttribute?.GetMax(),
+                    description
                 );
             }
             else if (optionAttribute.LongName is null)
@@ -143,7 +154,8 @@ namespace Remora.Commands.Signatures
                     parameter,
                     optionAttribute.ShortName ?? throw new InvalidOperationException(),
                     rangeAttribute?.GetMin(),
-                    rangeAttribute?.GetMax()
+                    rangeAttribute?.GetMax(),
+                    description
                 );
             }
             else
@@ -154,7 +166,8 @@ namespace Remora.Commands.Signatures
                     optionAttribute.ShortName ?? throw new InvalidOperationException(),
                     optionAttribute.LongName ?? throw new InvalidOperationException(),
                     rangeAttribute?.GetMin(),
-                    rangeAttribute?.GetMax()
+                    rangeAttribute?.GetMax(),
+                    description
                 );
             }
 
@@ -176,13 +189,16 @@ namespace Remora.Commands.Signatures
                 );
             }
 
+            var description = parameter.GetDescriptionOrDefault();
+
             IParameterShape newNamedParameter;
             if (optionAttribute.ShortName is null)
             {
                 newNamedParameter = new SwitchParameterShape
                 (
                     parameter,
-                    optionAttribute.LongName ?? throw new InvalidOperationException()
+                    optionAttribute.LongName ?? throw new InvalidOperationException(),
+                    description
                 );
             }
             else if (optionAttribute.LongName is null)
@@ -190,7 +206,8 @@ namespace Remora.Commands.Signatures
                 newNamedParameter = new SwitchParameterShape
                 (
                     parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException()
+                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                    description
                 );
             }
             else
@@ -199,7 +216,8 @@ namespace Remora.Commands.Signatures
                 (
                     parameter,
                     optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    optionAttribute.LongName ?? throw new InvalidOperationException()
+                    optionAttribute.LongName ?? throw new InvalidOperationException(),
+                    description
                 );
             }
 
@@ -212,13 +230,16 @@ namespace Remora.Commands.Signatures
             ParameterInfo parameter
         )
         {
+            var description = parameter.GetDescriptionOrDefault();
+
             IParameterShape newNamedParameter;
             if (optionAttribute.ShortName is null)
             {
                 newNamedParameter = new NamedParameterShape
                 (
                     parameter,
-                    optionAttribute.LongName ?? throw new InvalidOperationException()
+                    optionAttribute.LongName ?? throw new InvalidOperationException(),
+                    description
                 );
             }
             else if (optionAttribute.LongName is null)
@@ -226,7 +247,8 @@ namespace Remora.Commands.Signatures
                 newNamedParameter = new NamedParameterShape
                 (
                     parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException()
+                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                    description
                 );
             }
             else
@@ -235,7 +257,8 @@ namespace Remora.Commands.Signatures
                 (
                     parameter,
                     optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    optionAttribute.LongName ?? throw new InvalidOperationException()
+                    optionAttribute.LongName ?? throw new InvalidOperationException(),
+                    description
                 );
             }
 
@@ -248,12 +271,13 @@ namespace Remora.Commands.Signatures
             ParameterInfo parameter
         )
         {
+            var description = parameter.GetDescriptionOrDefault();
             var isCollection = parameter.ParameterType.IsSupportedEnumerable();
 
             IParameterShape newPositionalParameter;
             if (!isCollection)
             {
-                newPositionalParameter = new PositionalParameterShape(parameter);
+                newPositionalParameter = new PositionalParameterShape(parameter, description);
             }
             else
             {
@@ -261,7 +285,8 @@ namespace Remora.Commands.Signatures
                 (
                     parameter,
                     rangeAttribute?.GetMin(),
-                    rangeAttribute?.GetMax()
+                    rangeAttribute?.GetMax(),
+                    description
                 );
             }
 

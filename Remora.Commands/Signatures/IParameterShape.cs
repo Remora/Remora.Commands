@@ -45,6 +45,17 @@ namespace Remora.Commands.Signatures
         object? DefaultValue { get; }
 
         /// <summary>
+        /// Gets a string that can be used to refer to the parameter in human-readable content. Typically, this is the
+        /// configured name of the parameter, or a unique fallback value.
+        /// </summary>
+        string HintName { get; }
+
+        /// <summary>
+        /// Gets a user-configured description of the parameter.
+        /// </summary>
+        string Description { get; }
+
+        /// <summary>
         /// Determines whether the given token sequence matches the parameter shape.
         /// </summary>
         /// <param name="tokenizer">The token sequence.</param>

@@ -114,7 +114,15 @@ namespace Remora.Commands.Trees
                     var groupChildren = new List<IChildNode>();
                     var groupAliases = new List<string>();
 
-                    var groupNode = new GroupNode(groupChildren, parent, group.Key, groupAliases);
+                    // Pick out the first custom description
+                    var description = group
+                        .Select(t => t.GetDescriptionOrDefault("MARKER"))
+                        .Distinct()
+                        .FirstOrDefault(d => d != "MARKER");
+
+                    description ??= "No description set.";
+
+                    var groupNode = new GroupNode(groupChildren, parent, group.Key, groupAliases, description);
 
                     foreach (var groupType in group)
                     {

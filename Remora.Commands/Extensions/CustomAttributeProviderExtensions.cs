@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -49,6 +50,33 @@ namespace Remora.Commands.Extensions
             where TAttribute : Attribute
         {
             return attributeProvider.GetCustomAttributes(typeof(TAttribute), inherit).FirstOrDefault() as TAttribute;
+        }
+
+        /// <summary>
+        /// Gets a user-configured description of the given attribute provider. The description is taken from an
+        /// instance of the <see cref="DescriptionAttribute"/>.
+        /// </summary>
+        /// <param name="attributeProvider">The attribute provider.</param>
+        /// <param name="defaultDescription">The default description to use if no attribute can be found.</param>
+        /// <returns>The description.</returns>
+        public static string GetDescriptionOrDefault
+        (
+            this ICustomAttributeProvider attributeProvider,
+            string defaultDescription = "No description set."
+        )
+        {
+            var descriptionAttribute = attributeProvider.GetCustomAttribute<DescriptionAttribute>();
+            if (descriptionAttribute is null)
+            {
+                return defaultDescription;
+            }
+
+            if (string.IsNullOrWhiteSpace(descriptionAttribute.Description))
+            {
+                return defaultDescription;
+            }
+
+            return descriptionAttribute.Description;
         }
     }
 }

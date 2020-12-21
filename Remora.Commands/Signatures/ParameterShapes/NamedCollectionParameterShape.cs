@@ -76,15 +76,17 @@ namespace Remora.Commands.Signatures
         /// <param name="longName">The long name.</param>
         /// <param name="min">The minimum number of items in the collection.</param>
         /// <param name="max">The maximum number of items in the collection.</param>
+        /// <param name="description">The description of the parameter.</param>
         public NamedCollectionParameterShape
         (
             ParameterInfo parameter,
             char shortName,
             string longName,
             ulong? min,
-            ulong? max
+            ulong? max,
+            string description = "No description set."
         )
-            : base(parameter, shortName, longName)
+            : base(parameter, shortName, longName, description)
         {
             this.Min = min;
             this.Max = max;
@@ -102,14 +104,16 @@ namespace Remora.Commands.Signatures
         /// <param name="shortName">The short name.</param>
         /// <param name="min">The minimum number of items in the collection.</param>
         /// <param name="max">The maximum number of items in the collection.</param>
+        /// <param name="description">The description of the parameter.</param>
         public NamedCollectionParameterShape
         (
             ParameterInfo parameter,
             char shortName,
             ulong? min,
-            ulong? max
+            ulong? max,
+            string description = "No description set."
         )
-            : base(parameter, shortName)
+            : base(parameter, shortName, description)
         {
             this.Min = min;
             this.Max = max;
@@ -127,14 +131,16 @@ namespace Remora.Commands.Signatures
         /// <param name="longName">The long name.</param>
         /// <param name="min">The minimum number of items in the collection.</param>
         /// <param name="max">The maximum number of items in the collection.</param>
+        /// <param name="description">The description of the parameter.</param>
         public NamedCollectionParameterShape
         (
             ParameterInfo parameter,
             string longName,
             ulong? min,
-            ulong? max
+            ulong? max,
+            string description = "No description set."
         )
-            : base(parameter, longName)
+            : base(parameter, longName, description)
         {
             this.Min = min;
             this.Max = max;

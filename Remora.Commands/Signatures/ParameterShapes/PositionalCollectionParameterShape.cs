@@ -75,8 +75,15 @@ namespace Remora.Commands.Signatures
         /// <param name="parameter">The underlying parameter.</param>
         /// <param name="min">The minimum number of elements.</param>
         /// <param name="max">The maximum number of elements.</param>
-        public PositionalCollectionParameterShape(ParameterInfo parameter, ulong? min, ulong? max)
-            : base(parameter)
+        /// <param name="description">The description of the parameter.</param>
+        public PositionalCollectionParameterShape
+        (
+            ParameterInfo parameter,
+            ulong? min,
+            ulong? max,
+            string description = "No description set."
+        )
+            : base(parameter, description)
         {
             this.Min = min;
             this.Max = max;

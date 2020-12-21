@@ -51,24 +51,32 @@ namespace Remora.Commands.Trees.Nodes
         public IReadOnlyList<string> Aliases { get; }
 
         /// <summary>
+        /// Gets a user-configured description of the group.
+        /// </summary>
+        public string Description { get; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GroupNode"/> class.
         /// </summary>
         /// <param name="children">The child nodes of the group node.</param>
         /// <param name="parent">The parent of the group node.</param>
         /// <param name="key">The key value for the group node.</param>
         /// <param name="aliases">Additional key aliases, if any.</param>
+        /// <param name="description">The description of the group.</param>
         public GroupNode
         (
             IReadOnlyList<IChildNode> children,
             IParentNode parent,
             string key,
-            IReadOnlyList<string>? aliases = null
+            IReadOnlyList<string>? aliases = null,
+            string description = "No description set."
         )
         {
             this.Children = children;
             this.Parent = parent;
             this.Key = key;
             this.Aliases = aliases ?? Array.Empty<string>();
+            this.Description = description;
         }
     }
 }

@@ -39,13 +39,21 @@ namespace Remora.Commands.Signatures
         /// <inheritdoc/>
         public virtual object? DefaultValue => this.Parameter.DefaultValue;
 
+        /// <inheritdoc/>
+        public string HintName => this.Parameter.Name;
+
+        /// <inheritdoc/>
+        public string Description { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PositionalParameterShape"/> class.
         /// </summary>
         /// <param name="parameter">The underlying parameter.</param>
-        public PositionalParameterShape(ParameterInfo parameter)
+        /// <param name="description">The description of the parameter.</param>
+        public PositionalParameterShape(ParameterInfo parameter, string description = "No description set.")
         {
             this.Parameter = parameter;
+            this.Description = description;
         }
 
         /// <inheritdoc />
