@@ -32,7 +32,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a named parameter with a single value.
     /// </summary>
-    internal class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
+    public class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
     {
         private static readonly MethodInfo EmptyArrayMethod;
         private readonly object _emptyCollection;

@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="ulong"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class UInt64Parser : AbstractTypeParser<ulong>
+    public class UInt64Parser : AbstractTypeParser<ulong>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<ulong>> TryParse(string value, CancellationToken ct)

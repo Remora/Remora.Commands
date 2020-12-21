@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="long"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class Int64Parser : AbstractTypeParser<long>
+    public class Int64Parser : AbstractTypeParser<long>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<long>> TryParse(string value, CancellationToken ct)

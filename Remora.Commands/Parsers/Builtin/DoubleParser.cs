@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="double"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class DoubleParser : AbstractTypeParser<double>
+    public class DoubleParser : AbstractTypeParser<double>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<double>> TryParse(string value, CancellationToken ct)

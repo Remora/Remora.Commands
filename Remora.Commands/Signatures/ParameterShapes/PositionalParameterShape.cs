@@ -31,7 +31,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a single value without a name.
     /// </summary>
-    internal class PositionalParameterShape : IParameterShape
+    public class PositionalParameterShape : IParameterShape
     {
         /// <inheritdoc />
         public ParameterInfo Parameter { get; }

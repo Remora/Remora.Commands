@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="bool"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class BooleanParser : AbstractTypeParser<bool>
+    public class BooleanParser : AbstractTypeParser<bool>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<bool>> TryParse(string value, CancellationToken ct)

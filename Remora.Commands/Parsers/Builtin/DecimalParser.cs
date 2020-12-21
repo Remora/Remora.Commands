@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="decimal"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class DecimalParser : AbstractTypeParser<decimal>
+    public class DecimalParser : AbstractTypeParser<decimal>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<decimal>> TryParse(string value, CancellationToken ct)

@@ -32,7 +32,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="BigInteger"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class BigIntegerParser : AbstractTypeParser<BigInteger>
+    public class BigIntegerParser : AbstractTypeParser<BigInteger>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<BigInteger>> TryParse(string value, CancellationToken ct)

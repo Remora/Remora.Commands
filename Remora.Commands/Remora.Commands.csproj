@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>1.0.0-beta6</Version>
+        <Version>1.0.0-beta7</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
-        <PackageReleaseNotes>Implement support for descriptions.</PackageReleaseNotes>
+        <PackageReleaseNotes>Make more types public.</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>

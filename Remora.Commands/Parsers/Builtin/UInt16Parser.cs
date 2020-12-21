@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="ushort"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class UInt16Parser : AbstractTypeParser<ushort>
+    public class UInt16Parser : AbstractTypeParser<ushort>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<ushort>> TryParse(string value, CancellationToken ct)

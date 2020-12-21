@@ -33,7 +33,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a single value without a name.
     /// </summary>
-    internal class PositionalCollectionParameterShape : PositionalParameterShape, ICollectionParameterShape
+    public class PositionalCollectionParameterShape : PositionalParameterShape, ICollectionParameterShape
     {
         private static readonly MethodInfo EmptyArrayMethod;
         private readonly object _emptyCollection;

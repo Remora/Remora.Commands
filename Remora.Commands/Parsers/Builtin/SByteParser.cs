@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="sbyte"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class SByteParser : AbstractTypeParser<sbyte>
+    public class SByteParser : AbstractTypeParser<sbyte>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<sbyte>> TryParse(string value, CancellationToken ct)

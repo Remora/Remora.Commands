@@ -33,7 +33,7 @@ namespace Remora.Commands.Parsers
     /// </summary>
     /// <typeparam name="TEnum">The enum type.</typeparam>
     [UsedImplicitly]
-    internal class EnumParser<TEnum> : AbstractTypeParser<TEnum>
+    public class EnumParser<TEnum> : AbstractTypeParser<TEnum>
         where TEnum : struct, Enum
     {
         /// <inheritdoc />

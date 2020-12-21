@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses strings.
     /// </summary>
     [UsedImplicitly]
-    internal class StringParser : AbstractTypeParser<string>
+    public class StringParser : AbstractTypeParser<string>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<string>> TryParse(string value, CancellationToken ct)

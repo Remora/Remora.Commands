@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="byte"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class ByteParser : AbstractTypeParser<byte>
+    public class ByteParser : AbstractTypeParser<byte>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<byte>> TryParse(string value, CancellationToken ct)

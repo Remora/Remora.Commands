@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="char"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class CharParser : AbstractTypeParser<char>
+    public class CharParser : AbstractTypeParser<char>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<char>> TryParse(string value, CancellationToken ct)

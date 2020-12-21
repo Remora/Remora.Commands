@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="float"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class SingleParser : AbstractTypeParser<float>
+    public class SingleParser : AbstractTypeParser<float>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<float>> TryParse(string value, CancellationToken ct)

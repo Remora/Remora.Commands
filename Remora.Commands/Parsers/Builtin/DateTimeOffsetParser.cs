@@ -32,7 +32,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="DateTimeOffset"/>s.
     /// </summary>
     [UsedImplicitly]
-    internal class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
+    public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
     {
         /// <inheritdoc />
         public override ValueTask<RetrieveEntityResult<DateTimeOffset>> TryParse(string value, CancellationToken ct)
