@@ -19,7 +19,7 @@ public class ThingCommands : CommandGroup
     (
         string name, // = "new-thing"
         [Option("description") string description, // = "My thing!"
-        [Option("enable-indexing") bool enableIndexing = false // = true
+        [Switch("enable-indexing") bool enableIndexing = false // = true
     )
     {
         return _thingService.AddThing(name, description, enableIndexing);
@@ -39,6 +39,10 @@ the following option syntax types:
     - `[Option('v')] T value` (short)
     - `[Option("value")] T value` (long)
     - `[Option('v', "value")] T value` (short and long)
+  * Switches
+    - `[Switch('e')] bool value = false` (short)
+    - `[Switch("enable")] bool value = false` (long)
+    - `[Switch('e', "enable")] bool value = false` (short and long)
   * Collections
     - `IEnumerable<T> values` (positional)
     - `[Option('v', "values")] IEnumerable<T> values` (named, as above)
