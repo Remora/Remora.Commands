@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>1.0.0-beta8</Version>
+        <Version>1.0.0-beta9</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
-        <PackageReleaseNotes>Make more things public.</PackageReleaseNotes>
+        <PackageReleaseNotes>Make switches explicit.</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
