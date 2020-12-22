@@ -208,6 +208,8 @@ Get it on [NuGet][1]!
 Heavily inspired by [CommandLineParser][2], a great library for parsing *nix
 getopts-style arguments from the command line itself.
 
+Icon by [Twemoji][3], licensed under CC-BY 4.0.
 
 [1]: http://nuget.org/packages/Remora.Commands
 [2]: https://github.com/commandlineparser/commandline
+[3]: https://twemoji.twitter.com/
