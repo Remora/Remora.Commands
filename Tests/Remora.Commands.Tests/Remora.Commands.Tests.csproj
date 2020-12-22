@@ -22,6 +22,9 @@
       <Compile Update="Services\CommandServiceTests.Raw.cs">
         <DependentUpon>CommandServiceTests.cs</DependentUpon>
       </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.cs">
+        <DependentUpon>CommandServiceTests.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

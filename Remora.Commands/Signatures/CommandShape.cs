@@ -110,7 +110,7 @@ namespace Remora.Commands.Signatures
             var isCollection = parameter.ParameterType.IsSupportedEnumerable();
 
             IParameterShape newNamedParameter;
-            if (parameter.ParameterType == typeof(bool))
+            if (optionAttribute is SwitchAttribute)
             {
                 newNamedParameter = CreateNamedSwitchParameterShape(optionAttribute, parameter);
             }
@@ -186,6 +186,15 @@ namespace Remora.Commands.Signatures
                 (
                     $"{parameter.Member.Name}::{parameter.Name} incorrectly declared: " +
                     $"switches must have a default value."
+                );
+            }
+
+            if (parameter.ParameterType != typeof(bool))
+            {
+                throw new InvalidOperationException
+                (
+                    $"{parameter.Member.Name}::{parameter.Name} incorrectly declared: " +
+                    $"switches must be booleans."
                 );
             }
 

@@ -567,6 +567,81 @@ namespace Remora.Commands.Tests.Services
 
                     Assert.True(executionResult.IsSuccess);
                 }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a single named boolean parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNamedBoolCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync("test option --enable true", services);
+
+                    Assert.True(executionResult.IsSuccess);
+
+                    executionResult = await commandService.TryExecuteAsync("test option", services);
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a single short-named boolean parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteShortNameNamedBoolCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test option-short-name -e true",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a single short and long-named boolean
+                /// parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteShortAndLongNameNamedBoolCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test option-short-and-long-name -e true",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+
+                    executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test option-short-and-long-name --enable true",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
             }
 
             /// <summary>

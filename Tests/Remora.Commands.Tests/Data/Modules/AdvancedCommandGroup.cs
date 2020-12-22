@@ -50,7 +50,7 @@ namespace Remora.Commands.Tests.Data.Modules
             [Option("first")] string first,
             string second,
             [Option("third")] string third,
-            [Option("enable")] bool option = false
+            [Switch("enable")] bool option = false
         )
         {
             return Task.FromResult<IResult>(OperationResult.FromSuccess());

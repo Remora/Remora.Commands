@@ -756,6 +756,108 @@ namespace Remora.Commands.Tests.Services
 
                     Assert.True(executionResult.IsSuccess);
                 }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a single named boolean parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNamedBoolCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "enable", new[] { "true" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync("test option", values, services);
+
+                    Assert.True(executionResult.IsSuccess);
+
+                    values = new Dictionary<string, IReadOnlyList<string>>();
+                    executionResult = await commandService.TryExecuteAsync("test option", values, services);
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a single short-named boolean parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteShortNameNamedBoolCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "e", new[] { "true" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test option-short-name",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a single short and long-named boolean
+                /// parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteShortAndLongNameNamedBoolCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "e", new[] { "true" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test option-short-and-long-name",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+
+                    values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "enable", new[] { "true" } }
+                    };
+
+                    executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test option-short-and-long-name",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
             }
 
             /// <summary>
