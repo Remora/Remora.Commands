@@ -68,6 +68,7 @@ namespace Remora.Commands.Services
         /// <param name="additionalParameters">
         /// Any additional parameters that should be available during instantiation of the command group.
         /// </param>
+        /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
         public async Task<CommandExecutionResult> TryExecuteAsync
@@ -75,12 +76,13 @@ namespace Remora.Commands.Services
             string commandString,
             IServiceProvider services,
             object[]? additionalParameters = null,
+            TreeSearchOptions? searchOptions = null,
             CancellationToken ct = default
         )
         {
             additionalParameters ??= Array.Empty<object>();
 
-            var searchResults = this.Tree.Search(commandString).ToList();
+            var searchResults = this.Tree.Search(commandString, searchOptions).ToList();
             if (searchResults.Count == 0)
             {
                 return CommandExecutionResult.NotFound();
@@ -101,6 +103,7 @@ namespace Remora.Commands.Services
         /// <param name="additionalParameters">
         /// Any additional parameters that should be available during instantiation of the command group.
         /// </param>
+        /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
         public async Task<CommandExecutionResult> TryExecuteAsync
@@ -109,12 +112,13 @@ namespace Remora.Commands.Services
             IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
             IServiceProvider services,
             object[]? additionalParameters = null,
+            TreeSearchOptions? searchOptions = null,
             CancellationToken ct = default
         )
         {
             additionalParameters ??= Array.Empty<object>();
 
-            var searchResults = this.Tree.Search(commandNameString, namedParameters).ToList();
+            var searchResults = this.Tree.Search(commandNameString, namedParameters, searchOptions).ToList();
             if (searchResults.Count == 0)
             {
                 return CommandExecutionResult.NotFound();

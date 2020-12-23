@@ -26,6 +26,7 @@ using System.Linq;
 using System.Reflection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
+using Remora.Commands.Trees;
 
 namespace Remora.Commands.Signatures
 {
@@ -152,8 +153,14 @@ namespace Remora.Commands.Signatures
         }
 
         /// <inheritdoc/>
-        public override bool Matches(TokenizingEnumerator tokenizer, out ulong consumedTokens)
+        public override bool Matches
+        (
+            TokenizingEnumerator tokenizer,
+            out ulong consumedTokens,
+            TreeSearchOptions? searchOptions = null
+        )
         {
+            searchOptions ??= new TreeSearchOptions();
             consumedTokens = 0;
 
             if (!tokenizer.MoveNext())
@@ -170,7 +177,7 @@ namespace Remora.Commands.Signatures
                         return false;
                     }
 
-                    if (!tokenizer.Current.Value.Equals(this.LongName, StringComparison.Ordinal))
+                    if (!tokenizer.Current.Value.Equals(this.LongName, searchOptions.KeyComparison))
                     {
                         return false;
                     }
@@ -235,12 +242,18 @@ namespace Remora.Commands.Signatures
         }
 
         /// <inheritdoc/>
-        public override bool Matches(KeyValuePair<string, IReadOnlyList<string>> namedValue, out bool isFatal)
+        public override bool Matches
+        (
+            KeyValuePair<string, IReadOnlyList<string>> namedValue,
+            out bool isFatal,
+            TreeSearchOptions? searchOptions = null
+        )
         {
+            searchOptions ??= new TreeSearchOptions();
             isFatal = false;
 
             var (name, value) = namedValue;
-            var nameMatches = name.Equals(this.LongName, StringComparison.Ordinal) ||
+            var nameMatches = name.Equals(this.LongName, searchOptions.KeyComparison) ||
                               (this.ShortName is not null && name.Length == 1 && name[0] == this.ShortName);
 
             if (!nameMatches)
@@ -270,7 +283,7 @@ namespace Remora.Commands.Signatures
         }
 
         /// <inheritdoc/>
-        public override bool IsOmissible()
+        public override bool IsOmissible(TreeSearchOptions? searchOptions = null)
         {
             if (this.Parameter.IsOptional)
             {

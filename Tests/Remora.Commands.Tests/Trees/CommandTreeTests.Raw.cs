@@ -20,6 +20,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Collections.Generic;
 using Remora.Commands.Tests.Data.DummyModules;
 using Remora.Commands.Trees;
 using Xunit;
@@ -120,6 +122,40 @@ namespace Remora.Commands.Tests.Trees
 
                     var result = tree.Search("t c");
                     Assert.NotEmpty(result);
+                }
+            }
+
+            /// <summary>
+            /// Tests various search options.
+            /// </summary>
+            public class SearchOptions
+            {
+                /// <summary>
+                /// Tests the key comparison option.
+                /// </summary>
+                public class KeyComparison
+                {
+                    /// <summary>
+                    /// Tests whether a command can be found by performing a search with a different key comparison.
+                    /// </summary>
+                    [Fact]
+                    public void CanFindCommandWithDifferentCasing()
+                    {
+                        var builder = new CommandTreeBuilder();
+                        builder.RegisterModule<GroupWithCasingDifferences>();
+
+                        var tree = builder.Build();
+
+                        var options = new TreeSearchOptions(StringComparison.OrdinalIgnoreCase);
+
+                        var result = tree.Search
+                        (
+                            "test somecommand",
+                            options
+                        );
+
+                        Assert.NotEmpty(result);
+                    }
                 }
             }
         }

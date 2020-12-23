@@ -16,4 +16,8 @@
       <PackageReference Include="Remora.Results" Version="1.3.0" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)' != 'net5.0'">
+        <PackageReference Include="IsExternalInit.System.Runtime.CompilerServices" Version="1.0.0" />
+    </ItemGroup>
+
 </Project>

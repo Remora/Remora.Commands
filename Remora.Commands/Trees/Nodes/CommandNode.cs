@@ -94,13 +94,16 @@ namespace Remora.Commands.Trees.Nodes
         /// </summary>
         /// <param name="tokenizer">The token sequence.</param>
         /// <param name="boundCommandShape">The resulting shape, if any.</param>
+        /// <param name="searchOptions">A set of search options.</param>
         /// <returns>true if the shape matches; otherwise, false.</returns>
         public bool TryBind
         (
             TokenizingEnumerator tokenizer,
-            [NotNullWhen(true)] out BoundCommandNode? boundCommandShape
+            [NotNullWhen(true)] out BoundCommandNode? boundCommandShape,
+            TreeSearchOptions? searchOptions = null
         )
         {
+            searchOptions ??= new TreeSearchOptions();
             boundCommandShape = null;
 
             if (!tokenizer.MoveNext())
@@ -116,7 +119,7 @@ namespace Remora.Commands.Trees.Nodes
                 var matchedParameters = new List<IParameterShape>();
                 foreach (var parameterToCheck in parametersToCheck)
                 {
-                    if (!parameterToCheck.Matches(tokenizer, out var consumedTokens))
+                    if (!parameterToCheck.Matches(tokenizer, out var consumedTokens, searchOptions))
                     {
                         continue;
                     }
@@ -149,7 +152,7 @@ namespace Remora.Commands.Trees.Nodes
                 if (matchedParameters.Count == 0)
                 {
                     // Check if all remaining parameters are optional
-                    if (!parametersToCheck.All(p => p.IsOmissible()))
+                    if (!parametersToCheck.All(p => p.IsOmissible(searchOptions)))
                     {
                         return false;
                     }
@@ -179,13 +182,16 @@ namespace Remora.Commands.Trees.Nodes
         /// </summary>
         /// <param name="namedParameters">The named parameters.</param>
         /// <param name="boundCommandShape">The resulting shape, if any.</param>
+        /// <param name="searchOptions">A set of search options.</param>
         /// <returns>true if the shape matches; otherwise, false.</returns>
         public bool TryBind
         (
             IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
-            [NotNullWhen(true)] out BoundCommandNode? boundCommandShape
+            [NotNullWhen(true)] out BoundCommandNode? boundCommandShape,
+            TreeSearchOptions? searchOptions = null
         )
         {
+            searchOptions ??= new TreeSearchOptions();
             boundCommandShape = null;
 
             using var enumerator = namedParameters.GetEnumerator();
@@ -208,7 +214,7 @@ namespace Remora.Commands.Trees.Nodes
                         current = new KeyValuePair<string, IReadOnlyList<string>>(string.Empty, Array.Empty<string>());
                     }
 
-                    if (!parameterToCheck.Matches(current, out var isFatal))
+                    if (!parameterToCheck.Matches(current, out var isFatal, searchOptions))
                     {
                         if (isFatal)
                         {
@@ -228,7 +234,7 @@ namespace Remora.Commands.Trees.Nodes
                 if (matchedParameters.Count == 0)
                 {
                     // Check if all remaining parameters are optional
-                    if (!parametersToCheck.All(p => p.IsOmissible()))
+                    if (!parametersToCheck.All(p => p.IsOmissible(searchOptions)))
                     {
                         return false;
                     }

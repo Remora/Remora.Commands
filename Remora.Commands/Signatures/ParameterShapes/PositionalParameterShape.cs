@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Remora.Commands.Tokenization;
+using Remora.Commands.Trees;
 using static Remora.Commands.Tokenization.TokenType;
 
 namespace Remora.Commands.Signatures
@@ -57,7 +58,12 @@ namespace Remora.Commands.Signatures
         }
 
         /// <inheritdoc />
-        public virtual bool Matches(TokenizingEnumerator tokenizer, out ulong consumedTokens)
+        public virtual bool Matches
+        (
+            TokenizingEnumerator tokenizer,
+            out ulong consumedTokens,
+            TreeSearchOptions? searchOptions = null
+        )
         {
             consumedTokens = 0;
 
@@ -76,15 +82,21 @@ namespace Remora.Commands.Signatures
         }
 
         /// <inheritdoc/>
-        public virtual bool Matches(KeyValuePair<string, IReadOnlyList<string>> namedValue, out bool isFatal)
+        public virtual bool Matches
+        (
+            KeyValuePair<string, IReadOnlyList<string>> namedValue,
+            out bool isFatal,
+            TreeSearchOptions? searchOptions = null
+        )
         {
+            searchOptions ??= new TreeSearchOptions();
             isFatal = false;
 
             // This one is a bit of a special case. Since all parameters are named in the case of pre-bound parameters,
             // we'll use the actual parameter name as a hint to match against.
             var (name, value) = namedValue;
 
-            if (!name.Equals(this.Parameter.Name, StringComparison.Ordinal))
+            if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
             {
                 return false;
             }
@@ -99,6 +111,6 @@ namespace Remora.Commands.Signatures
         }
 
         /// <inheritdoc/>
-        public virtual bool IsOmissible() => this.Parameter.IsOptional;
+        public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.Parameter.IsOptional;
     }
 }
