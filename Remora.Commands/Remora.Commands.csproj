@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>1.0.1</Version>
+        <Version>1.1.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
-        <PackageReleaseNotes>Initial full release.</PackageReleaseNotes>
+        <PackageReleaseNotes>Add support for overriding the key comparison method. This release is source-compatible.</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
