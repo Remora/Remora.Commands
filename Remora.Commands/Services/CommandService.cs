@@ -457,7 +457,7 @@ namespace Remora.Commands.Services
                 }
 
                 var parserType = typeof(ITypeParser<>).MakeGenericType(typeToParse);
-                var registeredParser = _parserRepository.GetTypes(parserType).FirstOrDefault();
+                var registeredParser = _parserRepository.GetTypes(parserType).LastOrDefault();
 
                 if (registeredParser is null)
                 {
