@@ -21,7 +21,6 @@
 //
 
 using System;
-using System.Collections.Generic;
 using Remora.Commands.Tests.Data.DummyModules;
 using Remora.Commands.Trees;
 using Xunit;

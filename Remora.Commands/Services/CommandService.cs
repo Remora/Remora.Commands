@@ -414,6 +414,9 @@ namespace Remora.Commands.Services
         /// </summary>
         /// <param name="boundCommandNode">The bound command node.</param>
         /// <param name="services">The available services.</param>
+        /// <param name="additionalParameters">
+        /// Any additional parameters that should be available during instantiation of the command group.
+        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A sorted array of materialized parameters.</returns>
         private async Task<RetrieveEntityResult<object?[]>> MaterializeParametersAsync

@@ -21,7 +21,6 @@
 //
 
 using System;
-using System.Linq;
 using System.Numerics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
