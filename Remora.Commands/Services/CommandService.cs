@@ -29,6 +29,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
@@ -46,6 +47,9 @@ namespace Remora.Commands.Services
     [PublicAPI]
     public class CommandService
     {
+        private readonly TypeRepository<ICondition> _conditionRepository;
+        private readonly TypeRepository<ITypeParser> _parserRepository;
+
         /// <summary>
         /// Gets the tree of registered commands.
         /// </summary>
@@ -55,9 +59,18 @@ namespace Remora.Commands.Services
         /// Initializes a new instance of the <see cref="CommandService"/> class.
         /// </summary>
         /// <param name="tree">The command tree.</param>
-        internal CommandService(CommandTree tree)
+        /// <param name="conditionRepository">The condition type repository.</param>
+        /// <param name="parserRepository">The parser type repository.</param>
+        internal CommandService
+        (
+            CommandTree tree,
+            IOptions<TypeRepository<ICondition>> conditionRepository,
+            IOptions<TypeRepository<ITypeParser>> parserRepository
+        )
         {
             this.Tree = tree;
+            _conditionRepository = conditionRepository.Value;
+            _parserRepository = parserRepository.Value;
         }
 
         /// <summary>
@@ -175,13 +188,20 @@ namespace Remora.Commands.Services
         {
             // Check method-level conditions, if any
             var method = boundCommandNode.Node.CommandMethod;
-            var methodConditionsResult = await CheckConditionsAsync(services, method, ct);
+            var methodConditionsResult = await CheckConditionsAsync(services, method, additionalParameters, ct);
             if (!methodConditionsResult.IsSuccess)
             {
                 return CommandExecutionResult.Failed(methodConditionsResult);
             }
 
-            var materializeResult = await MaterializeParametersAsync(boundCommandNode, services, ct);
+            var materializeResult = await MaterializeParametersAsync
+            (
+                boundCommandNode,
+                services,
+                additionalParameters,
+                ct
+            );
+
             if (!materializeResult.IsSuccess)
             {
                 return CommandExecutionResult.FromError(materializeResult);
@@ -193,7 +213,15 @@ namespace Remora.Commands.Services
             var methodParameters = method.GetParameters();
             foreach (var (parameter, value) in methodParameters.Zip(materializedParameters, (info, o) => (info, o)))
             {
-                var parameterConditionResult = await CheckConditionsAsync(services, parameter, value, ct);
+                var parameterConditionResult = await CheckConditionsAsync
+                (
+                    services,
+                    parameter,
+                    value,
+                    additionalParameters,
+                    ct
+                );
+
                 if (!parameterConditionResult.IsSuccess)
                 {
                     return CommandExecutionResult.Failed(parameterConditionResult);
@@ -247,12 +275,16 @@ namespace Remora.Commands.Services
         /// </summary>
         /// <param name="services">The available services.</param>
         /// <param name="method">The method.</param>
+        /// <param name="additionalParameters">
+        /// Any additional parameters that should be available during instantiation of the command group.
+        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
         private async Task<DetermineConditionResult> CheckConditionsAsync
         (
             IServiceProvider services,
             MethodInfo method,
+            object[] additionalParameters,
             CancellationToken ct
         )
         {
@@ -265,20 +297,26 @@ namespace Remora.Commands.Services
             foreach (var conditionAttribute in conditionAttributes)
             {
                 var conditionType = typeof(ICondition<>).MakeGenericType(conditionAttribute.GetType());
+
                 var conditionMethod = conditionType.GetMethod(nameof(ICondition<ConditionAttribute>.CheckAsync));
                 if (conditionMethod is null)
                 {
                     throw new InvalidOperationException();
                 }
 
-                var conditions = services.GetServices(conditionType).ToList();
-                if (conditions.Count == 0)
+                var conditionTypes = _conditionRepository.GetTypes(conditionType).ToList();
+                if (conditionTypes.Count == 0)
                 {
                     throw new InvalidOperationException
                     (
                         "Condition attributes were applied, but no matching condition was registered."
                     );
                 }
+
+                var conditions = conditionTypes.Select
+                (
+                    c => ActivatorUtilities.CreateInstance(services, c, additionalParameters)
+                );
 
                 foreach (var condition in conditions)
                 {
@@ -305,6 +343,9 @@ namespace Remora.Commands.Services
         /// <param name="services">The available services.</param>
         /// <param name="parameter">The parameter.</param>
         /// <param name="value">The materialized value of the parameter.</param>
+        /// <param name="additionalParameters">
+        /// Any additional parameters that should be available during instantiation of the command group.
+        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
         private async Task<DetermineConditionResult> CheckConditionsAsync
@@ -312,6 +353,7 @@ namespace Remora.Commands.Services
             IServiceProvider services,
             ParameterInfo parameter,
             object? value,
+            object[] additionalParameters,
             CancellationToken ct
         )
         {
@@ -335,14 +377,19 @@ namespace Remora.Commands.Services
                     throw new InvalidOperationException();
                 }
 
-                var conditions = services.GetServices(conditionType).ToList();
-                if (conditions.Count == 0)
+                var conditionTypes = _conditionRepository.GetTypes(conditionType).ToList();
+                if (conditionTypes.Count == 0)
                 {
                     throw new InvalidOperationException
                     (
                         "Condition attributes were applied, but no matching condition was registered."
                     );
                 }
+
+                var conditions = conditionTypes.Select
+                (
+                    c => ActivatorUtilities.CreateInstance(services, c, additionalParameters)
+                );
 
                 foreach (var condition in conditions)
                 {
@@ -373,6 +420,7 @@ namespace Remora.Commands.Services
         (
             BoundCommandNode boundCommandNode,
             IServiceProvider services,
+            object[] additionalParameters,
             CancellationToken ct
         )
         {
@@ -406,14 +454,31 @@ namespace Remora.Commands.Services
                 }
 
                 var parserType = typeof(ITypeParser<>).MakeGenericType(typeToParse);
-                if (!(services.GetService(parserType) is ITypeParser parser))
+                var registeredParser = _parserRepository.GetTypes(parserType).FirstOrDefault();
+
+                if (registeredParser is null)
                 {
-                    // We can't parse this type
-                    return RetrieveEntityResult<object?[]>.FromError
-                    (
-                        $"No parser has been registered for \"{parserType.Name}\"."
-                    );
+                    if (typeToParse.IsEnum)
+                    {
+                        // We'll use our fallback parser
+                        registeredParser = typeof(EnumParser<>).MakeGenericType(typeToParse);
+                    }
+                    else
+                    {
+                        // We can't parse this type
+                        return RetrieveEntityResult<object?[]>.FromError
+                        (
+                            $"No parser has been registered for \"{parserType.Name}\"."
+                        );
+                    }
                 }
+
+                var parser = (ITypeParser)ActivatorUtilities.CreateInstance
+                (
+                    services,
+                    registeredParser,
+                    additionalParameters
+                );
 
                 if (isCollection)
                 {

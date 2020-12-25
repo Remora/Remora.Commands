@@ -86,47 +86,35 @@ namespace Remora.Commands.Extensions
                 services =>
                 {
                     var tree = services.GetRequiredService<CommandTree>();
-                    return new CommandService(tree);
+                    var conditionRepository = services.GetRequiredService<IOptions<TypeRepository<ICondition>>>();
+                    var parserRepository = services.GetRequiredService<IOptions<TypeRepository<ITypeParser>>>();
+
+                    return new CommandService(tree, conditionRepository, parserRepository);
                 }
             );
 
+            serviceCollection.AddOptions<TypeRepository<ICondition>>();
+            serviceCollection.AddOptions<TypeRepository<ITypeParser>>();
+
             serviceCollection
-                .AddSingletonParser<char, CharParser>()
-                .AddSingletonParser<bool, BooleanParser>()
-                .AddSingletonParser<byte, ByteParser>()
-                .AddSingletonParser<sbyte, SByteParser>()
-                .AddSingletonParser<ushort, UInt16Parser>()
-                .AddSingletonParser<short, Int16Parser>()
-                .AddSingletonParser<uint, UInt32Parser>()
-                .AddSingletonParser<int, Int32Parser>()
-                .AddSingletonParser<ulong, UInt64Parser>()
-                .AddSingletonParser<long, Int64Parser>()
-                .AddSingletonParser<float, SingleParser>()
-                .AddSingletonParser<double, DoubleParser>()
-                .AddSingletonParser<decimal, DecimalParser>()
-                .AddSingletonParser<BigInteger, BigIntegerParser>()
-                .AddSingletonParser<string, StringParser>()
-                .AddSingletonParser<DateTimeOffset, DateTimeOffsetParser>()
+                .AddParser<char, CharParser>()
+                .AddParser<bool, BooleanParser>()
+                .AddParser<byte, ByteParser>()
+                .AddParser<sbyte, SByteParser>()
+                .AddParser<ushort, UInt16Parser>()
+                .AddParser<short, Int16Parser>()
+                .AddParser<uint, UInt32Parser>()
+                .AddParser<int, Int32Parser>()
+                .AddParser<ulong, UInt64Parser>()
+                .AddParser<long, Int64Parser>()
+                .AddParser<float, SingleParser>()
+                .AddParser<double, DoubleParser>()
+                .AddParser<decimal, DecimalParser>()
+                .AddParser<BigInteger, BigIntegerParser>()
+                .AddParser<string, StringParser>()
+                .AddParser<DateTimeOffset, DateTimeOffsetParser>()
                 .TryAddSingleton(typeof(ITypeParser<>), typeof(EnumParser<>));
 
-            return serviceCollection;
-        }
-
-        /// <summary>
-        /// Adds a type parser as a singleton service.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
-        /// <typeparam name="TType">The type to parse.</typeparam>
-        /// <typeparam name="TParser">The type parser.</typeparam>
-        /// <returns>The service collection, with the parser.</returns>
-        public static IServiceCollection AddSingletonParser<TType, TParser>
-        (
-            this IServiceCollection serviceCollection
-        )
-            where TType : notnull
-            where TParser : AbstractTypeParser<TType>
-        {
-            serviceCollection.TryAddSingleton<ITypeParser<TType>, TParser>();
             return serviceCollection;
         }
 
@@ -144,7 +132,7 @@ namespace Remora.Commands.Extensions
             where TType : notnull
             where TParser : AbstractTypeParser<TType>
         {
-            serviceCollection.TryAddScoped<ITypeParser<TType>, TParser>();
+            serviceCollection.Configure<TypeRepository<ITypeParser>>(tr => tr.RegisterType<TParser>());
             return serviceCollection;
         }
 
@@ -161,32 +149,9 @@ namespace Remora.Commands.Extensions
         public static IServiceCollection AddCondition<TCondition>
         (
             this IServiceCollection serviceCollection
-        ) where TCondition : class
+        ) where TCondition : class, ICondition
         {
-            var conditionInterfaces = typeof(TCondition).GetInterfaces()
-                .Where(i => i.IsGenericType)
-                .Where
-                (
-                    i => i.GetGenericTypeDefinition() == typeof(ICondition<>) ||
-                         i.GetGenericTypeDefinition() == typeof(ICondition<,>)
-                )
-                .ToList();
-
-            if (conditionInterfaces.Count == 0)
-            {
-                throw new InvalidOperationException
-                (
-                    $"The type \"{typeof(TCondition).Name}\" did not implement any condition interfaces."
-                );
-            }
-
-            foreach (var conditionInterface in conditionInterfaces)
-            {
-                serviceCollection.TryAddScoped(conditionInterface, typeof(TCondition));
-            }
-
-            serviceCollection.TryAddScoped<TCondition>();
-
+            serviceCollection.Configure<TypeRepository<ICondition>>(tr => tr.RegisterType<TCondition>());
             return serviceCollection;
         }
     }

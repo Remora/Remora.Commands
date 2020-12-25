@@ -33,7 +33,7 @@ namespace Remora.Commands.Conditions
     /// </summary>
     /// <typeparam name="TAttribute">The data attribute type.</typeparam>
     /// <typeparam name="TData">The data type.</typeparam>
-    public interface ICondition<in TAttribute, in TData>
+    public interface ICondition<in TAttribute, in TData> : ICondition
         where TAttribute : ConditionAttribute
     {
         /// <summary>
@@ -55,7 +55,7 @@ namespace Remora.Commands.Conditions
     /// Represents the public API of a condition service.
     /// </summary>
     /// <typeparam name="TAttribute">The data attribute type.</typeparam>
-    public interface ICondition<in TAttribute>
+    public interface ICondition<in TAttribute> : ICondition
         where TAttribute : ConditionAttribute
     {
         /// <summary>
@@ -65,5 +65,12 @@ namespace Remora.Commands.Conditions
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
         ValueTask<DetermineConditionResult> CheckAsync(TAttribute attribute, CancellationToken ct = default);
+    }
+
+    /// <summary>
+    /// Marker interface for conditions.
+    /// </summary>
+    public interface ICondition
+    {
     }
 }

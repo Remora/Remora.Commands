@@ -32,7 +32,7 @@ namespace Remora.Commands.Parsers
     /// </summary>
     /// <typeparam name="TType">The type to parse.</typeparam>
     [PublicAPI]
-    public abstract class AbstractTypeParser<TType> : ITypeParser<TType>, ITypeParser
+    public abstract class AbstractTypeParser<TType> : ITypeParser<TType>
         where TType : notnull
     {
         /// <inheritdoc />
