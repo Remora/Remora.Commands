@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>1.2.1</Version>
+        <Version>1.2.2</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Pick the last over the first parser, allowing overrides.
+            Attempt instantiation without accepting the offered context.
         </PackageReleaseNotes>
     </PropertyGroup>
 

@@ -229,12 +229,7 @@ namespace Remora.Commands.Services
             }
 
             var groupType = boundCommandNode.Node.GroupType;
-            var groupInstance = (CommandGroup)ActivatorUtilities.CreateInstance
-            (
-                services,
-                groupType,
-                additionalParameters
-            );
+            var groupInstance = CreateInstance<CommandGroup>(services, groupType, additionalParameters);
 
             groupInstance.SetCancellationToken(ct);
 
@@ -315,7 +310,7 @@ namespace Remora.Commands.Services
 
                 var conditions = conditionTypes.Select
                 (
-                    c => ActivatorUtilities.CreateInstance(services, c, additionalParameters)
+                    c => CreateInstance<ICondition>(services, c, additionalParameters)
                 );
 
                 foreach (var condition in conditions)
@@ -388,7 +383,7 @@ namespace Remora.Commands.Services
 
                 var conditions = conditionTypes.Select
                 (
-                    c => ActivatorUtilities.CreateInstance(services, c, additionalParameters)
+                    c => CreateInstance<ICondition>(services, c, additionalParameters)
                 );
 
                 foreach (var condition in conditions)
@@ -476,13 +471,7 @@ namespace Remora.Commands.Services
                     }
                 }
 
-                var parser = (ITypeParser)ActivatorUtilities.CreateInstance
-                (
-                    services,
-                    registeredParser,
-                    additionalParameters
-                );
-
+                var parser = CreateInstance<ITypeParser>(services, registeredParser, additionalParameters);
                 if (isCollection)
                 {
                     var collectionType = typeof(List<>).MakeGenericType(typeToParse);
@@ -539,6 +528,34 @@ namespace Remora.Commands.Services
             }
 
             return materializedParameters.ToArray();
+        }
+
+        private TInstance CreateInstance<TInstance>
+        (
+            IServiceProvider services,
+            Type typeToCreate,
+            object[] additionalParameters
+        )
+        {
+            try
+            {
+                return (TInstance)ActivatorUtilities.CreateInstance
+                (
+                    services,
+                    typeToCreate,
+                    additionalParameters
+                );
+            }
+            catch (InvalidOperationException)
+            {
+                // Try without offering additional parameters; this method has a bad habit of throwing if it can't
+                // match all provided extra parameters.
+                return (TInstance)ActivatorUtilities.CreateInstance
+                (
+                    services,
+                    typeToCreate
+                );
+            }
         }
     }
 }
