@@ -37,7 +37,7 @@ namespace Remora.Commands.Tests.Services
     public partial class CommandServiceTests
     {
         /// <summary>
-        /// Tests functionality of raw parsing-based operations.
+        /// Tests functionality of preparsed operations.
         /// </summary>
         public class Preparsed
         {
@@ -1394,6 +1394,37 @@ namespace Remora.Commands.Tests.Services
                     );
 
                     Assert.False(executionResult.IsSuccess);
+                }
+            }
+
+            /// <summary>
+            /// Tests nonstandard return types.
+            /// </summary>
+            public class ReturnType
+            {
+                /// <summary>
+                /// Tests whether a method that returns a ValueTask{IResult} can be executed.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteValueTaskCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<ReturnTypeCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "a",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
                 }
             }
         }

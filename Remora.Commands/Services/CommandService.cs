@@ -235,8 +235,16 @@ namespace Remora.Commands.Services
 
             try
             {
-                var returnValue = (Task<IResult>)method.Invoke(groupInstance, materializedParameters);
-                var result = await returnValue;
+                IResult result;
+                if (method.ReturnType == typeof(Task<IResult>))
+                {
+                    result = await (Task<IResult>)method.Invoke(groupInstance, materializedParameters);
+                }
+                else
+                {
+                    result = await (ValueTask<IResult>)method.Invoke(groupInstance, materializedParameters);
+                }
+
                 if (!result.IsSuccess)
                 {
                     return CommandExecutionResult.Failed(result);
