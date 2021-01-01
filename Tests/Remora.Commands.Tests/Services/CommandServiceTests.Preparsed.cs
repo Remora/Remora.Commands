@@ -1308,27 +1308,43 @@ namespace Remora.Commands.Tests.Services
                         .BuildServiceProvider();
 
                     var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>();
                     var executionResult = await commandService.TryExecuteAsync
                     (
                         "test overload",
+                        values,
                         services
                     );
 
                     Assert.True(executionResult.IsSuccess);
                     Assert.Equal("overload-1", ((RetrieveEntityResult<string>)executionResult.InnerResult!).Entity);
 
+                    values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "value", new[] { "booga" } }
+                    };
+
                     executionResult = await commandService.TryExecuteAsync
                     (
-                        "test overload booga",
+                        "test overload",
+                        values,
                         services
                     );
 
                     Assert.True(executionResult.IsSuccess);
                     Assert.Equal("overload-2", ((RetrieveEntityResult<string>)executionResult.InnerResult!).Entity);
 
+                    values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "value-2", new[] { "booga" } },
+                        { "value1", new[] { "wooga" } }
+                    };
+
                     executionResult = await commandService.TryExecuteAsync
                     (
-                        "test overload --value-2 booga wooga",
+                        "test overload",
+                        values,
                         services
                     );
 
@@ -1356,9 +1372,12 @@ namespace Remora.Commands.Tests.Services
                         .BuildServiceProvider();
 
                     var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>();
                     var executionResult = await commandService.TryExecuteAsync
                     (
                         "test method-condition",
+                        values,
                         services
                     );
 
@@ -1379,17 +1398,30 @@ namespace Remora.Commands.Tests.Services
                         .BuildServiceProvider();
 
                     var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "value", new[] { "booga" } }
+                    };
+
                     var executionResult = await commandService.TryExecuteAsync
                     (
-                        "test parameter-condition booga",
+                        "test parameter-condition",
+                        values,
                         services
                     );
 
                     Assert.True(executionResult.IsSuccess);
 
+                    values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "value", new[] { "wooga" } }
+                    };
+
                     executionResult = await commandService.TryExecuteAsync
                     (
-                        "test parameter-condition wooga",
+                        "test parameter-condition",
+                        values,
                         services
                     );
 

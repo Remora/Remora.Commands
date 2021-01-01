@@ -196,14 +196,14 @@ namespace Remora.Commands.Trees.Nodes
 
             using var enumerator = namedParameters.GetEnumerator();
 
-            // The return value of MoveNext is ignored, because empty collections are allowed
-            _ = enumerator.MoveNext();
-
             var parametersToCheck = new List<IParameterShape>(this.Shape.Parameters);
 
             var boundParameters = new List<BoundParameterShape>();
             while (parametersToCheck.Count > 0)
             {
+                // The return value of MoveNext is ignored, because empty collections are allowed
+                _ = enumerator.MoveNext();
+
                 var matchedParameters = new List<IParameterShape>();
                 foreach (var parameterToCheck in parametersToCheck)
                 {
@@ -226,9 +226,6 @@ namespace Remora.Commands.Trees.Nodes
 
                     matchedParameters.Add(parameterToCheck);
                     boundParameters.Add(new BoundParameterShape(parameterToCheck, current.Value ));
-
-                    // We ignore the return value of MoveNext here as well
-                    _ = enumerator.MoveNext();
                 }
 
                 if (matchedParameters.Count == 0)
