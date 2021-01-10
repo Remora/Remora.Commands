@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Remora.Commands.Tokenization;
@@ -40,7 +41,7 @@ namespace Remora.Commands.Signatures
         public virtual object? DefaultValue => this.Parameter.DefaultValue;
 
         /// <inheritdoc/>
-        public string HintName => this.Parameter.Name;
+        public string HintName => this.Parameter.Name ?? throw new InvalidOperationException();
 
         /// <inheritdoc/>
         public string Description { get; }

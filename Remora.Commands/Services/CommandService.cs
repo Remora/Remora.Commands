@@ -238,11 +238,17 @@ namespace Remora.Commands.Services
                 IResult result;
                 if (method.ReturnType == typeof(Task<IResult>))
                 {
-                    result = await (Task<IResult>)method.Invoke(groupInstance, materializedParameters);
+                    var invocationResult = method.Invoke(groupInstance, materializedParameters)
+                                           ?? throw new InvalidOperationException();
+
+                    result = await (Task<IResult>)invocationResult;
                 }
                 else
                 {
-                    result = await (ValueTask<IResult>)method.Invoke(groupInstance, materializedParameters);
+                    var invocationResult = method.Invoke(groupInstance, materializedParameters)
+                                           ?? throw new InvalidOperationException();
+
+                    result = await (ValueTask<IResult>)invocationResult;
                 }
 
                 if (!result.IsSuccess)
@@ -323,11 +329,14 @@ namespace Remora.Commands.Services
 
                 foreach (var condition in conditions)
                 {
-                    var result = await (ValueTask<DetermineConditionResult>)conditionMethod.Invoke
+                    var invocationResult = conditionMethod.Invoke
                     (
                         condition,
                         new[] { conditionAttribute, ct }
-                    );
+                    )
+                    ?? throw new InvalidOperationException();
+
+                    var result = await (ValueTask<DetermineConditionResult>)invocationResult;
 
                     if (!result.IsSuccess)
                     {
@@ -396,11 +405,14 @@ namespace Remora.Commands.Services
 
                 foreach (var condition in conditions)
                 {
-                    var result = await (ValueTask<DetermineConditionResult>)conditionMethod.Invoke
+                    var invocationResult = conditionMethod.Invoke
                     (
                         condition,
                         new[] { conditionAttribute, value, ct }
-                    );
+                    )
+                    ?? throw new InvalidOperationException();
+
+                    var result = await (ValueTask<DetermineConditionResult>)invocationResult;
 
                     if (!result.IsSuccess)
                     {
@@ -483,7 +495,7 @@ namespace Remora.Commands.Services
                 if (isCollection)
                 {
                     var collectionType = typeof(List<>).MakeGenericType(typeToParse);
-                    IList collection = (IList)Activator.CreateInstance(collectionType);
+                    IList collection = (IList)Activator.CreateInstance(collectionType)!;
                     foreach (var value in boundParameter.Tokens)
                     {
                         var parseResult = await parser.TryParseAsync(value, ct);
@@ -516,7 +528,7 @@ namespace Remora.Commands.Services
                     {
                         // No need for parsing; if a switch is present it means it's the inverse of the parameter's
                         // default value
-                        var defaultValue = (bool)parameter.DefaultValue;
+                        var defaultValue = (bool)(parameter.DefaultValue ?? throw new InvalidOperationException());
                         materializedParameters.Add(!defaultValue);
                         continue;
                     }

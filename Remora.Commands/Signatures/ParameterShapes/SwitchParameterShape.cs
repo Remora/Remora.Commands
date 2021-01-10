@@ -63,10 +63,10 @@ namespace Remora.Commands.Signatures
 
                 if (this.ShortName is not null)
                 {
-                    return this.ShortName.ToString();
+                    return this.ShortName.ToString() ?? throw new InvalidOperationException();
                 }
 
-                return this.Parameter.Name;
+                return this.Parameter.Name ?? throw new InvalidOperationException();
             }
         }
 
