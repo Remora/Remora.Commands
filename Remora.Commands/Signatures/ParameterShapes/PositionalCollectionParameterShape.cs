@@ -92,7 +92,7 @@ namespace Remora.Commands.Signatures
             var elementType = this.Parameter.ParameterType.GetCollectionElementType();
 
             var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
-            _emptyCollection = emptyArrayMethod.Invoke(null, null);
+            _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
         }
 
         /// <inheritdoc />
