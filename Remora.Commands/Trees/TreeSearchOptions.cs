@@ -22,6 +22,8 @@
 
 using System;
 
+#pragma warning disable CS5191
+
 namespace Remora.Commands.Trees
 {
     /// <summary>
