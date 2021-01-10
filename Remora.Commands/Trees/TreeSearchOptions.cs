@@ -22,7 +22,7 @@
 
 using System;
 
-#pragma warning disable CS5191
+#pragma warning disable CS1591
 
 namespace Remora.Commands.Trees
 {
