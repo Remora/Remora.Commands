@@ -31,6 +31,7 @@ namespace Remora.Commands.Tokenization
     [PublicAPI]
     public ref struct TokenizingEnumerator
     {
+        private bool _isInCombinedShortNameSegment;
         private ReadOnlySpan<char> _segment;
         private SpanSplitEnumerator _splitEnumerator;
         private Token _current;
@@ -46,6 +47,7 @@ namespace Remora.Commands.Tokenization
         /// <param name="value">The value to tokenize.</param>
         public TokenizingEnumerator(ReadOnlySpan<char> value)
         {
+            _isInCombinedShortNameSegment = default;
             _segment = default;
             _splitEnumerator = new SpanSplitEnumerator(value, " ");
             _current = default;
@@ -70,6 +72,7 @@ namespace Remora.Commands.Tokenization
                     return false;
                 }
 
+                _isInCombinedShortNameSegment = false;
                 _segment = _splitEnumerator.Current;
             }
 
@@ -91,9 +94,24 @@ namespace Remora.Commands.Tokenization
             {
                 span = span.Slice(1);
             }
+            else if (_isInCombinedShortNameSegment)
+            {
+                type = TokenType.ShortName;
+            }
 
             if (type != TokenType.Value)
             {
+                if (type == TokenType.ShortName && span.Length > 1 && char.IsLetterOrDigit(span[1]))
+                {
+                    // A combined short-name option, it looks like. We'll return here.
+                    _isInCombinedShortNameSegment = true;
+
+                    _current = new Token(type, span.Slice(0, 1));
+                    _segment = span.Slice(1);
+
+                    return true;
+                }
+
                 var assignmentIndex = span.IndexOf('=');
                 if (assignmentIndex > 0)
                 {
