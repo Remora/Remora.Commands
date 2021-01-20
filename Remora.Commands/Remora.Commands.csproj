@@ -6,11 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>1.3.2</Version>
+        <Version>1.4.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Ensure IsExternalInit is a pure development dependency.
-            Multitarget .NET 5.0
+            Implement support for combined short options (e.g, GNU tar style).
         </PackageReleaseNotes>
     </PropertyGroup>
 
