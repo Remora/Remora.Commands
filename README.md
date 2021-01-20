@@ -49,6 +49,18 @@ the following option syntax types:
     - `[Range(Min = 1, Max = 2)] IEnumerable<T> values` (constrained)
   * Verbs
 
+Short names are specified using a single dash (`-`), and long options by two 
+dashes (`--`). As an added bonus, you may combine short-name switches, similar
+to what's supported by GNU `tar`. You can even place a normal named option at 
+the end, followed by a value.
+
+That is, both of the invocations below are valid (consider `x`, `v` and `z` as 
+switches, and `f` as a named option).
+```
+my-command -xvz
+my-command -xvf file.bin
+```
+
 ## Ease of use
 It's dead easy to get started with Remora.Commands.
 
