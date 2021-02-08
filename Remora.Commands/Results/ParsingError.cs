@@ -1,5 +1,5 @@
 //
-//  DateTimeOffsetParser.cs
+//  ParsingError.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,30 +20,32 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Results
 {
     /// <summary>
-    /// Parses <see cref="DateTimeOffset"/>s.
+    /// Represents a failure to parse the given type.
     /// </summary>
-    [UsedImplicitly]
-    public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
+    /// <typeparam name="TType">The type that's being parsed.</typeparam>
+    [PublicAPI]
+    public record ParsingError<TType> : ResultError
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<DateTimeOffset>> TryParse(string value, CancellationToken ct)
+        /// <summary>
+        /// Gets the reason why the parsing failed.
+        /// </summary>
+        public string Reason { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParsingError{TType}"/> class.
+        /// </summary>
+        /// <param name="value">The value that failed to parse.</param>
+        /// <param name="reason">The reason why the parsing failed.</param>
+        public ParsingError(string value, string? reason = null)
+            : base($"Failed to parse \"{value}\" as an instance of the type \"{typeof(TType)}\"")
         {
-            return new ValueTask<Result<DateTimeOffset>>
-            (
-                !DateTimeOffset.TryParse(value, out var result)
-                ? new ParsingError<DateTimeOffset>(value)
-                : Result<DateTimeOffset>.FromSuccess(result)
-            );
+            this.Reason = reason ?? "No reason given.";
         }
     }
 }

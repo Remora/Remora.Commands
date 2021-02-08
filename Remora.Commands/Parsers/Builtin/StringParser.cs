@@ -34,9 +34,9 @@ namespace Remora.Commands.Parsers
     public class StringParser : AbstractTypeParser<string>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<string>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<string>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<string>>(RetrieveEntityResult<string>.FromSuccess(value));
+            return new(value);
         }
     }
 }

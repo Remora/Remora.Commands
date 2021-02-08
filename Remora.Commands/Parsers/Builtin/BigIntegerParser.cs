@@ -24,6 +24,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -35,13 +36,13 @@ namespace Remora.Commands.Parsers
     public class BigIntegerParser : AbstractTypeParser<BigInteger>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<BigInteger>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<BigInteger>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<BigInteger>>
+            return new
             (
                 !BigInteger.TryParse(value, out var result)
-                ? RetrieveEntityResult<BigInteger>.FromError($"Failed to parse \"{value}\" as a BigInteger.")
-                : RetrieveEntityResult<BigInteger>.FromSuccess(result)
+                ? new ParsingError<BigInteger>(value)
+                : result
             );
         }
     }

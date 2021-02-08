@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class UInt64Parser : AbstractTypeParser<ulong>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<ulong>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<ulong>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<ulong>>
+            return new ValueTask<Result<ulong>>
             (
                 !ulong.TryParse(value, out var result)
-                ? RetrieveEntityResult<ulong>.FromError($"Failed to parse \"{value}\" as a ulong.")
-                : RetrieveEntityResult<ulong>.FromSuccess(result)
+                ? new ParsingError<ulong>(value)
+                : Result<ulong>.FromSuccess(result)
             );
         }
     }

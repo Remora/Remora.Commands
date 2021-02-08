@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class SByteParser : AbstractTypeParser<sbyte>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<sbyte>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<sbyte>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<sbyte>>
+            return new ValueTask<Result<sbyte>>
             (
                 !sbyte.TryParse(value, out var result)
-                ? RetrieveEntityResult<sbyte>.FromError($"Failed to parse \"{value}\" as a sbyte.")
-                : RetrieveEntityResult<sbyte>.FromSuccess(result)
+                ? new ParsingError<sbyte>(value)
+                : Result<sbyte>.FromSuccess(result)
             );
         }
     }

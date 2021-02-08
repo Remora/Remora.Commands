@@ -40,7 +40,7 @@ namespace Remora.Commands.Parsers
         /// <param name="value">The value.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A retrieval result which may or may not have succeeded.</returns>
-        ValueTask<RetrieveEntityResult<TType>> TryParse(string value, CancellationToken ct);
+        ValueTask<Result<TType>> TryParse(string value, CancellationToken ct);
     }
 
     /// <summary>
@@ -54,6 +54,6 @@ namespace Remora.Commands.Parsers
         /// <param name="value">The value.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A retrieval result which may or may not have succeeded.</returns>
-        ValueTask<RetrieveEntityResult<object>> TryParseAsync(string value, CancellationToken ct);
+        ValueTask<Result<object>> TryParseAsync(string value, CancellationToken ct);
     }
 }

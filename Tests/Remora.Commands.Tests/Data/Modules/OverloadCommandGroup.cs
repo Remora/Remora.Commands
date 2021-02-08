@@ -35,19 +35,19 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("overload")]
         public Task<IResult> Overload()
         {
-            return Task.FromResult<IResult>(RetrieveEntityResult<string>.FromSuccess("overload-1"));
+            return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-1"));
         }
 
         [Command("overload")]
         public Task<IResult> Overload(string value)
         {
-            return Task.FromResult<IResult>(RetrieveEntityResult<string>.FromSuccess("overload-2"));
+            return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-2"));
         }
 
         [Command("overload")]
         public Task<IResult> Overload(string value1, [Option("value-2")] string value2)
         {
-            return Task.FromResult<IResult>(RetrieveEntityResult<string>.FromSuccess("overload-3"));
+            return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-3"));
         }
     }
 }

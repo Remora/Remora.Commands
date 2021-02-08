@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class BooleanParser : AbstractTypeParser<bool>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<bool>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<bool>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<bool>>
+            return new ValueTask<Result<bool>>
             (
                 !bool.TryParse(value, out var result)
-                ? RetrieveEntityResult<bool>.FromError($"Failed to parse \"{value}\" as a bool.")
-                : RetrieveEntityResult<bool>.FromSuccess(result)
+                ? new ParsingError<bool>(value)
+                : result
             );
         }
     }

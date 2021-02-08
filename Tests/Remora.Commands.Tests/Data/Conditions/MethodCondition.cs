@@ -32,15 +32,15 @@ namespace Remora.Commands.Tests.Data.Conditions
     public class MethodCondition : ICondition<MethodConditionAttribute>
     {
         /// <inheritdoc />
-        public ValueTask<DetermineConditionResult> CheckAsync
+        public ValueTask<Result> CheckAsync
         (
             MethodConditionAttribute attribute,
             CancellationToken ct = default
         )
         {
             return attribute.Data == "booga"
-                ? new ValueTask<DetermineConditionResult>(DetermineConditionResult.FromSuccess())
-                : new ValueTask<DetermineConditionResult>(DetermineConditionResult.FromError("No match :("));
+                ? new ValueTask<Result>(Result.FromSuccess())
+                : new ValueTask<Result>(new GenericError("No match :("));
         }
     }
 }

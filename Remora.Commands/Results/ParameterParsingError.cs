@@ -1,5 +1,5 @@
 //
-//  DateTimeOffsetParser.cs
+//  ParameterParsingError.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,30 +20,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Remora.Commands.Results;
+using Remora.Commands.Signatures;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Results
 {
     /// <summary>
-    /// Parses <see cref="DateTimeOffset"/>s.
+    /// Represents a failure to parse a bound parameter.
     /// </summary>
-    [UsedImplicitly]
-    public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
+    public record ParameterParsingError : ResultError
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<DateTimeOffset>> TryParse(string value, CancellationToken ct)
+        /// <summary>
+        /// Gets the parameter that failed to parse.
+        /// </summary>
+        public BoundParameterShape Parameter { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParameterParsingError"/> class.
+        /// </summary>
+        /// <param name="parameter">The parameter that failed to parse.</param>
+        public ParameterParsingError(BoundParameterShape parameter)
+            : base($"Failed to parse the value of {parameter.ParameterShape.HintName}.")
         {
-            return new ValueTask<Result<DateTimeOffset>>
-            (
-                !DateTimeOffset.TryParse(value, out var result)
-                ? new ParsingError<DateTimeOffset>(value)
-                : Result<DateTimeOffset>.FromSuccess(result)
-            );
+            this.Parameter = parameter;
         }
     }
 }

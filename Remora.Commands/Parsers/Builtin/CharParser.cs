@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class CharParser : AbstractTypeParser<char>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<char>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<char>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<char>>
+            return new ValueTask<Result<char>>
             (
                 !char.TryParse(value, out var result)
-                ? RetrieveEntityResult<char>.FromError($"Failed to parse \"{value}\" as a char.")
-                : RetrieveEntityResult<char>.FromSuccess(result)
+                ? new ParsingError<char>(value)
+                : Result<char>.FromSuccess(result)
             );
         }
     }

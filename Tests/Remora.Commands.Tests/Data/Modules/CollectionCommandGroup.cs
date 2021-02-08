@@ -36,43 +36,43 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("positional-collection")]
         public Task<IResult> PositionalCollection(IEnumerable<string> values)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("named-collection")]
         public Task<IResult> NamedCollection([Option("values")] IEnumerable<string> values)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("positional-collection-and-named-value")]
         public Task<IResult> PositionalCollection(IEnumerable<string> values, [Option("named")] string named)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("collection-with-min-count")]
         public Task<IResult> MinCountCollection([Range(Min = 1)] IEnumerable<string> values)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("collection-with-max-count")]
         public Task<IResult> MaxCountCollection([Range(Max = 2)] IEnumerable<string> values)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("collection-with-min-and-max-count")]
         public Task<IResult> MinMaxCountCollection([Range(Min = 1, Max = 2)] IEnumerable<string> values)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("constrained-collection-with-positional-value")]
         public Task<IResult> ConstrainedCollectionWithPositional([Range(Max = 2)] IEnumerable<string> values, string value)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
     }
 }

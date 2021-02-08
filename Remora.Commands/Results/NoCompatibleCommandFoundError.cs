@@ -1,5 +1,5 @@
 //
-//  AbstractTypeParser.cs
+//  NoCompatibleCommandFoundError.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,31 +20,32 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using Remora.Commands.Signatures;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Results
 {
     /// <summary>
-    /// Represents an abstract type parser.
+    /// Represents a failure to find a compatible command that could be executed from a list of candidates.
     /// </summary>
-    /// <typeparam name="TType">The type to parse.</typeparam>
     [PublicAPI]
-    public abstract class AbstractTypeParser<TType> : ITypeParser<TType>
-        where TType : notnull
+    public record NoCompatibleCommandFoundError : ResultError
     {
-        /// <inheritdoc />
-        public abstract ValueTask<Result<TType>> TryParse(string value, CancellationToken ct);
+        /// <summary>
+        /// Gets the command candidates that were considered.
+        /// </summary>
+        public IReadOnlyList<BoundCommandNode> Candidates { get; }
 
-        /// <inheritdoc/>
-        async ValueTask<Result<object>> ITypeParser.TryParseAsync(string value, CancellationToken ct)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NoCompatibleCommandFoundError"/> class.
+        /// </summary>
+        /// <param name="candidates">The command candidates that were considered.</param>
+        public NoCompatibleCommandFoundError(IReadOnlyList<BoundCommandNode> candidates)
+            : base("No compatible, executable command could be found.")
         {
-            var result = await TryParse(value, ct);
-            return result.IsSuccess
-                ? Result<object>.FromSuccess(result.Entity)
-                : result;
+            this.Candidates = candidates;
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Remora.Commands.Conditions
         /// <param name="data">The data.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
-        ValueTask<DetermineConditionResult> CheckAsync
+        ValueTask<Result> CheckAsync
         (
             TAttribute attribute,
             TData data,
@@ -64,7 +64,7 @@ namespace Remora.Commands.Conditions
         /// <param name="attribute">The attribute.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
-        ValueTask<DetermineConditionResult> CheckAsync(TAttribute attribute, CancellationToken ct = default);
+        ValueTask<Result> CheckAsync(TAttribute attribute, CancellationToken ct = default);
     }
 
     /// <summary>

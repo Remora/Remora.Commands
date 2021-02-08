@@ -35,13 +35,13 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("positional-and-named")]
         public Task<IResult> PositionalAndNamed(string first, [Option("another")] string second)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("named-and-positional")]
         public Task<IResult> NamedAndPositional([Option("first")] string first, string second)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("mixed")]
@@ -53,7 +53,7 @@ namespace Remora.Commands.Tests.Data.Modules
             [Switch("enable")] bool option = false
         )
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
     }
 }

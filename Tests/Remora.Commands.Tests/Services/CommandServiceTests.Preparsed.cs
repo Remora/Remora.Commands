@@ -1318,7 +1318,7 @@ namespace Remora.Commands.Tests.Services
                     );
 
                     Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-1", ((RetrieveEntityResult<string>)executionResult.InnerResult!).Entity);
+                    Assert.Equal("overload-1", (Result<string>)executionResult.Entity!);
 
                     values = new Dictionary<string, IReadOnlyList<string>>
                     {
@@ -1333,7 +1333,7 @@ namespace Remora.Commands.Tests.Services
                     );
 
                     Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-2", ((RetrieveEntityResult<string>)executionResult.InnerResult!).Entity);
+                    Assert.Equal("overload-2", (Result<string>)executionResult.Entity!);
 
                     values = new Dictionary<string, IReadOnlyList<string>>
                     {
@@ -1349,7 +1349,7 @@ namespace Remora.Commands.Tests.Services
                     );
 
                     Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-3", ((RetrieveEntityResult<string>)executionResult.InnerResult!).Entity);
+                    Assert.Equal("overload-3", (Result<string>)executionResult.Entity!);
                 }
             }
 

@@ -24,6 +24,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -37,13 +38,13 @@ namespace Remora.Commands.Parsers
         where TEnum : struct, Enum
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<TEnum>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<TEnum>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<TEnum>>
+            return new ValueTask<Result<TEnum>>
             (
                 !Enum.TryParse<TEnum>(value, true, out var result)
-                ? RetrieveEntityResult<TEnum>.FromError($"Failed to parse \"{value}\" as a {typeof(TEnum).Name}.")
-                : RetrieveEntityResult<TEnum>.FromSuccess(result)
+                ? new ParsingError<TEnum>(value)
+                : Result<TEnum>.FromSuccess(result)
             );
         }
     }

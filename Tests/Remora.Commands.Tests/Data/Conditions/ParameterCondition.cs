@@ -32,7 +32,7 @@ namespace Remora.Commands.Tests.Data.Conditions
     public class ParameterCondition : ICondition<ParameterConditionAttribute, string>
     {
         /// <inheritdoc />
-        public ValueTask<DetermineConditionResult> CheckAsync
+        public ValueTask<Result> CheckAsync
         (
             ParameterConditionAttribute attribute,
             string value,
@@ -40,8 +40,8 @@ namespace Remora.Commands.Tests.Data.Conditions
         )
         {
             return attribute.Data == value
-                ? new ValueTask<DetermineConditionResult>(DetermineConditionResult.FromSuccess())
-                : new ValueTask<DetermineConditionResult>(DetermineConditionResult.FromError("No match :("));
+                ? new ValueTask<Result>(Result.FromSuccess())
+                : new ValueTask<Result>(new GenericError("No match :("));
         }
     }
 }

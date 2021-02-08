@@ -35,37 +35,37 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("switch")]
         public Task<IResult> SingleBoolSwitch([Switch("enable")] bool value = false)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("switch-short-name")]
         public Task<IResult> SingleShortBoolSwitch([Switch('e')] bool value = false)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("switch-short-and-long-name")]
         public Task<IResult> SingleShortAndLongBoolSwitch([Switch('e', "enable")] bool value = false)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("option")]
         public Task<IResult> SingleNamedBool([Option("enable")] bool value = false)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("option-short-name")]
         public Task<IResult> SingleShortNamedBool([Option('e')] bool value = false)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("option-short-and-long-name")]
         public Task<IResult> SingleShortAndLongNamedBool([Option('e', "enable")] bool value = false)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
     }
 }

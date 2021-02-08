@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class SingleParser : AbstractTypeParser<float>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<float>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<float>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<float>>
+            return new ValueTask<Result<float>>
             (
                 !float.TryParse(value, out var result)
-                ? RetrieveEntityResult<float>.FromError($"Failed to parse \"{value}\" as a float.")
-                : RetrieveEntityResult<float>.FromSuccess(result)
+                ? new ParsingError<float>(value)
+                : Result<float>.FromSuccess(result)
             );
         }
     }

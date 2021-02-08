@@ -37,13 +37,13 @@ namespace Remora.Commands.Tests.Data.Modules
         [MethodCondition("booga")]
         public Task<IResult> Parameterless()
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("parameter-condition")]
         public Task<IResult> Parameterized([ParameterCondition("booga")] string value)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  DateTimeOffsetParser.cs
+//  RequiredParameterValueMissingError.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,30 +20,31 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Remora.Commands.Results;
+using Remora.Commands.Signatures;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Results
 {
     /// <summary>
-    /// Parses <see cref="DateTimeOffset"/>s.
+    /// Represents the lack of a value for a required parameter.
     /// </summary>
-    [UsedImplicitly]
-    public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
+    [PublicAPI]
+    public record RequiredParameterValueMissingError : ResultError
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<DateTimeOffset>> TryParse(string value, CancellationToken ct)
+        /// <summary>
+        /// Gets the shape of the missing parameter.
+        /// </summary>
+        public IParameterShape ParameterShape { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequiredParameterValueMissingError"/> class.
+        /// </summary>
+        /// <param name="parameterShape">The shape of the missing parameter.</param>
+        public RequiredParameterValueMissingError(IParameterShape parameterShape)
+            : base($"No value was provided for the required parameter \"{parameterShape.HintName}\".")
         {
-            return new ValueTask<Result<DateTimeOffset>>
-            (
-                !DateTimeOffset.TryParse(value, out var result)
-                ? new ParsingError<DateTimeOffset>(value)
-                : Result<DateTimeOffset>.FromSuccess(result)
-            );
+            this.ParameterShape = parameterShape;
         }
     }
 }

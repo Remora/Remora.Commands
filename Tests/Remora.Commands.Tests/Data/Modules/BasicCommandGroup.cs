@@ -35,43 +35,43 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("parameterless")]
         public Task<IResult> Parameterless()
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("single-positional")]
         public Task<IResult> SinglePositional(string value)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("single-optional-positional")]
         public Task<IResult> SingleOptionalPositional(string value = "dooga")
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("single-named")]
         public Task<IResult> SingleNamed([Option("value")] string value)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("single-optional-named")]
         public Task<IResult> SingleOptionalNamed([Option("value")] string value = "dooga")
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("single-named-with-short-name")]
         public Task<IResult> SingleNamedWithShortName([Option('v')] string value)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
         [Command("single-named-with-long-and-short-name")]
         public Task<IResult> SingleNamedWithLongAndShortName([Option('v', "value")] string value)
         {
-            return Task.FromResult<IResult>(OperationResult.FromSuccess());
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
     }
 }

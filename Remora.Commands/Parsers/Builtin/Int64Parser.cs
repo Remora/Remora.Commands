@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class Int64Parser : AbstractTypeParser<long>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<long>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<long>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<long>>
+            return new ValueTask<Result<long>>
             (
                 !long.TryParse(value, out var result)
-                ? RetrieveEntityResult<long>.FromError($"Failed to parse \"{value}\" as a long.")
-                : RetrieveEntityResult<long>.FromSuccess(result)
+                ? new ParsingError<long>(value)
+                : Result<long>.FromSuccess(result)
             );
         }
     }

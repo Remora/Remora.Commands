@@ -1,5 +1,5 @@
 //
-//  DateTimeOffsetParser.cs
+//  MissingParserError.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -21,29 +21,30 @@
 //
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Results
 {
     /// <summary>
-    /// Parses <see cref="DateTimeOffset"/>s.
+    /// Represents the lack of a parser for a given type.
     /// </summary>
-    [UsedImplicitly]
-    public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
+    [PublicAPI]
+    public record MissingParserError : ResultError
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<DateTimeOffset>> TryParse(string value, CancellationToken ct)
+        /// <summary>
+        /// Gets the type for which no parser has been registered.
+        /// </summary>
+        public Type Type { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MissingParserError"/> class.
+        /// </summary>
+        /// <param name="type">The type for which no parser has been registered.</param>
+        public MissingParserError(Type type)
+            : base($"No parser has been registered for \"{type.Name}\".")
         {
-            return new ValueTask<Result<DateTimeOffset>>
-            (
-                !DateTimeOffset.TryParse(value, out var result)
-                ? new ParsingError<DateTimeOffset>(value)
-                : Result<DateTimeOffset>.FromSuccess(result)
-            );
+            this.Type = type;
         }
     }
 }

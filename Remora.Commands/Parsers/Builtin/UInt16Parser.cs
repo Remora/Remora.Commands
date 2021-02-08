@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class UInt16Parser : AbstractTypeParser<ushort>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<ushort>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<ushort>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<ushort>>
+            return new ValueTask<Result<ushort>>
             (
                 !ushort.TryParse(value, out var result)
-                ? RetrieveEntityResult<ushort>.FromError($"Failed to parse \"{value}\" as a ushort.")
-                : RetrieveEntityResult<ushort>.FromSuccess(result)
+                ? new ParsingError<ushort>(value)
+                : Result<ushort>.FromSuccess(result)
             );
         }
     }

@@ -176,7 +176,8 @@ namespace Remora.Commands.Trees
                 {
                     throw new InvalidOperationException
                     (
-                        "Methods marked as commands must return Task<IResult> or ValueTask<IResult>."
+                        $"Methods marked as commands must return {typeof(Task<IResult>)} or " +
+                        $"{typeof(ValueTask<IResult>)}."
                     );
                 }
 

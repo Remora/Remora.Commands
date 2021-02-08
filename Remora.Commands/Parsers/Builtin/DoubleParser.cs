@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class DoubleParser : AbstractTypeParser<double>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<double>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<double>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<double>>
+            return new ValueTask<Result<double>>
             (
                 !double.TryParse(value, out var result)
-                ? RetrieveEntityResult<double>.FromError($"Failed to parse \"{value}\" as a double.")
-                : RetrieveEntityResult<double>.FromSuccess(result)
+                ? new ParsingError<double>(value)
+                : Result<double>.FromSuccess(result)
             );
         }
     }

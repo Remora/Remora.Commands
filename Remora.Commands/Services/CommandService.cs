@@ -84,7 +84,7 @@ namespace Remora.Commands.Services
         /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
-        public async Task<CommandExecutionResult> TryExecuteAsync
+        public async Task<Result<IResult>> TryExecuteAsync
         (
             string commandString,
             IServiceProvider services,
@@ -98,7 +98,7 @@ namespace Remora.Commands.Services
             var searchResults = this.Tree.Search(commandString, searchOptions).ToList();
             if (searchResults.Count == 0)
             {
-                return CommandExecutionResult.NotFound();
+                return new CommandNotFoundError(commandString);
             }
 
             return await TryExecuteAsync(searchResults, services, additionalParameters, ct);
@@ -119,7 +119,7 @@ namespace Remora.Commands.Services
         /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
-        public async Task<CommandExecutionResult> TryExecuteAsync
+        public async Task<Result<IResult>> TryExecuteAsync
         (
             string commandNameString,
             IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
@@ -134,13 +134,13 @@ namespace Remora.Commands.Services
             var searchResults = this.Tree.Search(commandNameString, namedParameters, searchOptions).ToList();
             if (searchResults.Count == 0)
             {
-                return CommandExecutionResult.NotFound();
+                return new CommandNotFoundError(commandNameString);
             }
 
             return await TryExecuteAsync(searchResults, services, additionalParameters, ct);
         }
 
-        private async Task<CommandExecutionResult> TryExecuteAsync
+        private async Task<Result<IResult>> TryExecuteAsync
         (
             IReadOnlyList<BoundCommandNode> commandCandidates,
             IServiceProvider services,
@@ -155,30 +155,12 @@ namespace Remora.Commands.Services
                 {
                     return executeResult;
                 }
-
-                switch (executeResult.Status)
-                {
-                    case ExecutionStatus.Failed:
-                    case ExecutionStatus.Faulted:
-                    {
-                        return executeResult;
-                    }
-                    case ExecutionStatus.Ambiguous:
-                    case ExecutionStatus.NotFound:
-                    {
-                        break;
-                    }
-                    default:
-                    {
-                        throw new ArgumentOutOfRangeException();
-                    }
-                }
             }
 
-            return CommandExecutionResult.NotFound();
+            return new NoCompatibleCommandFoundError(commandCandidates);
         }
 
-        private async Task<CommandExecutionResult> TryExecuteAsync
+        private async Task<Result<IResult>> TryExecuteAsync
         (
             BoundCommandNode boundCommandNode,
             IServiceProvider services,
@@ -191,7 +173,11 @@ namespace Remora.Commands.Services
             var methodConditionsResult = await CheckConditionsAsync(services, method, additionalParameters, ct);
             if (!methodConditionsResult.IsSuccess)
             {
-                return CommandExecutionResult.Failed(methodConditionsResult);
+                return Result<IResult>.FromError
+                (
+                    new GenericError("One or more method conditions failed."),
+                    methodConditionsResult
+                );
             }
 
             var materializeResult = await MaterializeParametersAsync
@@ -204,7 +190,7 @@ namespace Remora.Commands.Services
 
             if (!materializeResult.IsSuccess)
             {
-                return CommandExecutionResult.FromError(materializeResult);
+                return Result.FromError(new GenericError("Failed to materialize all parameters."), materializeResult);
             }
 
             var materializedParameters = materializeResult.Entity;
@@ -224,7 +210,11 @@ namespace Remora.Commands.Services
 
                 if (!parameterConditionResult.IsSuccess)
                 {
-                    return CommandExecutionResult.Failed(parameterConditionResult);
+                    return Result<IResult>.FromError
+                    (
+                        new GenericError("One or more parameter conditions failed."),
+                        methodConditionsResult
+                    );
                 }
             }
 
@@ -251,16 +241,11 @@ namespace Remora.Commands.Services
                     result = await (ValueTask<IResult>)invocationResult;
                 }
 
-                if (!result.IsSuccess)
-                {
-                    return CommandExecutionResult.Failed(result);
-                }
-
-                return CommandExecutionResult.FromSuccess(result);
+                return Result<IResult>.FromSuccess(result);
             }
             catch (Exception ex)
             {
-                return CommandExecutionResult.Faulted(ex);
+                return ex;
             }
             finally
             {
@@ -289,7 +274,7 @@ namespace Remora.Commands.Services
         /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
-        private async Task<DetermineConditionResult> CheckConditionsAsync
+        private async Task<Result> CheckConditionsAsync
         (
             IServiceProvider services,
             MethodInfo method,
@@ -300,7 +285,7 @@ namespace Remora.Commands.Services
             var conditionAttributes = method.GetCustomAttributes(typeof(ConditionAttribute), false);
             if (!conditionAttributes.Any())
             {
-                return DetermineConditionResult.FromSuccess();
+                return Result.FromSuccess();
             }
 
             foreach (var conditionAttribute in conditionAttributes)
@@ -336,7 +321,7 @@ namespace Remora.Commands.Services
                     )
                     ?? throw new InvalidOperationException();
 
-                    var result = await (ValueTask<DetermineConditionResult>)invocationResult;
+                    var result = await (ValueTask<Result>)invocationResult;
 
                     if (!result.IsSuccess)
                     {
@@ -345,7 +330,7 @@ namespace Remora.Commands.Services
                 }
             }
 
-            return DetermineConditionResult.FromSuccess();
+            return Result.FromSuccess();
         }
 
         /// <summary>
@@ -360,7 +345,7 @@ namespace Remora.Commands.Services
         /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
-        private async Task<DetermineConditionResult> CheckConditionsAsync
+        private async Task<Result> CheckConditionsAsync
         (
             IServiceProvider services,
             ParameterInfo parameter,
@@ -372,7 +357,7 @@ namespace Remora.Commands.Services
             var conditionAttributes = parameter.GetCustomAttributes(typeof(ConditionAttribute), false);
             if (!conditionAttributes.Any())
             {
-                return DetermineConditionResult.FromSuccess();
+                return Result.FromSuccess();
             }
 
             foreach (var conditionAttribute in conditionAttributes)
@@ -412,7 +397,7 @@ namespace Remora.Commands.Services
                     )
                     ?? throw new InvalidOperationException();
 
-                    var result = await (ValueTask<DetermineConditionResult>)invocationResult;
+                    var result = await (ValueTask<Result>)invocationResult;
 
                     if (!result.IsSuccess)
                     {
@@ -421,7 +406,7 @@ namespace Remora.Commands.Services
                 }
             }
 
-            return DetermineConditionResult.FromSuccess();
+            return Result.FromSuccess();
         }
 
         /// <summary>
@@ -434,7 +419,7 @@ namespace Remora.Commands.Services
         /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A sorted array of materialized parameters.</returns>
-        private async Task<RetrieveEntityResult<object?[]>> MaterializeParametersAsync
+        private async Task<Result<object?[]>> MaterializeParametersAsync
         (
             BoundCommandNode boundCommandNode,
             IServiceProvider services,
@@ -454,10 +439,7 @@ namespace Remora.Commands.Services
                     var shape = parameterShapes[parameter];
                     if (!shape.IsOmissible())
                     {
-                        return RetrieveEntityResult<object?[]>.FromError
-                        (
-                            "An unbound required parameter was encountered."
-                        );
+                        return new RequiredParameterValueMissingError(shape);
                     }
 
                     materializedParameters.Add(shape.DefaultValue);
@@ -483,11 +465,7 @@ namespace Remora.Commands.Services
                     }
                     else
                     {
-                        // We can't parse this type
-                        return RetrieveEntityResult<object?[]>.FromError
-                        (
-                            $"No parser has been registered for \"{parserType.Name}\"."
-                        );
+                        return new MissingParserError(typeToParse);
                     }
                 }
 
@@ -501,11 +479,7 @@ namespace Remora.Commands.Services
                         var parseResult = await parser.TryParseAsync(value, ct);
                         if (!parseResult.IsSuccess)
                         {
-                            // Parsing failed
-                            return RetrieveEntityResult<object?[]>.FromError
-                            (
-                                $"Failed to parse an instance of \"{typeToParse.Name}\" from the value \"{value}\""
-                            );
+                            return Result<object?[]>.FromError(new ParameterParsingError(boundParameter), parseResult);
                         }
 
                         collection.Add(parseResult.Entity);
@@ -537,10 +511,7 @@ namespace Remora.Commands.Services
                     var parseResult = await parser.TryParseAsync(value, ct);
                     if (!parseResult.IsSuccess)
                     {
-                        return RetrieveEntityResult<object?[]>.FromError
-                        (
-                            $"Failed to parse an instance of \"{typeToParse.Name}\" from the value \"{value}\""
-                        );
+                        return Result<object?[]>.FromError(new ParameterParsingError(boundParameter), parseResult);
                     }
 
                     materializedParameters.Add(parseResult.Entity);

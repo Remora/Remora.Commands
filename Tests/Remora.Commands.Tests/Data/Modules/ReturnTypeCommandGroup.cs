@@ -20,7 +20,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
 using System.Threading.Tasks;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -35,7 +34,7 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("a")]
         public ValueTask<IResult> A()
         {
-            return new(OperationResult.FromSuccess());
+            return new(Result.FromSuccess());
         }
     }
 }

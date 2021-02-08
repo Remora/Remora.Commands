@@ -1,5 +1,5 @@
 //
-//  ExecutionStatus.cs
+//  CommandNotFoundError.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -21,38 +21,29 @@
 //
 
 using JetBrains.Annotations;
+using Remora.Results;
 
 namespace Remora.Commands.Results
 {
     /// <summary>
-    /// Enumerates the resulting statuses an execution might have.
+    /// Represents a failure to find a command that matches the input.
     /// </summary>
     [PublicAPI]
-    public enum ExecutionStatus
+    public record CommandNotFoundError : ResultError
     {
         /// <summary>
-        /// A matching command was found, and the execution was successful.
+        /// Gets the original input that was the basis for the search.
         /// </summary>
-        Successful,
+        public string OriginalInput { get; }
 
         /// <summary>
-        /// A matching command was found, but the execution failed in user code.
+        /// Initializes a new instance of the <see cref="CommandNotFoundError"/> class.
         /// </summary>
-        Failed,
-
-        /// <summary>
-        /// A matching command was found, but user code failed in an uncontrolled manner.
-        /// </summary>
-        Faulted,
-
-        /// <summary>
-        /// The matching commands were ambiguous, and no single command could be matched against.
-        /// </summary>
-        Ambiguous,
-
-        /// <summary>
-        /// No matching command was found.
-        /// </summary>
-        NotFound
+        /// <param name="originalInput">The original input that was the basis for the search.</param>
+        public CommandNotFoundError(string originalInput)
+            : base("No matching command could be found.")
+        {
+            this.OriginalInput = originalInput;
+        }
     }
 }

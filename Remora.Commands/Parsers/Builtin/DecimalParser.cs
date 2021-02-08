@@ -23,6 +23,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Results;
 using Remora.Results;
 
 namespace Remora.Commands.Parsers
@@ -34,13 +35,13 @@ namespace Remora.Commands.Parsers
     public class DecimalParser : AbstractTypeParser<decimal>
     {
         /// <inheritdoc />
-        public override ValueTask<RetrieveEntityResult<decimal>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<decimal>> TryParse(string value, CancellationToken ct)
         {
-            return new ValueTask<RetrieveEntityResult<decimal>>
+            return new ValueTask<Result<decimal>>
             (
                 !decimal.TryParse(value, out var result)
-                ? RetrieveEntityResult<decimal>.FromError($"Failed to parse \"{value}\" as a decimal.")
-                : RetrieveEntityResult<decimal>.FromSuccess(result)
+                ? new ParsingError<decimal>(value)
+                : Result<decimal>.FromSuccess(result)
             );
         }
     }
