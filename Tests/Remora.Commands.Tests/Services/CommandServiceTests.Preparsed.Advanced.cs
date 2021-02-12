@@ -164,6 +164,250 @@ namespace Remora.Commands.Tests.Services
 
                     Assert.True(executionResult.IsSuccess);
                 }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a single greedy parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecutePositionalGreedyCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AdvancedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "greedy", new[] { "ooga", "wooga", "booga" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test positional-greedy",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a greedy parameter, followed by a named
+                /// parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecutePositionalGreedyWithNamedAfterCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AdvancedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "greedy", new[] { "ooga", "wooga", "booga" } },
+                        { "second", new[] { "dooga" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test positional-greedy-with-named-after",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a greedy parameter, preceded by a named
+                /// parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecutePositionalGreedyWithNamedBeforeCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AdvancedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "first", new[] { "dooga" } },
+                        { "greedy", new[] { "ooga", "wooga", "booga" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test positional-greedy-with-named-before",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a greedy parameter, preceded by a named
+                /// parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecutePositionalGreedyWithPositionalBeforeCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AdvancedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "first", new[] { "dooga" } },
+                        { "greedy", new[] { "ooga", "wooga", "booga" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test positional-greedy-with-positional-before",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a single named greedy parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNamedGreedyCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AdvancedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "greedy", new[] { "ooga", "wooga", "booga" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test named-greedy",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a greedy parameter, followed by a named
+                /// parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNamedGreedyWithNamedAfterCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AdvancedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "greedy", new[] { "ooga", "wooga", "booga" } },
+                        { "second", new[] { "dooga" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test named-greedy-with-named-after",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a greedy parameter, preceded by a named
+                /// parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNamedGreedyWithNamedBeforeCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AdvancedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "first", new[] { "dooga" } },
+                        { "greedy", new[] { "ooga", "wooga", "booga" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test named-greedy-with-named-before",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a greedy parameter, preceded by a named
+                /// parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNamedGreedyWithPositionalBeforeCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AdvancedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "first", new[] { "dooga" } },
+                        { "greedy", new[] { "ooga", "wooga", "booga" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test named-greedy-with-positional-before",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
             }
         }
     }

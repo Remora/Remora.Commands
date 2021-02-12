@@ -55,5 +55,53 @@ namespace Remora.Commands.Tests.Data.Modules
         {
             return Task.FromResult<IResult>(Result.FromSuccess());
         }
+
+        [Command("positional-greedy")]
+        public Task<IResult> PositionalGreedy([Greedy] string greedy)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("positional-greedy-with-named-after")]
+        public Task<IResult> PositionalGreedyWithNamedAfter([Greedy] string greedy, [Option("second")] string second)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("positional-greedy-with-named-before")]
+        public Task<IResult> PositionalGreedyWithNamedBefore([Option("first")] string first, [Greedy] string greedy)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("positional-greedy-with-positional-before")]
+        public Task<IResult> PositionalGreedyWithPositionalBefore(string first, [Greedy] string greedy)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("named-greedy")]
+        public Task<IResult> NamedGreedy([Greedy, Option("greedy")] string greedy)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("named-greedy-with-named-after")]
+        public Task<IResult> NamedGreedyWithNamedAfter([Greedy, Option("greedy")] string greedy, [Option("second")] string second)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("named-greedy-with-named-before")]
+        public Task<IResult> NamedGreedyWithNamedBefore([Option("first")] string first, [Greedy, Option("greedy")] string greedy)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("named-greedy-with-positional-before")]
+        public Task<IResult> NamedGreedyWithPositionalBefore(string first, [Greedy, Option("greedy")] string greedy)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
     }
 }
