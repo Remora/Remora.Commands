@@ -116,7 +116,11 @@ namespace Remora.Commands.Signatures
             }
             else if (!isCollection)
             {
-                newNamedParameter = CreateNamedSingleValueParameterShape(optionAttribute, parameter);
+                var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
+
+                newNamedParameter = greedyAttribute is null
+                    ? CreateNamedSingleValueParameterShape(optionAttribute, parameter)
+                    : CreateGreedyNamedSingleValueParameterShape(optionAttribute, parameter);
             }
             else
             {
@@ -274,6 +278,47 @@ namespace Remora.Commands.Signatures
             return newNamedParameter;
         }
 
+        private static IParameterShape CreateGreedyNamedSingleValueParameterShape
+        (
+            OptionAttribute optionAttribute,
+            ParameterInfo parameter
+        )
+        {
+            var description = parameter.GetDescriptionOrDefault();
+
+            IParameterShape newNamedParameter;
+            if (optionAttribute.ShortName is null)
+            {
+                newNamedParameter = new NamedGreedyParameterShape
+                (
+                    parameter,
+                    optionAttribute.LongName ?? throw new InvalidOperationException(),
+                    description
+                );
+            }
+            else if (optionAttribute.LongName is null)
+            {
+                newNamedParameter = new NamedGreedyParameterShape
+                (
+                    parameter,
+                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                    description
+                );
+            }
+            else
+            {
+                newNamedParameter = new NamedGreedyParameterShape
+                (
+                    parameter,
+                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                    optionAttribute.LongName ?? throw new InvalidOperationException(),
+                    description
+                );
+            }
+
+            return newNamedParameter;
+        }
+
         private static IParameterShape CreatePositionalParameterShape
         (
             RangeAttribute? rangeAttribute,
@@ -286,7 +331,11 @@ namespace Remora.Commands.Signatures
             IParameterShape newPositionalParameter;
             if (!isCollection)
             {
-                newPositionalParameter = new PositionalParameterShape(parameter, description);
+                var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
+
+                newPositionalParameter = greedyAttribute is null
+                    ? new PositionalParameterShape(parameter, description)
+                    : new PositionalGreedyParameterShape(parameter, description);
             }
             else
             {

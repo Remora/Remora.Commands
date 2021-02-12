@@ -489,14 +489,6 @@ namespace Remora.Commands.Services
                 }
                 else
                 {
-                    if (boundParameter.Tokens.Count > 1)
-                    {
-                        throw new InvalidOperationException
-                        (
-                            "More than one token was provided for a single-value parameter."
-                        );
-                    }
-
                     // Special case: switches
                     if (boundParameter.ParameterShape is SwitchParameterShape)
                     {
@@ -507,7 +499,26 @@ namespace Remora.Commands.Services
                         continue;
                     }
 
-                    var value = boundParameter.Tokens[0];
+                    // Special case: greedy parameters
+                    string value;
+                    if (boundParameter.ParameterShape is NamedGreedyParameterShape or PositionalGreedyParameterShape)
+                    {
+                        // Merge the bound tokens
+                        value = string.Join(' ', boundParameter.Tokens);
+                    }
+                    else
+                    {
+                        if (boundParameter.Tokens.Count > 1)
+                        {
+                            throw new InvalidOperationException
+                            (
+                                "More than one token was provided for a single-value parameter."
+                            );
+                        }
+
+                        value = boundParameter.Tokens[0];
+                    }
+
                     var parseResult = await parser.TryParseAsync(value, ct);
                     if (!parseResult.IsSuccess)
                     {
