@@ -108,7 +108,7 @@ namespace Remora.Commands.Signatures
                 return false;
             }
 
-            if (value.Count == 1)
+            if (value.Count >= 1)
             {
                 return true;
             }
