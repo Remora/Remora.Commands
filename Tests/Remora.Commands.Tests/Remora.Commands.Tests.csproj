@@ -25,6 +25,78 @@
       <Compile Update="Services\CommandServiceTests.Preparsed.cs">
         <DependentUpon>CommandServiceTests.cs</DependentUpon>
       </Compile>
+      <Compile Update="Trees\CommandTreeTests.Raw.Aliasing.cs">
+        <DependentUpon>CommandTreeTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Trees\CommandTreeTests.Raw.Basic.cs">
+        <DependentUpon>CommandTreeTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Trees\CommandTreeTests.Raw.SearchOptions.cs">
+        <DependentUpon>CommandTreeTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Trees\CommandTreeTests.Preparsed.Aliasing.cs">
+        <DependentUpon>CommandTreeTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Trees\CommandTreeTests.Preparsed.Basic.cs">
+        <DependentUpon>CommandTreeTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Trees\CommandTreeTests.Preparsed.SearchOptions.cs">
+        <DependentUpon>CommandTreeTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Trees\CommandTreeBuilderTests.Basics.cs">
+        <DependentUpon>CommandTreeBuilderTests.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Trees\CommandTreeBuilderTests.Descriptions.cs">
+        <DependentUpon>CommandTreeBuilderTests.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.Advanced.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.Basics.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.BuiltinTypeTests.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.Collections.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.Conditions.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.Overloads.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.ReturnType.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.Specializations.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.Advanced.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.Basics.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.BuiltinTypeTests.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.Collections.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.Conditions.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.Overloads.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.ReturnType.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.Specializations.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

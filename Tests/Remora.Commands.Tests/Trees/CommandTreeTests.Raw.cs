@@ -20,11 +20,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using Remora.Commands.Tests.Data.DummyModules;
-using Remora.Commands.Trees;
-using Xunit;
-
 namespace Remora.Commands.Tests.Trees
 {
     public partial class CommandTreeTests
@@ -32,131 +27,8 @@ namespace Remora.Commands.Tests.Trees
         /// <summary>
         /// Tests functionality of raw parsing-based operations.
         /// </summary>
-        public class Raw
+        public partial class Raw
         {
-            /// <summary>
-            /// Tests basic requirements.
-            /// </summary>
-            public class Basic
-            {
-                /// <summary>
-                /// Tests whether the tree can be successfully searched.
-                /// </summary>
-                [Fact]
-                public void SearchIsSuccessfulIfAMatchingCommandExists()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
-
-                    var tree = builder.Build();
-
-                    var result = tree.Search("a c d");
-                    Assert.NotEmpty(result);
-                }
-
-                /// <summary>
-                /// Tests whether the tree can be successfully searched.
-                /// </summary>
-                [Fact]
-                public void SearchIsUnsuccessfulIfNoMatchingCommandExists()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
-
-                    var tree = builder.Build();
-
-                    var result = tree.Search("a d c");
-                    Assert.Empty(result);
-                }
-            }
-
-            /// <summary>
-            /// Tests aliasing behaviour.
-            /// </summary>
-            public class Aliasing
-            {
-                /// <summary>
-                /// Tests whether a command can be found by searching for its primary key and one of the aliases of the
-                /// group it is contained within.
-                /// </summary>
-                [Fact]
-                public void CanFindCommandByCommandPrimaryKeyAndGroupAlias()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<AliasedGroupWithAliasedCommand>();
-
-                    var tree = builder.Build();
-
-                    var result = tree.Search("t command");
-                    Assert.NotEmpty(result);
-                }
-
-                /// <summary>
-                /// Tests whether a command can be found by searching for one of its aliases and the primary key of the
-                /// group it is contained within.
-                /// </summary>
-                [Fact]
-                public void CanFindCommandByCommandAliasAndGroupPrimaryKey()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<AliasedGroupWithAliasedCommand>();
-
-                    var tree = builder.Build();
-
-                    var result = tree.Search("test c");
-                    Assert.NotEmpty(result);
-                }
-
-                /// <summary>
-                /// Tests whether a command can be found by searching for one of its aliases and one of the aliases of the
-                /// group it is contained within.
-                /// </summary>
-                [Fact]
-                public void CanFindCommandByCommandAliasAndGroupAlias()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<AliasedGroupWithAliasedCommand>();
-
-                    var tree = builder.Build();
-
-                    var result = tree.Search("t c");
-                    Assert.NotEmpty(result);
-                }
-            }
-
-            /// <summary>
-            /// Tests various search options.
-            /// </summary>
-            public class SearchOptions
-            {
-                /// <summary>
-                /// Tests the key comparison option.
-                /// </summary>
-                public class KeyComparison
-                {
-                    /// <summary>
-                    /// Tests whether a command can be found by performing a search with a different key comparison.
-                    /// </summary>
-                    [Fact]
-                    public void CanFindCommandWithDifferentCasing()
-                    {
-                        var builder = new CommandTreeBuilder();
-                        builder.RegisterModule<GroupWithCasingDifferences>();
-
-                        var tree = builder.Build();
-
-                        var options = new TreeSearchOptions(StringComparison.OrdinalIgnoreCase);
-
-                        var result = tree.Search
-                        (
-                            "test somecommand",
-                            options
-                        );
-
-                        Assert.NotEmpty(result);
-                    }
-                }
-            }
         }
     }
 }
