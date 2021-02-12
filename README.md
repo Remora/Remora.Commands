@@ -63,7 +63,8 @@ my-command -xvf file.bin
 
 The library also supports "greedy" options, which can simplify usage in certain
 cases, allowing users to omit quotes. A greedy option treats multiple subsequent
-values as one combined value, concatenating them automatically. 
+values as one combined value, concatenating them automatically. Concatenation is
+done with a single space in between each value. 
 
 Making an option greedy is a simple matter of applying the `Greedy` attribute, 
 and it can be combined with `Option` for both named and positional greedy 
