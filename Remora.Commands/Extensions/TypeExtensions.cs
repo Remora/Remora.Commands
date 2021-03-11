@@ -23,7 +23,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading.Tasks;
 using Remora.Commands.Attributes;
+using Remora.Results;
 
 namespace Remora.Commands.Extensions
 {
@@ -93,6 +96,38 @@ namespace Remora.Commands.Extensions
         public static Type GetCollectionElementType(this Type type)
         {
             return type.GetGenericArguments()[0];
+        }
+
+        /// <summary>
+        /// Checks whether the given type is a supported return type for a command. Currently, supported return types
+        /// are limited to <see cref="Task{TResult}"/> or <see cref="ValueTask{TResult}"/>, where TResult is any of
+        /// <see cref="IResult"/>, <see cref="Result"/>, or <see cref="Result{TEntity}"/>, where TEntity is any type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>True if the type is supported; otherwise, false.</returns>
+        public static bool IsSupportedCommandReturnType(this Type type)
+        {
+            if (!type.IsGenericType)
+            {
+                // The return type must be generic
+                return false;
+            }
+
+            var genericTypeDefinition = type.GetGenericTypeDefinition();
+            if (genericTypeDefinition != typeof(Task<>) && genericTypeDefinition != typeof(ValueTask<>))
+            {
+                // The return type must be a task
+                return false;
+            }
+
+            var innerType = type.GetGenericArguments().Single();
+            if (!typeof(IResult).IsAssignableFrom(innerType))
+            {
+                // The inner type must be an implementation of IResult
+                return false;
+            }
+
+            return true;
         }
     }
 }

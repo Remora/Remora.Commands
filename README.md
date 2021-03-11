@@ -166,6 +166,9 @@ commands do-thing
 commands subcommands do-thing
 ```
 
+Generally, types return `Task<IResult>`, but you can use both `ValueTask<T>` and 
+`Task<T>`, as long as `T` implements `IResult`.
+
 Commands themselves can be overloaded using normal C# syntax, and the various
 argument syntax variants (that is, positional, named, switches, and collections)
 can easily be mixed and matched.

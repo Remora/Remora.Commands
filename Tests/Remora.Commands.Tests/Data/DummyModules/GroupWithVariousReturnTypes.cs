@@ -1,5 +1,5 @@
 //
-//  ReturnTypeCommandGroup.cs
+//  GroupWithVariousReturnTypes.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,6 +20,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -27,44 +29,44 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.Modules
+namespace Remora.Commands.Tests.Data.DummyModules
 {
-    public class ReturnTypeCommandGroup : CommandGroup
+    public class GroupWithVariousReturnTypes : CommandGroup
     {
         [Command("a")]
         public Task<IResult> A()
         {
-            return Task.FromResult<IResult>(Result.FromSuccess());
+            throw new NotImplementedException();
         }
 
         [Command("b")]
         public ValueTask<IResult> B()
         {
-            return new(Result.FromSuccess());
+            throw new NotImplementedException();
         }
 
         [Command("c")]
         public Task<Result> C()
         {
-            return Task.FromResult(Result.FromSuccess());
+            throw new NotImplementedException();
         }
 
         [Command("d")]
         public ValueTask<Result> D()
         {
-            return new(Result.FromSuccess());
+            throw new NotImplementedException();
         }
 
         [Command("e")]
         public Task<Result<string>> E()
         {
-            return Task.FromResult(Result<string>.FromSuccess("success"));
+            throw new NotImplementedException();
         }
 
         [Command("f")]
         public ValueTask<Result<string>> F()
         {
-            return new("success");
+            throw new NotImplementedException();
         }
     }
 }

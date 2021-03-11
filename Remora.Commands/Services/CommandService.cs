@@ -226,19 +226,31 @@ namespace Remora.Commands.Services
             try
             {
                 IResult result;
-                if (method.ReturnType == typeof(Task<IResult>))
+                if (method.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>))
                 {
-                    var invocationResult = method.Invoke(groupInstance, materializedParameters)
-                                           ?? throw new InvalidOperationException();
+                    var genericUnwrapMethod = GetType()
+                            .GetMethod(nameof(UnwrapCommandValueTask), BindingFlags.NonPublic | BindingFlags.Static)
+                            ?? throw new InvalidOperationException();
 
-                    result = await (Task<IResult>)invocationResult;
+                    var unwrapMethod = genericUnwrapMethod
+                            .MakeGenericMethod(method.ReturnType.GetGenericArguments().Single());
+
+                    var invocationResult = method.Invoke(groupInstance, materializedParameters);
+                    var unwrapTask = (Task<IResult>)(unwrapMethod.Invoke
+                    (
+                        null, new[] { invocationResult }
+                    ) ?? throw new InvalidOperationException());
+
+                    result = await unwrapTask;
                 }
                 else
                 {
-                    var invocationResult = method.Invoke(groupInstance, materializedParameters)
-                                           ?? throw new InvalidOperationException();
+                    var invocationResult = (Task)(method.Invoke(groupInstance, materializedParameters)
+                                                    ?? throw new InvalidOperationException());
+                    await invocationResult;
 
-                    result = await (ValueTask<IResult>)invocationResult;
+                    result = (IResult)(invocationResult.GetType().GetProperty(nameof(Task<object>.Result))
+                        ?.GetValue(invocationResult) ?? throw new InvalidOperationException());
                 }
 
                 return Result<IResult>.FromSuccess(result);
@@ -331,6 +343,18 @@ namespace Remora.Commands.Services
             }
 
             return Result.FromSuccess();
+        }
+
+        /// <summary>
+        /// Helper method for unwrapping instances of <see cref="ValueTask{TResult}"/>.
+        /// </summary>
+        /// <param name="task">The task.</param>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        private static async Task<IResult> UnwrapCommandValueTask<TEntity>(ValueTask<TEntity> task)
+            where TEntity : IResult
+        {
+            return await task;
         }
 
         /// <summary>

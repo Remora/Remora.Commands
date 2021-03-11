@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>2.1.1</Version>
+        <Version>2.2.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Update dependencies.
+            Allow returning more types from commands.
         </PackageReleaseNotes>
     </PropertyGroup>
 

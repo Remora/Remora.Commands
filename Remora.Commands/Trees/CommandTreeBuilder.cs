@@ -172,12 +172,12 @@ namespace Remora.Commands.Trees
                     continue;
                 }
 
-                if (!(method.ReturnType == typeof(Task<IResult>) || method.ReturnType == typeof(ValueTask<IResult>)))
+                if (!method.ReturnType.IsSupportedCommandReturnType())
                 {
                     throw new InvalidOperationException
                     (
-                        $"Methods marked as commands must return {typeof(Task<IResult>)} or " +
-                        $"{typeof(ValueTask<IResult>)}."
+                        $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
+                        $"containing a type that implements {typeof(IResult)}."
                     );
                 }
 

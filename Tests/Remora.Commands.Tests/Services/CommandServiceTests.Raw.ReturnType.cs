@@ -25,6 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
+using Remora.Results;
 using Xunit;
 
 namespace Remora.Commands.Tests.Services
@@ -39,11 +40,11 @@ namespace Remora.Commands.Tests.Services
             public class ReturnType
             {
                 /// <summary>
-                /// Tests whether a method that returns a ValueTask{IResult} can be executed.
+                /// Tests whether a method that returns a <see cref="Task{IResult}"/> can be executed.
                 /// </summary>
                 /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
                 [Fact]
-                public async Task CanExecuteValueTaskCommand()
+                public async Task CanExecuteTaskCommand()
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
@@ -58,6 +59,120 @@ namespace Remora.Commands.Tests.Services
                     );
 
                     Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether a method that returns a <see cref="ValueTask{IResult}"/> can be executed.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteValueTaskCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<ReturnTypeCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "b",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether a method that returns a <see cref="ValueTask{Result}"/> can be executed.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteTaskWithResultCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<ReturnTypeCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "c",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                    Assert.IsType<Result>(executionResult.Entity);
+                }
+
+                /// <summary>
+                /// Tests whether a method that returns a <see cref="ValueTask{Result}"/> can be executed.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteValueTaskWithResultCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<ReturnTypeCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "d",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                    Assert.IsType<Result>(executionResult.Entity);
+                }
+
+                /// <summary>
+                /// Tests whether a method that returns a <see cref="Task{ResultOfT}"/> can be executed.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteTaskWithResultOfTCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<ReturnTypeCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "e",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                    Assert.IsType<Result<string>>(executionResult.Entity);
+                }
+
+                /// <summary>
+                /// Tests whether a method that returns a <see cref="ValueTask{ResultOfT}"/> can be executed.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteValueTaskWithResultOfTCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<ReturnTypeCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "f",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                    Assert.IsType<Result<string>>(executionResult.Entity);
                 }
             }
         }

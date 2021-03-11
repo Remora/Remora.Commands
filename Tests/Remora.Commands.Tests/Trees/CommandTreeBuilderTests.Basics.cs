@@ -449,6 +449,30 @@ namespace Remora.Commands.Tests.Trees
                 Assert.Equal("command", command.Key);
                 Assert.Empty(command.Aliases);
             }
+
+            /// <summary>
+            /// Tests whether a <see cref="GroupWithVariousReturnTypes"/> can be correctly parsed into a tree.
+            /// </summary>
+            [Fact]
+            public void ParsesGroupWithVariousReturnTypesCorrectly()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<GroupWithVariousReturnTypes>();
+
+                var tree = builder.Build();
+                var root = tree.Root;
+
+                Assert.Collection
+                (
+                    root.Children,
+                    a => Assert.Equal(nameof(a), a.Key),
+                    b => Assert.Equal(nameof(b), b.Key),
+                    c => Assert.Equal(nameof(c), c.Key),
+                    d => Assert.Equal(nameof(d), d.Key),
+                    e => Assert.Equal(nameof(e), e.Key),
+                    f => Assert.Equal(nameof(f), f.Key)
+                );
+            }
         }
     }
 }
