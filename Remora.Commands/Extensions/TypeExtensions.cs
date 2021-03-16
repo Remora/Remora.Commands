@@ -62,12 +62,10 @@ namespace Remora.Commands.Extensions
         /// <returns>true if the type is an enumerable type; otherwise, false.</returns>
         public static bool IsSupportedEnumerable(this Type type)
         {
-            if (!type.IsGenericType)
+            if (type.IsGenericType)
             {
-                return false;
+                type = type.GetGenericTypeDefinition();
             }
-
-            type = type.GetGenericTypeDefinition();
 
             switch (type)
             {
@@ -77,6 +75,7 @@ namespace Remora.Commands.Extensions
                 case var _ when type == typeof(IReadOnlyCollection<>):
                 case var _ when type == typeof(IReadOnlyList<>):
                 case var _ when type == typeof(List<>):
+                case var _ when type.IsArray:
                 {
                     return true;
                 }
@@ -95,6 +94,11 @@ namespace Remora.Commands.Extensions
         /// <returns>The element type.</returns>
         public static Type GetCollectionElementType(this Type type)
         {
+            if (type.IsArray)
+            {
+                return type.GetElementType() ?? throw new InvalidOperationException();
+            }
+
             return type.GetGenericArguments()[0];
         }
 

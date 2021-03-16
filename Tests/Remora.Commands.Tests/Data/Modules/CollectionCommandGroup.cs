@@ -74,5 +74,17 @@ namespace Remora.Commands.Tests.Data.Modules
         {
             return Task.FromResult<IResult>(Result.FromSuccess());
         }
+
+        [Command("array-collection")]
+        public Task<IResult> ArrayCollection(string[] values)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("params-collection")]
+        public Task<IResult> ParamsCollection(params string[] values)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
     }
 }

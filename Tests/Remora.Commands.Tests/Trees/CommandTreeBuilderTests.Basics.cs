@@ -21,6 +21,7 @@
 //
 
 using System.Linq;
+using Remora.Commands.Signatures;
 using Remora.Commands.Tests.Data.DummyModules;
 using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
@@ -471,6 +472,44 @@ namespace Remora.Commands.Tests.Trees
                     d => Assert.Equal(nameof(d), d.Key),
                     e => Assert.Equal(nameof(e), e.Key),
                     f => Assert.Equal(nameof(f), f.Key)
+                );
+            }
+
+            /// <summary>
+            /// Tests whether a <see cref="GroupWithVariousReturnTypes"/> can be correctly parsed into a tree.
+            /// </summary>
+            [Fact]
+            public void ParsesGroupWithVariousCollectionTypesCorrectly()
+            {
+                void AssertIsCollectionCommand(IChildNode childNode)
+                {
+                    Assert.IsType<CommandNode>(childNode);
+
+                    var commandNode = (CommandNode)childNode;
+                    Assert.Collection
+                    (
+                        commandNode.Shape.Parameters,
+                        p => Assert.IsType<PositionalCollectionParameterShape>(p)
+                    );
+                }
+
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<GroupWithVariousCollectionTypes>();
+
+                var tree = builder.Build();
+                var root = tree.Root;
+
+                Assert.Collection
+                (
+                    root.Children,
+                    AssertIsCollectionCommand,
+                    AssertIsCollectionCommand,
+                    AssertIsCollectionCommand,
+                    AssertIsCollectionCommand,
+                    AssertIsCollectionCommand,
+                    AssertIsCollectionCommand,
+                    AssertIsCollectionCommand,
+                    AssertIsCollectionCommand
                 );
             }
         }

@@ -331,6 +331,64 @@ namespace Remora.Commands.Tests.Services
 
                     Assert.False(executionResult.IsSuccess);
                 }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a positional array.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteArrayCollectionCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<CollectionCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "values", new[] { "ra", "ra", "rasputin" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test array-collection",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a positional params array.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteParamsCollectionCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<CollectionCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "values", new[] { "ra", "ra", "rasputin" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test params-collection",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
             }
         }
     }

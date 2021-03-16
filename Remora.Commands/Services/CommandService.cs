@@ -509,7 +509,20 @@ namespace Remora.Commands.Services
                         collection.Add(parseResult.Entity);
                     }
 
-                    materializedParameters.Add(collection);
+                    if (parameter.ParameterType.IsArray)
+                    {
+                        // Special case for array support
+                        var toArrayMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))
+                            ?? throw new MissingMethodException();
+
+                        var typedToArrayMethod = toArrayMethod.MakeGenericMethod(typeToParse);
+
+                        materializedParameters.Add(typedToArrayMethod.Invoke(null, new object?[] { collection }));
+                    }
+                    else
+                    {
+                        materializedParameters.Add(collection);
+                    }
                 }
                 else
                 {
