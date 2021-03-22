@@ -168,6 +168,35 @@ namespace Remora.Commands.Services
             CancellationToken ct = default
         )
         {
+            // Check group-level conditions, if any
+            var groupTypeWithConditions = boundCommandNode.Node.GroupType;
+            while (true)
+            {
+                var groupConditionsResult = await CheckConditionsAsync
+                (
+                    services,
+                    groupTypeWithConditions,
+                    additionalParameters,
+                    ct
+                );
+
+                if (!groupConditionsResult.IsSuccess)
+                {
+                    return Result<IResult>.FromError
+                    (
+                        new GenericError("One or more group conditions failed."),
+                        groupConditionsResult
+                    );
+                }
+
+                if (!typeof(CommandGroup).IsAssignableFrom(groupTypeWithConditions.DeclaringType))
+                {
+                    break;
+                }
+
+                groupTypeWithConditions = groupTypeWithConditions.DeclaringType;
+            }
+
             // Check method-level conditions, if any
             var method = boundCommandNode.Node.CommandMethod;
             var methodConditionsResult = await CheckConditionsAsync(services, method, additionalParameters, ct);
@@ -276,11 +305,11 @@ namespace Remora.Commands.Services
         }
 
         /// <summary>
-        /// Checks the user-provided conditions of the given method. If a condition does not pass, the command will
-        /// not execute.
+        /// Checks the user-provided conditions applied to the given attribute provider. If a condition does not pass,
+        /// the command will not execute.
         /// </summary>
         /// <param name="services">The available services.</param>
-        /// <param name="method">The method.</param>
+        /// <param name="attributeProvider">The group.</param>
         /// <param name="additionalParameters">
         /// Any additional parameters that should be available during instantiation of the command group.
         /// </param>
@@ -289,12 +318,12 @@ namespace Remora.Commands.Services
         private async Task<Result> CheckConditionsAsync
         (
             IServiceProvider services,
-            MethodInfo method,
+            ICustomAttributeProvider attributeProvider,
             object[] additionalParameters,
             CancellationToken ct
         )
         {
-            var conditionAttributes = method.GetCustomAttributes(typeof(ConditionAttribute), false);
+            var conditionAttributes = attributeProvider.GetCustomAttributes(typeof(ConditionAttribute), false);
             if (!conditionAttributes.Any())
             {
                 return Result.FromSuccess();

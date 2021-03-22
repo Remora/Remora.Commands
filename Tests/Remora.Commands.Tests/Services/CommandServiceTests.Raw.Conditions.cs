@@ -40,6 +40,52 @@ namespace Remora.Commands.Tests.Services
             public class Conditions
             {
                 /// <summary>
+                /// Tests whether the command service can execute a command with a group condition.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteCommandWithGroupCondition()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<CommandGroupWithGroupCondition>()
+                        .AddCondition<GroupCondition>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test method",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a group condition.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteCommandWithOuterGroupCondition()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<NestedCommandGroupWithOuterGroupCondition>()
+                        .AddCondition<GroupCondition>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test method",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
                 /// Tests whether the command service can execute a command with a method condition.
                 /// </summary>
                 /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
