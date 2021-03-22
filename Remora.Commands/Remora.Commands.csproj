@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>2.3.0</Version>
+        <Version>2.4.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Add support for parsing arrays, both params and otherwise.
+            Implement support for applying conditions to command groups.
         </PackageReleaseNotes>
     </PropertyGroup>
 
