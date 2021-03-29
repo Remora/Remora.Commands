@@ -44,7 +44,7 @@ namespace Remora.Commands.Parsers
             var result = await TryParse(value, ct);
             return result.IsSuccess
                 ? Result<object>.FromSuccess(result.Entity)
-                : result;
+                : Result<object>.FromError(result);
         }
     }
 }
