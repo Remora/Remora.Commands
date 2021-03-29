@@ -148,22 +148,36 @@ namespace Remora.Commands.Services
             CancellationToken ct
         )
         {
-            foreach (var commandCandidate in commandCandidates)
+            // First, walk through the candidates and do the following:
+            // 1) Check group conditions
+            // 2) Check method conditions
+            // 3) Materialize parameters, parsing strings to concrete instances
+            // 4) Check parameter conditions
+            var preparedCommands = await Task.WhenAll
+            (
+                commandCandidates.Select(c => PrepareCommandAsync(services, c, additionalParameters, ct))
+            );
+
+            // Then, check if we have to bail out at this point
+            if (preparedCommands.Count(r => r.IsSuccess) > 1)
             {
-                var executeResult = await TryExecuteAsync(commandCandidate, services, additionalParameters, ct);
-                if (executeResult.IsSuccess)
-                {
-                    return executeResult;
-                }
+                return Result<IResult>.FromError(new AmbiguousCommandInvocationError());
             }
 
-            return new NoCompatibleCommandFoundError(commandCandidates);
+            if (preparedCommands.Count(r => r.IsSuccess) == 0)
+            {
+                return Result<IResult>.FromError(preparedCommands.Last(r => !r.IsSuccess));
+            }
+
+            // At this point, a single candidate remains, so we execute it
+            var (node, parameters) = preparedCommands.Single(r => r.IsSuccess).Entity!;
+            return await TryExecuteAsync(node, services, additionalParameters, parameters, ct);
         }
 
-        private async Task<Result<IResult>> TryExecuteAsync
+        private async Task<Result<(BoundCommandNode Node, object?[] Parameters)>> PrepareCommandAsync
         (
-            BoundCommandNode boundCommandNode,
             IServiceProvider services,
+            BoundCommandNode boundCommandNode,
             object[] additionalParameters,
             CancellationToken ct = default
         )
@@ -182,11 +196,7 @@ namespace Remora.Commands.Services
 
                 if (!groupConditionsResult.IsSuccess)
                 {
-                    return Result<IResult>.FromError
-                    (
-                        new GenericError("One or more group conditions failed."),
-                        groupConditionsResult
-                    );
+                    return Result<(BoundCommandNode, object?[])>.FromError(groupConditionsResult);
                 }
 
                 if (!typeof(CommandGroup).IsAssignableFrom(groupTypeWithConditions.DeclaringType))
@@ -202,11 +212,7 @@ namespace Remora.Commands.Services
             var methodConditionsResult = await CheckConditionsAsync(services, method, additionalParameters, ct);
             if (!methodConditionsResult.IsSuccess)
             {
-                return Result<IResult>.FromError
-                (
-                    new GenericError("One or more method conditions failed."),
-                    methodConditionsResult
-                );
+                return Result<(BoundCommandNode, object?[])>.FromError(methodConditionsResult);
             }
 
             var materializeResult = await MaterializeParametersAsync
@@ -219,7 +225,7 @@ namespace Remora.Commands.Services
 
             if (!materializeResult.IsSuccess)
             {
-                return Result.FromError(new GenericError("Failed to materialize all parameters."), materializeResult);
+                return Result<(BoundCommandNode, object?[])>.FromError(materializeResult);
             }
 
             var materializedParameters = materializeResult.Entity;
@@ -239,18 +245,28 @@ namespace Remora.Commands.Services
 
                 if (!parameterConditionResult.IsSuccess)
                 {
-                    return Result<IResult>.FromError
-                    (
-                        new GenericError("One or more parameter conditions failed."),
-                        methodConditionsResult
-                    );
+                    return Result<(BoundCommandNode, object?[])>.FromError(parameterConditionResult);
                 }
             }
 
+            return (boundCommandNode, materializedParameters);
+        }
+
+        private async Task<Result<IResult>> TryExecuteAsync
+        (
+            BoundCommandNode boundCommandNode,
+            IServiceProvider services,
+            object[] additionalParameters,
+            object?[] materializedParameters,
+            CancellationToken ct = default
+        )
+        {
             var groupType = boundCommandNode.Node.GroupType;
             var groupInstance = CreateInstance<CommandGroup>(services, groupType, additionalParameters);
 
             groupInstance.SetCancellationToken(ct);
+
+            var method = boundCommandNode.Node.CommandMethod;
 
             try
             {
