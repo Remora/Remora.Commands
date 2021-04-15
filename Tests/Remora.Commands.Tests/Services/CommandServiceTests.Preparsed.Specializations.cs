@@ -245,6 +245,75 @@ namespace Remora.Commands.Tests.Services
 
                     Assert.True(executionResult.IsSuccess);
                 }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a nullable struct parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNullableStructCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "v", new[] { "0" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test nullable-struct",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a nullable struct parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNullableStructWithDefaultCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "v", new[] { "0" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test nullable-struct-with-default",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+
+                    values = new Dictionary<string, IReadOnlyList<string>>();
+
+                    executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test nullable-struct-with-default",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
             }
         }
     }

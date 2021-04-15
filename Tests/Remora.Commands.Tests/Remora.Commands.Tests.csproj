@@ -97,6 +97,12 @@
       <Compile Update="Services\CommandServiceTests.Preparsed.Specializations.cs">
         <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
       </Compile>
+      <Compile Update="Services\CommandServiceTests.Preparsed.Ambiguity.cs">
+        <DependentUpon>CommandServiceTests.Preparsed.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.Ambiguity.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

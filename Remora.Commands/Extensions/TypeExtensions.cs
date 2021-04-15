@@ -87,6 +87,21 @@ namespace Remora.Commands.Extensions
         }
 
         /// <summary>
+        /// Determines whether the type is a nullable struct.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>true if the type is a nullable struct; otherwise, false.</returns>
+        public static bool IsNullableStruct(this Type type)
+        {
+            if (!type.IsGenericType)
+            {
+                return false;
+            }
+
+            return type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        /// <summary>
         /// Gets the element type of the given type. The type is assumed to return true if
         /// <see cref="IsSupportedEnumerable"/> were to be called on it.
         /// </summary>

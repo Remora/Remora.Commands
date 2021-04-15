@@ -516,10 +516,17 @@ namespace Remora.Commands.Services
                 }
 
                 var typeToParse = parameter.ParameterType;
+
                 var isCollection = typeToParse.IsSupportedEnumerable();
                 if (isCollection)
                 {
                     typeToParse = typeToParse.GetCollectionElementType();
+                }
+
+                var isNullable = typeToParse.IsNullableStruct();
+                if (isNullable)
+                {
+                    typeToParse = typeToParse.GetGenericArguments()[0];
                 }
 
                 var parserType = typeof(ITypeParser<>).MakeGenericType(typeToParse);
@@ -607,7 +614,17 @@ namespace Remora.Commands.Services
                         return Result<object?[]>.FromError(new ParameterParsingError(boundParameter), parseResult);
                     }
 
-                    materializedParameters.Add(parseResult.Entity);
+                    if (isNullable)
+                    {
+                        var constructor = parameter.ParameterType.GetConstructor(new[] { typeToParse })
+                            ?? throw new MissingMethodException();
+
+                        materializedParameters.Add(constructor.Invoke(new[] { parseResult.Entity }));
+                    }
+                    else
+                    {
+                        materializedParameters.Add(parseResult.Entity);
+                    }
                 }
             }
 

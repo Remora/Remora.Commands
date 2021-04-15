@@ -67,5 +67,17 @@ namespace Remora.Commands.Tests.Data.Modules
         {
             return Task.FromResult<IResult>(Result.FromSuccess());
         }
+
+        [Command("nullable-struct")]
+        public Task<IResult> NullableStruct([Option('v', "value")] int? value)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("nullable-struct-with-default")]
+        public Task<IResult> NullableStructWithDefault([Option('v', "value")] int? value = default)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
     }
 }
