@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>3.0.1</Version>
+        <Version>3.1.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Fix an issue where a parsed type could be incorrectly wrapped.
+            Add better support for nullable struct parameters.
         </PackageReleaseNotes>
     </PropertyGroup>
 
