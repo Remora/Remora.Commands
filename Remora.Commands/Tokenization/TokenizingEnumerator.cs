@@ -87,8 +87,12 @@ namespace Remora.Commands.Tokenization
             }
             else if (span.StartsWith("-"))
             {
-                type = TokenType.ShortName;
-                span = span.Slice(1);
+                // Workaround; names must be identifiers (i.e, not start with a digit)
+                if (span.Length <= 1 || !char.IsDigit(span[1]))
+                {
+                    type = TokenType.ShortName;
+                    span = span.Slice(1);
+                }
             }
             else if (span.StartsWith("="))
             {
