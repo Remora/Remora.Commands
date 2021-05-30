@@ -55,6 +55,7 @@ namespace Remora.Commands.Tests.Tokenization
         [InlineData("-xvf value", new[] { ShortName, ShortName, ShortName, Value }, new[] { "x", "v", "f", "value" })]
         [InlineData("-xvf=value", new[] { ShortName, ShortName, ShortName, Value }, new[] { "x", "v", "f", "value" })]
         [InlineData("-xvf=\"booga wooga\"", new[] { ShortName, ShortName, ShortName, Value }, new[] { "x", "v", "f", "booga wooga" })]
+        [InlineData("--a -10", new[] { LongName, Value }, new[] { "a", "-10" })]
         internal void TokenizesStringCorrectly
         (
             string value,
