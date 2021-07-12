@@ -148,9 +148,9 @@ namespace Remora.Commands.Trees
                         // Extract submodules and commands
                         groupChildren.AddRange(GetModuleCommands(groupType, groupNode));
                         groupChildren.AddRange(ToChildNodes(subgroups, groupNode));
-
-                        yield return groupNode;
                     }
+
+                    yield return groupNode;
                 }
             }
         }
