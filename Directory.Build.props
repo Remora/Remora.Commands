@@ -122,6 +122,7 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
     </ItemGroup>
 
+    <!-- NuGet Icon -->
     <ItemGroup>
         <None Include="$(SolutionDir)/images/shark.png" Pack="true" PackagePath="/" />
     </ItemGroup>
