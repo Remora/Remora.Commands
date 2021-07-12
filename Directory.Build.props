@@ -39,6 +39,7 @@
         <PackageProjectUrl>https://github.com/Nihlus/Remora.Commands</PackageProjectUrl>
         <PackageTags>commands;parsing;span;performance;getopts;command-line;</PackageTags>
         <PackageIconUrl>https://cdn.gullberg.tk/remora/icon/shark.png</PackageIconUrl>
+        <PackageIcon>shark.png</PackageIcon>
 
         <BaseDescription>
             Remora.Commands is a platform-agnostic command library that handles parsing and dispatch of typical *nix getopts-style command invocations.
@@ -119,5 +120,9 @@
     <!-- SourceLink -->
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="$(SolutionDir)/images/shark.png" Pack="true" PackagePath="/" />
     </ItemGroup>
 </Project>
