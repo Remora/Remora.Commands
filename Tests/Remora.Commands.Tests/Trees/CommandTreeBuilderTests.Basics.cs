@@ -55,6 +55,9 @@ namespace Remora.Commands.Tests.Trees
 
                 Assert.Equal("a", groupNode.Key);
 
+                var groupType = Assert.Single(groupNode.GroupTypes);
+                Assert.Equal(typeof(NamedGroupWithCommands), groupType);
+
                 Assert.Equal(3, groupNode.Children.Count);
                 Assert.IsType<CommandNode>(groupNode.Children[0]);
                 Assert.IsType<CommandNode>(groupNode.Children[1]);
@@ -88,6 +91,9 @@ namespace Remora.Commands.Tests.Trees
                 var groupNode = (GroupNode)root.Children[0];
 
                 Assert.Equal("a", groupNode.Key);
+
+                var groupType = Assert.Single(groupNode.GroupTypes);
+                Assert.Equal(typeof(NamedGroupWithCommandsWithNestedNamedGroupWithCommands), groupType);
 
                 Assert.Equal(2, groupNode.Children.Count);
                 Assert.Contains(groupNode.Children, n => n is GroupNode);
@@ -125,6 +131,9 @@ namespace Remora.Commands.Tests.Trees
 
                 Assert.Equal("a", groupNode.Key);
 
+                var groupType = Assert.Single(groupNode.GroupTypes);
+                Assert.Equal(typeof(NamedGroupWithCommandsWithNestedUnnamedGroupWithCommands), groupType);
+
                 Assert.Equal(3, groupNode.Children.Count);
                 Assert.IsType<CommandNode>(groupNode.Children[0]);
                 Assert.IsType<CommandNode>(groupNode.Children[1]);
@@ -159,6 +168,9 @@ namespace Remora.Commands.Tests.Trees
 
                 Assert.Equal("a", groupNode.Key);
 
+                var groupType = Assert.Single(groupNode.GroupTypes);
+                Assert.Equal(typeof(NamedGroupWithNestedNamedGroupWithCommands), groupType);
+
                 Assert.Single(groupNode.Children);
                 Assert.IsType<GroupNode>(groupNode.Children[0]);
 
@@ -191,6 +203,9 @@ namespace Remora.Commands.Tests.Trees
                 var groupNode = (GroupNode)root.Children[0];
 
                 Assert.Equal("a", groupNode.Key);
+
+                var groupType = Assert.Single(groupNode.GroupTypes);
+                Assert.Equal(typeof(NamedGroupWithNestedUnnamedGroupWithCommands), groupType);
 
                 Assert.Equal(3, groupNode.Children.Count);
                 Assert.IsType<CommandNode>(groupNode.Children[0]);
@@ -314,6 +329,9 @@ namespace Remora.Commands.Tests.Trees
 
                 Assert.Equal("a", groupNode.Key);
 
+                var groupType = Assert.Single(groupNode.GroupTypes);
+                Assert.Equal(typeof(UnnamedGroupWithNestedNamedGroupWithCommands.Nested), groupType);
+
                 Assert.Equal(3, groupNode.Children.Count);
                 Assert.IsType<CommandNode>(groupNode.Children[0]);
                 Assert.IsType<CommandNode>(groupNode.Children[1]);
@@ -377,6 +395,10 @@ namespace Remora.Commands.Tests.Trees
 
                 var group = (GroupNode)firstChild;
                 Assert.Equal("test", group.Key);
+
+                var groupType = Assert.Single(group.GroupTypes);
+                Assert.Equal(typeof(AliasedGroupWithAliasedCommand), groupType);
+
                 Assert.Collection(group.Aliases, a => Assert.Equal("t", a));
 
                 Assert.Single(group.Children);
@@ -408,6 +430,10 @@ namespace Remora.Commands.Tests.Trees
 
                 var group = (GroupNode)firstChild;
                 Assert.Equal("test", group.Key);
+
+                var groupType = Assert.Single(group.GroupTypes);
+                Assert.Equal(typeof(GroupWithAliasedCommand), groupType);
+
                 Assert.Empty(group.Aliases);
 
                 Assert.Single(group.Children);
@@ -439,6 +465,10 @@ namespace Remora.Commands.Tests.Trees
 
                 var group = (GroupNode)firstChild;
                 Assert.Equal("test", group.Key);
+
+                var groupType = Assert.Single(group.GroupTypes);
+                Assert.Equal(typeof(AliasedGroupWithCommand), groupType);
+
                 Assert.Collection(group.Aliases, a => Assert.Equal("t", a));
 
                 Assert.Single(group.Children);

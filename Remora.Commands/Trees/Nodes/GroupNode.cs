@@ -35,6 +35,11 @@ namespace Remora.Commands.Trees.Nodes
     [PublicAPI]
     public class GroupNode : IParentNode, IChildNode
     {
+        /// <summary>
+        /// Gets a list of the <see cref="Groups.CommandGroup"/> types that make up this group.
+        /// </summary>
+        public IReadOnlyList<Type> GroupTypes { get; }
+
         /// <inheritdoc/>
         public IReadOnlyList<IChildNode> Children { get; }
 
@@ -58,6 +63,7 @@ namespace Remora.Commands.Trees.Nodes
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupNode"/> class.
         /// </summary>
+        /// <param name="groupTypes">The <see cref="Groups.CommandGroup"/> types that make up this group.</param>
         /// <param name="children">The child nodes of the group node.</param>
         /// <param name="parent">The parent of the group node.</param>
         /// <param name="key">The key value for the group node.</param>
@@ -65,6 +71,7 @@ namespace Remora.Commands.Trees.Nodes
         /// <param name="description">The description of the group.</param>
         public GroupNode
         (
+            IReadOnlyList<Type> groupTypes,
             IReadOnlyList<IChildNode> children,
             IParentNode parent,
             string key,
@@ -72,6 +79,7 @@ namespace Remora.Commands.Trees.Nodes
             string description = "No description set."
         )
         {
+            this.GroupTypes = groupTypes;
             this.Children = children;
             this.Parent = parent;
             this.Key = key;
