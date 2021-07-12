@@ -49,6 +49,9 @@
       <Compile Update="Trees\CommandTreeBuilderTests.Descriptions.cs">
         <DependentUpon>CommandTreeBuilderTests.cs</DependentUpon>
       </Compile>
+      <Compile Update="Trees\CommandTreeBuilderTests.MultiGroup.cs">
+        <DependentUpon>CommandTreeBuilderTests.cs</DependentUpon>
+      </Compile>
       <Compile Update="Services\CommandServiceTests.Raw.Advanced.cs">
         <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
       </Compile>
