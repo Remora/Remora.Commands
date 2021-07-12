@@ -1,23 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remora.Commands", "Remora.Commands\Remora.Commands.csproj", "{482F4A1D-AF0F-49BD-B248-BAAB6CAD598E}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remora.Commands", "Remora.Commands\Remora.Commands.csproj", "{482F4A1D-AF0F-49BD-B248-BAAB6CAD598E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remora.Commands.Tests", "Tests\Remora.Commands.Tests\Remora.Commands.Tests.csproj", "{17F0B333-D282-4A72-8AF0-F9042674A4B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remora.Commands.Tests", "Tests\Remora.Commands.Tests\Remora.Commands.Tests.csproj", "{17F0B333-D282-4A72-8AF0-F9042674A4B3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{69F39D4E-EA11-4291-AAE6-AD1E40A97EAD}"
-ProjectSection(SolutionItems) = preProject
-	Tests\Directory.Build.props = Tests\Directory.Build.props
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		Tests\Directory.Build.props = Tests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "meta", "meta", "{5724BC99-30EE-44A4-A69F-EE95DF06B6AE}"
-ProjectSection(SolutionItems) = preProject
-	LICENSE = LICENSE
-	stylecop.json = stylecop.json
-	stylecop.ruleset = stylecop.ruleset
-	Directory.Build.props = Directory.Build.props
-	README.md = README.md
-	.travis.yml = .travis.yml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.travis.yml = .travis.yml
+		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		README.md = README.md
+		stylecop.json = stylecop.json
+		stylecop.ruleset = stylecop.ruleset
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,7 +38,13 @@ Global
 		{17F0B333-D282-4A72-8AF0-F9042674A4B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17F0B333-D282-4A72-8AF0-F9042674A4B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{17F0B333-D282-4A72-8AF0-F9042674A4B3} = {69F39D4E-EA11-4291-AAE6-AD1E40A97EAD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6BB17936-D5C2-4868-8E89-BCFD3BECFAB0}
 	EndGlobalSection
 EndGlobal

@@ -192,6 +192,9 @@ FakesAssemblies/
 *.resources
 test-results/
 
+# Visual Studio
+.vs/
+
 # Visual Studio Code
 .settings/
 
