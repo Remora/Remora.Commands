@@ -122,7 +122,7 @@ namespace Remora.Commands.Trees
 
                     description ??= "No description set.";
 
-                    var groupNode = new GroupNode(groupChildren, parent, group.Key, groupAliases, description);
+                    var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, description);
 
                     foreach (var groupType in group)
                     {

@@ -54,6 +54,10 @@ namespace Remora.Commands.Tests.Trees
 
                 Assert.Equal("a", groupNode.Key);
 
+                Assert.Equal(2, groupNode.GroupTypes.Count);
+                Assert.Equal(typeof(NamedGroupWithCommands), groupNode.GroupTypes[0]);
+                Assert.Equal(typeof(NamedGroupWithAdditionalCommands), groupNode.GroupTypes[1]);
+
                 Assert.Equal(6, groupNode.Children.Count);
                 var command1 = Assert.IsType<CommandNode>(groupNode.Children[0]);
                 var command2 = Assert.IsType<CommandNode>(groupNode.Children[1]);
