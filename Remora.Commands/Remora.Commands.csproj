@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>4.0.0</Version>
+        <Version>4.1.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Short names that start with digits should be treated as values (for negative numbers, etc).
+            Enhanced GroupNode to allow reflection upon the CommandGroup types that make up that node.
         </PackageReleaseNotes>
     </PropertyGroup>
 
