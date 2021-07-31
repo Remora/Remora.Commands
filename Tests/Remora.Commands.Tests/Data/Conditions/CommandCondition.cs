@@ -1,5 +1,5 @@
 //
-//  MethodConditionAttribute.cs
+//  CommandCondition.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,29 +20,27 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Remora.Commands.Conditions;
+using Remora.Commands.Tests.Data.Attributes;
+using Remora.Results;
 
-namespace Remora.Commands.Tests.Data.Attributes
+namespace Remora.Commands.Tests.Data.Conditions
 {
-    /// <summary>
-    /// Represents simple condition data attached to a method.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
-    public class MethodConditionAttribute : ConditionAttribute
+    /// <inheritdoc />
+    public class CommandCondition : ICondition<CommandConditionAttribute>
     {
-        /// <summary>
-        /// Gets the data of the attribute.
-        /// </summary>
-        public string Data { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MethodConditionAttribute"/> class.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        public MethodConditionAttribute(string data)
+        /// <inheritdoc />
+        public ValueTask<Result> CheckAsync
+        (
+            CommandConditionAttribute attribute,
+            CancellationToken ct = default
+        )
         {
-            this.Data = data;
+            return attribute.Data == "booga"
+                ? new ValueTask<Result>(Result.FromSuccess())
+                : new ValueTask<Result>(new GenericError("No match :("));
         }
     }
 }

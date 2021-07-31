@@ -37,6 +37,7 @@ using Remora.Commands.Parsers;
 using Remora.Commands.Results;
 using Remora.Commands.Signatures;
 using Remora.Commands.Trees;
+using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
 namespace Remora.Commands.Services
@@ -184,11 +185,14 @@ namespace Remora.Commands.Services
         {
             // Check group-level conditions, if any
             var groupTypeWithConditions = boundCommandNode.Node.GroupType;
+            var groupNode = boundCommandNode.Node.Parent as GroupNode;
+
             while (true)
             {
                 var groupConditionsResult = await CheckConditionsAsync
                 (
                     services,
+                    groupNode,
                     groupTypeWithConditions,
                     additionalParameters,
                     ct
@@ -205,11 +209,23 @@ namespace Remora.Commands.Services
                 }
 
                 groupTypeWithConditions = groupTypeWithConditions.DeclaringType;
+                if (groupNode is not null && !groupNode.GroupTypes.Contains(groupTypeWithConditions))
+                {
+                    groupNode = groupNode.Parent as GroupNode;
+                }
             }
 
             // Check method-level conditions, if any
             var method = boundCommandNode.Node.CommandMethod;
-            var methodConditionsResult = await CheckConditionsAsync(services, method, additionalParameters, ct);
+            var methodConditionsResult = await CheckConditionsAsync
+            (
+                services,
+                boundCommandNode.Node,
+                method,
+                additionalParameters,
+                ct
+            );
+
             if (!methodConditionsResult.IsSuccess)
             {
                 return Result<(BoundCommandNode, object?[])>.FromError(methodConditionsResult);
@@ -237,6 +253,7 @@ namespace Remora.Commands.Services
                 var parameterConditionResult = await CheckConditionsAsync
                 (
                     services,
+                    boundCommandNode.Node,
                     parameter,
                     value,
                     additionalParameters,
@@ -325,6 +342,7 @@ namespace Remora.Commands.Services
         /// the command will not execute.
         /// </summary>
         /// <param name="services">The available services.</param>
+        /// <param name="node">The node whose conditions are being checked.</param>
         /// <param name="attributeProvider">The group.</param>
         /// <param name="additionalParameters">
         /// Any additional parameters that should be available during instantiation of the command group.
@@ -334,6 +352,7 @@ namespace Remora.Commands.Services
         private async Task<Result> CheckConditionsAsync
         (
             IServiceProvider services,
+            IChildNode? node,
             ICustomAttributeProvider attributeProvider,
             object[] additionalParameters,
             CancellationToken ct
@@ -382,7 +401,15 @@ namespace Remora.Commands.Services
 
                     if (!result.IsSuccess)
                     {
-                        return result;
+                        return Result.FromError
+                        (
+                            new ConditionNotSatisfiedError
+                            (
+                                $"The condition \"{condition.GetType().Name}\" was not satisfied.",
+                                node
+                            ),
+                            result
+                        );
                     }
                 }
             }
@@ -407,6 +434,7 @@ namespace Remora.Commands.Services
         /// not execute.
         /// </summary>
         /// <param name="services">The available services.</param>
+        /// <param name="node">The node whose conditions are being checked.</param>
         /// <param name="parameter">The parameter.</param>
         /// <param name="value">The materialized value of the parameter.</param>
         /// <param name="additionalParameters">
@@ -417,6 +445,7 @@ namespace Remora.Commands.Services
         private async Task<Result> CheckConditionsAsync
         (
             IServiceProvider services,
+            IChildNode node,
             ParameterInfo parameter,
             object? value,
             object[] additionalParameters,
@@ -470,7 +499,15 @@ namespace Remora.Commands.Services
 
                     if (!result.IsSuccess)
                     {
-                        return result;
+                        return Result.FromError
+                        (
+                            new ConditionNotSatisfiedError
+                            (
+                                $"The condition \"{condition.GetType().Name}\" was not satisfied.",
+                                node
+                            ),
+                            result
+                        );
                     }
                 }
             }
