@@ -6,11 +6,12 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>4.1.1</Version>
+        <Version>4.2.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Enhanced GroupNode to allow reflection upon the CommandGroup types that make up that node.
-            Update dependencies.
+            Improve error reporting from failed conditions.
+            Add a distinct error for conditions.
+            Update nuget packages.
         </PackageReleaseNotes>
     </PropertyGroup>
 
