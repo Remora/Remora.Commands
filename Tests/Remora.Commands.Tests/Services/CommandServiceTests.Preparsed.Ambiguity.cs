@@ -63,7 +63,7 @@ namespace Remora.Commands.Tests.Services
                     var executionResult = await commandService.TryExecuteAsync("test command", values, services);
 
                     Assert.False(executionResult.IsSuccess);
-                    Assert.IsType<AmbiguousCommandInvocationError>(executionResult.Unwrap());
+                    Assert.IsType<AmbiguousCommandInvocationError>(executionResult.Error);
                 }
             }
         }
