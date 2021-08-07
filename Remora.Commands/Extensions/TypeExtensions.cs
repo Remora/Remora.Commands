@@ -140,13 +140,7 @@ namespace Remora.Commands.Extensions
             }
 
             var innerType = type.GetGenericArguments().Single();
-            if (!typeof(IResult).IsAssignableFrom(innerType))
-            {
-                // The inner type must be an implementation of IResult
-                return false;
-            }
-
-            return true;
+            return typeof(IResult).IsAssignableFrom(innerType);
         }
     }
 }

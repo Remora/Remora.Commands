@@ -113,10 +113,10 @@ namespace Remora.Commands.Tokenization
                     return true;
                 }
 
-                var segment = span.Slice(0, index);
+                var segment = span[..index];
 
                 var continuationIndex = Math.Clamp(index + _delimiter.Length, 0, span.Length);
-                var remainder = span.Slice(continuationIndex);
+                var remainder = span[continuationIndex..];
 
                 if (AdjustForQuotedValues(span, continuationIndex, ref segment, ref remainder))
                 {
@@ -157,7 +157,7 @@ namespace Remora.Commands.Tokenization
                 foundStartQuote = true;
 
                 // First, look for a closing quote in the segment
-                var closingIndex = segment.Slice(startIndex + 1).IndexOf(end);
+                var closingIndex = segment[(startIndex + 1)..].IndexOf(end);
                 if (closingIndex >= 0)
                 {
                     closingIndex += startIndex;
@@ -165,8 +165,8 @@ namespace Remora.Commands.Tokenization
 
                 if (closingIndex >= 0)
                 {
-                    segment = span.Slice(0, closingIndex + 2);
-                    remainder = span.Slice(closingIndex + 2);
+                    segment = span[..(closingIndex + 2)];
+                    remainder = span[(closingIndex + 2)..];
 
                     foundEndQuote = true;
                     break;
@@ -179,8 +179,8 @@ namespace Remora.Commands.Tokenization
                     continue;
                 }
 
-                segment = span.Slice(0, continuationIndex + closingIndex + 1);
-                remainder = span.Slice(continuationIndex + closingIndex + 1);
+                segment = span[..(continuationIndex + closingIndex + 1)];
+                remainder = span[(continuationIndex + closingIndex + 1)..];
 
                 foundEndQuote = true;
                 break;

@@ -40,7 +40,7 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("b")]
         public ValueTask<IResult> B()
         {
-            return new(Result.FromSuccess());
+            return new ValueTask<IResult>(Result.FromSuccess());
         }
 
         [Command("c")]
@@ -52,7 +52,7 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("d")]
         public ValueTask<Result> D()
         {
-            return new(Result.FromSuccess());
+            return new ValueTask<Result>(Result.FromSuccess());
         }
 
         [Command("e")]
@@ -64,7 +64,7 @@ namespace Remora.Commands.Tests.Data.Modules
         [Command("f")]
         public ValueTask<Result<string>> F()
         {
-            return new("success");
+            return new ValueTask<Result<string>>("success");
         }
     }
 }

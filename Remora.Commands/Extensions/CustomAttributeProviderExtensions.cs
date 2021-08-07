@@ -68,12 +68,9 @@ namespace Remora.Commands.Extensions
                 return defaultDescription;
             }
 
-            if (string.IsNullOrWhiteSpace(descriptionAttribute.Description))
-            {
-                return defaultDescription;
-            }
-
-            return descriptionAttribute.Description;
+            return string.IsNullOrWhiteSpace(descriptionAttribute.Description)
+                ? defaultDescription
+                : descriptionAttribute.Description;
         }
     }
 }

@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
 using Remora.Commands.Signatures;
 using Remora.Results;
 
@@ -28,6 +29,7 @@ namespace Remora.Commands.Results
     /// <summary>
     /// Represents a failure to parse a bound parameter.
     /// </summary>
+    [PublicAPI]
     public record ParameterParsingError : ResultError
     {
         /// <summary>

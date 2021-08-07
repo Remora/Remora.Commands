@@ -121,7 +121,7 @@ namespace Remora.Commands.Signatures
                 ++itemCount;
             }
 
-            if (!(this.Min is null))
+            if (this.Min is not null)
             {
                 if (itemCount < this.Min.Value)
                 {
@@ -182,12 +182,7 @@ namespace Remora.Commands.Signatures
                 return true;
             }
 
-            if (this.Min is null or 0)
-            {
-                return true;
-            }
-
-            return false;
+            return this.Min is null or 0;
         }
     }
 }

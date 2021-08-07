@@ -189,7 +189,7 @@ namespace Remora.Commands.Signatures
                 throw new InvalidOperationException
                 (
                     $"{parameter.Member.Name}::{parameter.Name} incorrectly declared: " +
-                    $"switches must have a default value."
+                    "switches must have a default value."
                 );
             }
 
@@ -198,7 +198,7 @@ namespace Remora.Commands.Signatures
                 throw new InvalidOperationException
                 (
                     $"{parameter.Member.Name}::{parameter.Name} incorrectly declared: " +
-                    $"switches must be booleans."
+                    "switches must be booleans."
                 );
             }
 

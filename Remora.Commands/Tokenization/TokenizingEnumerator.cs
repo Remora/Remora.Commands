@@ -87,7 +87,7 @@ namespace Remora.Commands.Tokenization
             if (span.StartsWith("--"))
             {
                 type = TokenType.LongName;
-                span = span.Slice(2);
+                span = span[2..];
             }
             else if (span.StartsWith("-"))
             {
@@ -95,12 +95,12 @@ namespace Remora.Commands.Tokenization
                 if (span.Length <= 1 || !char.IsDigit(span[1]))
                 {
                     type = TokenType.ShortName;
-                    span = span.Slice(1);
+                    span = span[1..];
                 }
             }
             else if (span.StartsWith("="))
             {
-                span = span.Slice(1);
+                span = span[1..];
             }
             else if (_isInCombinedShortNameSegment)
             {
@@ -114,8 +114,8 @@ namespace Remora.Commands.Tokenization
                     // A combined short-name option, it looks like. We'll return here.
                     _isInCombinedShortNameSegment = true;
 
-                    _current = new Token(type, span.Slice(0, 1));
-                    _segment = span.Slice(1);
+                    _current = new Token(type, span[..1]);
+                    _segment = span[1..];
 
                     return true;
                 }
@@ -123,8 +123,8 @@ namespace Remora.Commands.Tokenization
                 var assignmentIndex = span.IndexOf('=');
                 if (assignmentIndex > 0)
                 {
-                    remainder = span.Slice(assignmentIndex);
-                    span = span.Slice(0, assignmentIndex);
+                    remainder = span[assignmentIndex..];
+                    span = span[..assignmentIndex];
                 }
             }
 

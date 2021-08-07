@@ -172,7 +172,7 @@ namespace Remora.Commands.Tests.Services
 
                     var values = new Dictionary<string, IReadOnlyList<string>>
                     {
-                        { "values", new[] { "ra" } },
+                        { "values", new[] { "ra" } }
                     };
 
                     var executionResult = await commandService.TryExecuteAsync
@@ -221,7 +221,7 @@ namespace Remora.Commands.Tests.Services
 
                     values = new Dictionary<string, IReadOnlyList<string>>
                     {
-                        { "values", new[] { "ra", "ra", "rasputin" } },
+                        { "values", new[] { "ra", "ra", "rasputin" } }
                     };
 
                     executionResult = await commandService.TryExecuteAsync
@@ -250,7 +250,7 @@ namespace Remora.Commands.Tests.Services
 
                     var values = new Dictionary<string, IReadOnlyList<string>>
                     {
-                        { "values", new[] { "ra" } },
+                        { "values", new[] { "ra" } }
                     };
 
                     var executionResult = await commandService.TryExecuteAsync
@@ -274,7 +274,7 @@ namespace Remora.Commands.Tests.Services
 
                     values = new Dictionary<string, IReadOnlyList<string>>
                     {
-                        { "values", new[] { "ra", "ra", "rasputin" } },
+                        { "values", new[] { "ra", "ra", "rasputin" } }
                     };
 
                     executionResult = await commandService.TryExecuteAsync
