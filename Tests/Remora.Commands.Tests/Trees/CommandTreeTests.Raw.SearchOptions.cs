@@ -57,7 +57,7 @@ namespace Remora.Commands.Tests.Trees
                         var result = tree.Search
                         (
                             "test somecommand",
-                            options
+                            searchOptions: options
                         );
 
                         Assert.NotEmpty(result);

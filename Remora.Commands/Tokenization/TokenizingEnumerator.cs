@@ -31,6 +31,7 @@ namespace Remora.Commands.Tokenization
     [PublicAPI]
     public ref struct TokenizingEnumerator
     {
+        private readonly TokenizerOptions _tokenizerOptions;
         private bool _isInCombinedShortNameSegment;
         private ReadOnlySpan<char> _segment;
         private SpanSplitEnumerator _splitEnumerator;
@@ -45,11 +46,14 @@ namespace Remora.Commands.Tokenization
         /// Initializes a new instance of the <see cref="TokenizingEnumerator"/> struct.
         /// </summary>
         /// <param name="value">The value to tokenize.</param>
-        public TokenizingEnumerator(ReadOnlySpan<char> value)
+        /// <param name="tokenizerOptions">The tokenizer options.</param>
+        public TokenizingEnumerator(ReadOnlySpan<char> value, TokenizerOptions? tokenizerOptions = null)
         {
+            _tokenizerOptions = tokenizerOptions ?? new TokenizerOptions();
+
             _isInCombinedShortNameSegment = default;
             _segment = default;
-            _splitEnumerator = new SpanSplitEnumerator(value, " ");
+            _splitEnumerator = new SpanSplitEnumerator(value, _tokenizerOptions);
             _current = default;
         }
 
@@ -125,7 +129,7 @@ namespace Remora.Commands.Tokenization
             }
 
             // Remove quotes, if any
-            if (!span.IsEmpty)
+            if (!span.IsEmpty && !_tokenizerOptions.RetainQuotationMarks)
             {
                 foreach ((string start, string end) in Quotations.Pairs)
                 {

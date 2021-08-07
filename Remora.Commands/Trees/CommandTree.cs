@@ -52,17 +52,20 @@ namespace Remora.Commands.Trees
         /// Searches the command tree for a command that matches the shape of the given command string.
         /// </summary>
         /// <param name="commandString">The raw command string.</param>
+        /// <param name="tokenizerOptions">The tokenizer options to use.</param>
         /// <param name="searchOptions">A set of search options.</param>
         /// <returns>A search result which may or may not have succeeded.</returns>
         public IEnumerable<BoundCommandNode> Search
         (
             ReadOnlySpan<char> commandString,
+            TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null
         )
         {
+            tokenizerOptions ??= new TokenizerOptions();
             searchOptions ??= new TreeSearchOptions();
 
-            var tokenizer = new TokenizingEnumerator(commandString);
+            var tokenizer = new TokenizingEnumerator(commandString, tokenizerOptions);
             return Search(this.Root, tokenizer, searchOptions);
         }
 
@@ -73,18 +76,21 @@ namespace Remora.Commands.Trees
         /// </summary>
         /// <param name="commandNameString">The named command string.</param>
         /// <param name="namedParameters">The named parameters.</param>
+        /// <param name="tokenizerOptions">The tokenizer options to use.</param>
         /// <param name="searchOptions">A set of search options.</param>
         /// <returns>The matching command nodes.</returns>
         public IEnumerable<BoundCommandNode> Search
         (
             ReadOnlySpan<char> commandNameString,
             IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
+            TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null
         )
         {
+            tokenizerOptions ??= new TokenizerOptions();
             searchOptions ??= new TreeSearchOptions();
 
-            var splitEnumerator = new SpanSplitEnumerator(commandNameString, " ");
+            var splitEnumerator = new SpanSplitEnumerator(commandNameString, tokenizerOptions);
 
             var matchingNodes = Search(this.Root, splitEnumerator, searchOptions);
             var boundNodes = matchingNodes

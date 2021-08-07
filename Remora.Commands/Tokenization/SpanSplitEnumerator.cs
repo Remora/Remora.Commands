@@ -52,13 +52,15 @@ namespace Remora.Commands.Tokenization
         /// Initializes a new instance of the <see cref="SpanSplitEnumerator"/> struct.
         /// </summary>
         /// <param name="value">The value to split.</param>
-        /// <param name="delimiter">The delimiter to split on.</param>
-        /// <param name="ignoreEmpty">Whether empty results should be discarded.</param>
-        public SpanSplitEnumerator(ReadOnlySpan<char> value, ReadOnlySpan<char> delimiter, bool ignoreEmpty = true)
+        /// <param name="tokenizerOptions">The tokenizer options.</param>
+        public SpanSplitEnumerator(ReadOnlySpan<char> value, TokenizerOptions? tokenizerOptions = null)
         {
+            tokenizerOptions ??= new TokenizerOptions();
+            var (delimiter, ignoreEmptyValues, _) = tokenizerOptions;
+
             _value = value;
-            _delimiter = delimiter;
-            _ignoreEmpty = ignoreEmpty;
+            _delimiter = delimiter.AsSpan();
+            _ignoreEmpty = ignoreEmptyValues;
 
             _current = default;
         }

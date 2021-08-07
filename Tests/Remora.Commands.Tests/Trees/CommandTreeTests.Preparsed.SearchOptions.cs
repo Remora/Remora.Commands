@@ -59,7 +59,7 @@ namespace Remora.Commands.Tests.Trees
                         (
                             "test somecommand",
                             new Dictionary<string, IReadOnlyList<string>>(),
-                            options
+                            searchOptions: options
                         );
 
                         Assert.NotEmpty(result);

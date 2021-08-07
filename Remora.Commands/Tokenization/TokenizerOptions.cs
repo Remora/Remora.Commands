@@ -1,5 +1,5 @@
 //
-//  TreeSearchOptions.cs
+//  TokenizerOptions.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,18 +20,21 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
+using JetBrains.Annotations;
 
-#pragma warning disable CS1591
-
-namespace Remora.Commands.Trees
+namespace Remora.Commands.Tokenization
 {
     /// <summary>
-    /// Represents a set of options to use while searching the tree.
+    /// Holds various options for the tokenizer.
     /// </summary>
-    public record TreeSearchOptions
+    /// <param name="Delimiter">The string that delimits names and values.</param>
+    /// <param name="IgnoreEmptyValues">Whether empty values should be discarded.</param>
+    /// <param name="RetainQuotationMarks">Whether quotation marks should be retained in tokenized values.</param>
+    [PublicAPI]
+    public record TokenizerOptions
     (
-        StringComparison KeyComparison = StringComparison.Ordinal,
+        string Delimiter = " ",
+        bool IgnoreEmptyValues = true,
         bool RetainQuotationMarks = false
     );
 }

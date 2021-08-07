@@ -36,6 +36,7 @@ using Remora.Commands.Groups;
 using Remora.Commands.Parsers;
 using Remora.Commands.Results;
 using Remora.Commands.Signatures;
+using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
@@ -82,6 +83,7 @@ namespace Remora.Commands.Services
         /// <param name="additionalParameters">
         /// Any additional parameters that should be available during instantiation of the command group.
         /// </param>
+        /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
@@ -90,13 +92,14 @@ namespace Remora.Commands.Services
             string commandString,
             IServiceProvider services,
             object[]? additionalParameters = null,
+            TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
             CancellationToken ct = default
         )
         {
             additionalParameters ??= Array.Empty<object>();
 
-            var searchResults = this.Tree.Search(commandString, searchOptions).ToList();
+            var searchResults = this.Tree.Search(commandString, tokenizerOptions, searchOptions).ToList();
             if (searchResults.Count == 0)
             {
                 return new CommandNotFoundError(commandString);
@@ -117,6 +120,7 @@ namespace Remora.Commands.Services
         /// <param name="additionalParameters">
         /// Any additional parameters that should be available during instantiation of the command group.
         /// </param>
+        /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
@@ -126,13 +130,21 @@ namespace Remora.Commands.Services
             IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
             IServiceProvider services,
             object[]? additionalParameters = null,
+            TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
             CancellationToken ct = default
         )
         {
             additionalParameters ??= Array.Empty<object>();
 
-            var searchResults = this.Tree.Search(commandNameString, namedParameters, searchOptions).ToList();
+            var searchResults = this.Tree.Search
+            (
+                commandNameString,
+                namedParameters,
+                tokenizerOptions,
+                searchOptions
+            ).ToList();
+
             if (searchResults.Count == 0)
             {
                 return new CommandNotFoundError(commandNameString);

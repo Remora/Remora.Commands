@@ -38,7 +38,7 @@ namespace Remora.Commands.Tests.Tokenization
         public void SplitsEmptyStringsIntoNothing()
         {
             var value = string.Empty;
-            var enumerator = new SpanSplitEnumerator(value, " ");
+            var enumerator = new SpanSplitEnumerator(value);
 
             Assert.False(enumerator.MoveNext());
         }
@@ -50,7 +50,7 @@ namespace Remora.Commands.Tests.Tokenization
         public void SplitsSingleWordIntoSingleSegment()
         {
             var value = "bunt";
-            var enumerator = new SpanSplitEnumerator(value, " ");
+            var enumerator = new SpanSplitEnumerator(value);
 
             Assert.True(enumerator.MoveNext());
             Assert.Equal(value, enumerator.Current.ToString());
@@ -64,7 +64,7 @@ namespace Remora.Commands.Tests.Tokenization
         public void SplitsMultipleWordsIntoMultipleSegments()
         {
             var value = "a b c d e f g";
-            var enumerator = new SpanSplitEnumerator(value, " ");
+            var enumerator = new SpanSplitEnumerator(value);
 
             for (var i = 0; i < 7; i++)
             {
@@ -82,7 +82,7 @@ namespace Remora.Commands.Tests.Tokenization
         public void SplitsSingleQuotedTermIntoSingleSegment()
         {
             var value = "\"one term\"";
-            var enumerator = new SpanSplitEnumerator(value, " ");
+            var enumerator = new SpanSplitEnumerator(value);
 
             Assert.True(enumerator.MoveNext());
             Assert.Equal(value, enumerator.Current.ToString());
@@ -124,7 +124,7 @@ namespace Remora.Commands.Tests.Tokenization
         public void SplitsStringIntoCorrectElements(string value, IEnumerable<string> expectedElements)
         {
             var actualElements = new List<string>();
-            foreach (var segment in new SpanSplitEnumerator(value, " "))
+            foreach (var segment in new SpanSplitEnumerator(value))
             {
                 actualElements.Add(segment.ToString());
             }
