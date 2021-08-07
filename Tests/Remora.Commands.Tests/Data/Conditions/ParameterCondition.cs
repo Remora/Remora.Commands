@@ -41,7 +41,7 @@ namespace Remora.Commands.Tests.Data.Conditions
         {
             return attribute.Data == value
                 ? new ValueTask<Result>(Result.FromSuccess())
-                : new ValueTask<Result>(new GenericError("No match :("));
+                : new ValueTask<Result>(new InvalidOperationError("No match :("));
         }
     }
 }
