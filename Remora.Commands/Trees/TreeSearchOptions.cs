@@ -31,7 +31,6 @@ namespace Remora.Commands.Trees
     /// </summary>
     public record TreeSearchOptions
     (
-        StringComparison KeyComparison = StringComparison.Ordinal,
-        bool RetainQuotationMarks = false
+        StringComparison KeyComparison = StringComparison.Ordinal
     );
 }
