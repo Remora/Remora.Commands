@@ -29,7 +29,7 @@ using Xunit;
 
 namespace Remora.Commands.Tests.Trees
 {
-    public partial class CommandTreeBuilderTests
+    public static partial class CommandTreeBuilderTests
     {
         /// <summary>
         /// Tests basic requirements.

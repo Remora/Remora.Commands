@@ -32,9 +32,9 @@ using Xunit;
 
 namespace Remora.Commands.Tests.Services
 {
-    public partial class CommandServiceTests
+    public static partial class CommandServiceTests
     {
-        public partial class Preparsed
+        public static partial class Preparsed
         {
             /// <summary>
             /// Tests commands that use builtin type conversions.

@@ -22,12 +22,12 @@
 
 namespace Remora.Commands.Tests.Trees
 {
-    public partial class CommandTreeTests
+    public static partial class CommandTreeTests
     {
         /// <summary>
         /// Tests functionality of preparsed operations.
         /// </summary>
-        public partial class Preparsed
+        public static partial class Preparsed
         {
         }
     }

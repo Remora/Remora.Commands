@@ -28,9 +28,9 @@ using Xunit;
 
 namespace Remora.Commands.Tests.Trees
 {
-    public partial class CommandTreeTests
+    public static partial class CommandTreeTests
     {
-        public partial class Preparsed
+        public static partial class Preparsed
         {
             /// <summary>
             /// Tests various search options.

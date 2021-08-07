@@ -22,12 +22,12 @@
 
 namespace Remora.Commands.Tests.Trees
 {
-    public partial class CommandTreeTests
+    public static partial class CommandTreeTests
     {
         /// <summary>
         /// Tests functionality of raw parsing-based operations.
         /// </summary>
-        public partial class Raw
+        public static partial class Raw
         {
         }
     }

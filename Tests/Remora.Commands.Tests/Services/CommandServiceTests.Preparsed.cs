@@ -22,12 +22,12 @@
 
 namespace Remora.Commands.Tests.Services
 {
-    public partial class CommandServiceTests
+    public static partial class CommandServiceTests
     {
         /// <summary>
         /// Tests functionality of preparsed operations.
         /// </summary>
-        public partial class Preparsed
+        public static partial class Preparsed
         {
         }
     }

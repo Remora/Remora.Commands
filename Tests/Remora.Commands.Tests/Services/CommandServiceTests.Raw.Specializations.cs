@@ -29,9 +29,9 @@ using Xunit;
 
 namespace Remora.Commands.Tests.Services
 {
-    public partial class CommandServiceTests
+    public static partial class CommandServiceTests
     {
-        public partial class Raw
+        public static partial class Raw
         {
             /// <summary>
             /// Tests specialized behaviour.
