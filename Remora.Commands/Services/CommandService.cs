@@ -183,7 +183,7 @@ namespace Remora.Commands.Services
             }
 
             // At this point, a single candidate remains, so we execute it
-            var (node, parameters) = preparedCommands.Single(r => r.IsSuccess).Entity!;
+            var (node, parameters) = preparedCommands.Single(r => r.IsSuccess).Entity;
             return await TryExecuteAsync(node, services, additionalParameters, parameters, ct);
         }
 
