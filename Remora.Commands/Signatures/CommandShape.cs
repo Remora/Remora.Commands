@@ -52,10 +52,10 @@ namespace Remora.Commands.Signatures
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <param name="description">The description of the command.</param>
-        public CommandShape(IReadOnlyList<IParameterShape> parameters, string description = "No description set.")
+        public CommandShape(IReadOnlyList<IParameterShape> parameters, string? description = null)
         {
             this.Parameters = parameters;
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
 
         /// <summary>

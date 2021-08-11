@@ -51,10 +51,10 @@ namespace Remora.Commands.Signatures
         /// </summary>
         /// <param name="parameter">The underlying parameter.</param>
         /// <param name="description">The description of the parameter.</param>
-        public PositionalParameterShape(ParameterInfo parameter, string description = "No description set.")
+        public PositionalParameterShape(ParameterInfo parameter, string? description = null)
         {
             this.Parameter = parameter;
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
 
         /// <inheritdoc />

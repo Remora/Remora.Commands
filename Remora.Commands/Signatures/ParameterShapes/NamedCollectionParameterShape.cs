@@ -85,7 +85,7 @@ namespace Remora.Commands.Signatures
             string longName,
             ulong? min,
             ulong? max,
-            string description = "No description set."
+            string? description = null
         )
             : base(parameter, shortName, longName, description)
         {
@@ -112,7 +112,7 @@ namespace Remora.Commands.Signatures
             char shortName,
             ulong? min,
             ulong? max,
-            string description = "No description set."
+            string? description = null
         )
             : base(parameter, shortName, description)
         {
@@ -139,7 +139,7 @@ namespace Remora.Commands.Signatures
             string longName,
             ulong? min,
             ulong? max,
-            string description = "No description set."
+            string? description = null
         )
             : base(parameter, longName, description)
         {

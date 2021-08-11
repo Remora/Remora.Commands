@@ -82,7 +82,7 @@ namespace Remora.Commands.Signatures
             ParameterInfo parameter,
             ulong? min,
             ulong? max,
-            string description = "No description set."
+            string? description = null
         )
             : base(parameter, description)
         {

@@ -120,7 +120,7 @@ namespace Remora.Commands.Trees
                         .Distinct()
                         .FirstOrDefault(d => d != "MARKER");
 
-                    description ??= "No description set.";
+                    description ??= Constants.DefaultDescription;
 
                     var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, description);
 

@@ -85,13 +85,13 @@ namespace Remora.Commands.Signatures
             ParameterInfo parameter,
             char shortName,
             string longName,
-            string description = "No description set."
+            string? description = null
         )
         {
             this.Parameter = parameter;
             this.ShortName = shortName;
             this.LongName = longName;
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
 
         /// <summary>
@@ -100,11 +100,11 @@ namespace Remora.Commands.Signatures
         /// <param name="parameter">The underlying parameter.</param>
         /// <param name="shortName">The short name.</param>
         /// <param name="description">The description of the parameter.</param>
-        public SwitchParameterShape(ParameterInfo parameter, char shortName, string description = "No description set.")
+        public SwitchParameterShape(ParameterInfo parameter, char shortName, string? description = null)
         {
             this.Parameter = parameter;
             this.ShortName = shortName;
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
 
         /// <summary>
@@ -117,12 +117,12 @@ namespace Remora.Commands.Signatures
         (
             ParameterInfo parameter,
             string longName,
-            string description = "No description set."
+            string? description = null
         )
         {
             this.Parameter = parameter;
             this.LongName = longName;
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
 
         /// <inheritdoc/>

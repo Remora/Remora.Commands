@@ -76,7 +76,7 @@ namespace Remora.Commands.Trees.Nodes
             IParentNode parent,
             string key,
             IReadOnlyList<string>? aliases = null,
-            string description = "No description set."
+            string? description = null
         )
         {
             this.GroupTypes = groupTypes;
@@ -84,7 +84,7 @@ namespace Remora.Commands.Trees.Nodes
             this.Parent = parent;
             this.Key = key;
             this.Aliases = aliases ?? Array.Empty<string>();
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
     }
 }

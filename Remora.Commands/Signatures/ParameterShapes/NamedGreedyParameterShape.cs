@@ -85,13 +85,13 @@ namespace Remora.Commands.Signatures
             ParameterInfo parameter,
             char shortName,
             string longName,
-            string description = "No description set."
+            string? description = null
         )
         {
             this.Parameter = parameter;
             this.ShortName = shortName;
             this.LongName = longName;
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
 
         /// <summary>
@@ -104,12 +104,12 @@ namespace Remora.Commands.Signatures
         (
             ParameterInfo parameter,
             string longName,
-            string description = "No description set."
+            string? description = null
         )
         {
             this.Parameter = parameter;
             this.LongName = longName;
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
 
         /// <summary>
@@ -122,12 +122,12 @@ namespace Remora.Commands.Signatures
         (
             ParameterInfo parameter,
             char shortName,
-            string description = "No description set."
+            string? description = null
         )
         {
             this.Parameter = parameter;
             this.ShortName = shortName;
-            this.Description = description;
+            this.Description = description ?? Constants.DefaultDescription;
         }
 
         /// <inheritdoc/>

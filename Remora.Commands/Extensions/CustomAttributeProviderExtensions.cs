@@ -59,17 +59,17 @@ namespace Remora.Commands.Extensions
         public static string GetDescriptionOrDefault
         (
             this ICustomAttributeProvider attributeProvider,
-            string defaultDescription = "No description set."
+            string? defaultDescription = null
         )
         {
             var descriptionAttribute = attributeProvider.GetCustomAttribute<DescriptionAttribute>();
             if (descriptionAttribute is null)
             {
-                return defaultDescription;
+                return defaultDescription ?? Constants.DefaultDescription;
             }
 
             return string.IsNullOrWhiteSpace(descriptionAttribute.Description)
-                ? defaultDescription
+                ? Constants.DefaultDescription
                 : descriptionAttribute.Description;
         }
     }
