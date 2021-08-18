@@ -73,5 +73,11 @@ namespace Remora.Commands.Tests.Data.Modules
         {
             return Task.FromResult<IResult>(Result.FromSuccess());
         }
+
+        [Command("predetermined-command-node")]
+        public Task<IResult> PredeterminedCommandNode()
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
     }
 }
