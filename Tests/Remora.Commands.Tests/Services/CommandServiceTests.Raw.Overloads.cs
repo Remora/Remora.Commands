@@ -59,7 +59,7 @@ namespace Remora.Commands.Tests.Services
                     );
 
                     Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-1", (Result<string>)executionResult.Entity!);
+                    Assert.Equal("overload-1", (Result<string>)executionResult.Entity);
 
                     executionResult = await commandService.TryExecuteAsync
                     (
@@ -68,7 +68,7 @@ namespace Remora.Commands.Tests.Services
                     );
 
                     Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-2", (Result<string>)executionResult.Entity!);
+                    Assert.Equal("overload-2", (Result<string>)executionResult.Entity);
 
                     executionResult = await commandService.TryExecuteAsync
                     (
@@ -77,7 +77,7 @@ namespace Remora.Commands.Tests.Services
                     );
 
                     Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-3", (Result<string>)executionResult.Entity!);
+                    Assert.Equal("overload-3", (Result<string>)executionResult.Entity);
                 }
             }
         }
