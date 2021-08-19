@@ -40,7 +40,7 @@ namespace Remora.Commands.Trees
     [PublicAPI]
     public class CommandTreeBuilder
     {
-        private readonly List<Type> _registeredModuleTypes = new List<Type>();
+        private readonly List<Type> _registeredModuleTypes = new();
 
         /// <summary>
         /// Registers a module type with the builder.
