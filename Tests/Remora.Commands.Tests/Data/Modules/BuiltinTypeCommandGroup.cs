@@ -136,6 +136,12 @@ namespace Remora.Commands.Tests.Data.Modules
             return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
+        [Command("time-span")]
+        public Task<IResult> TimeSpan(TimeSpan value)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
         [Command("enum")]
         public Task<IResult> Enum(TestEnum value)
         {

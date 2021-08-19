@@ -436,6 +436,35 @@ namespace Remora.Commands.Tests.Services
                 }
 
                 /// <summary>
+                /// Tests whether the command service can execute a command with a <see cref="DateTime"/> parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteTimeSpanCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<BuiltinTypeCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var values = new Dictionary<string, IReadOnlyList<string>>
+                    {
+                        { "value", new[] { "0" } }
+                    };
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test time-span",
+                        values,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
                 /// Tests whether the command service can execute a command with a
                 /// <see cref="BuiltinTypeCommandGroup.TestEnum"/> parameter.
                 /// </summary>
