@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -40,7 +41,7 @@ namespace Remora.Commands.Parsers
         {
             return new ValueTask<Result<DateTimeOffset>>
             (
-                !DateTimeOffset.TryParse(value, out var result)
+                !DateTimeOffset.TryParse(value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result)
                 ? new ParsingError<DateTimeOffset>(value)
                 : Result<DateTimeOffset>.FromSuccess(result)
             );
