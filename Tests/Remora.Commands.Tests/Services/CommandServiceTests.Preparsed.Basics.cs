@@ -20,11 +20,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
+using Remora.Commands.Signatures;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 
@@ -238,6 +241,32 @@ namespace Remora.Commands.Tests.Services
                     (
                         "test single-named-with-long-and-short-name",
                         longValues,
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a pre-determined <see cref="BoundCommandNode"/>.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecutePredeterminedCommandNode()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<BasicCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    List<BoundCommandNode> commands = commandService.Tree.Search("test predetermined-command-node").ToList();
+                    BoundCommandNode node = commands.Single();
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        node,
                         services
                     );
 

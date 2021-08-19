@@ -153,6 +153,26 @@ namespace Remora.Commands.Services
             return await TryExecuteAsync(searchResults, services, additionalParameters, ct);
         }
 
+        /// <summary>
+        /// Attempts to execute a command.
+        /// </summary>
+        /// <param name="command">The command to execute.</param>
+        /// <param name="services">The services available to the invocation.</param>
+        /// <param name="additionalParameters">Any additional parameters that should be available during instantiation of the command group.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>An execution result which may or may not have succeeded.</returns>
+        public async Task<Result<IResult>> TryExecuteAsync
+        (
+            BoundCommandNode command,
+            IServiceProvider services,
+            object[]? additionalParameters = null,
+            CancellationToken ct = default
+        )
+        {
+            additionalParameters ??= Array.Empty<object>();
+            return await TryExecuteAsync(new List<BoundCommandNode> { command }, services, additionalParameters, ct);
+        }
+
         private async Task<Result<IResult>> TryExecuteAsync
         (
             IReadOnlyList<BoundCommandNode> commandCandidates,
