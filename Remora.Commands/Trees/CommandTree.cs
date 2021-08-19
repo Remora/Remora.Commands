@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees.Nodes;
@@ -32,6 +33,7 @@ namespace Remora.Commands.Trees
     /// <summary>
     /// Represents a tree view of the available commands.
     /// </summary>
+    [PublicAPI]
     public class CommandTree
     {
         /// <summary>

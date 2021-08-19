@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="ushort"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class UInt16Parser : AbstractTypeParser<ushort>
     {
         /// <inheritdoc />

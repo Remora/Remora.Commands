@@ -20,11 +20,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
+
 namespace Remora.Commands
 {
     /// <summary>
     /// Holds various constants.
     /// </summary>
+    [PublicAPI]
     public static class Constants
     {
         /// <summary>

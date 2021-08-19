@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using JetBrains.Annotations;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 using static Remora.Commands.Tokenization.TokenType;
@@ -32,6 +33,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a single value without a name.
     /// </summary>
+    [PublicAPI]
     public class PositionalParameterShape : IParameterShape
     {
         /// <inheritdoc />

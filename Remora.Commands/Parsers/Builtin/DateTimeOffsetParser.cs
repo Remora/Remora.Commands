@@ -32,7 +32,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="DateTimeOffset"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
     {
         /// <inheritdoc />

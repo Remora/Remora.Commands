@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="decimal"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class DecimalParser : AbstractTypeParser<decimal>
     {
         /// <inheritdoc />

@@ -32,7 +32,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="BigInteger"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class BigIntegerParser : AbstractTypeParser<BigInteger>
     {
         /// <inheritdoc />

@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="sbyte"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class SByteParser : AbstractTypeParser<sbyte>
     {
         /// <inheritdoc />

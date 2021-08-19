@@ -22,6 +22,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Remora.Results;
 
 #pragma warning disable SA1402
@@ -33,6 +34,7 @@ namespace Remora.Commands.Conditions
     /// </summary>
     /// <typeparam name="TAttribute">The data attribute type.</typeparam>
     /// <typeparam name="TData">The data type.</typeparam>
+    [PublicAPI]
     public interface ICondition<in TAttribute, in TData> : ICondition
         where TAttribute : ConditionAttribute
     {
@@ -55,6 +57,7 @@ namespace Remora.Commands.Conditions
     /// Represents the public API of a condition service.
     /// </summary>
     /// <typeparam name="TAttribute">The data attribute type.</typeparam>
+    [PublicAPI]
     public interface ICondition<in TAttribute> : ICondition
         where TAttribute : ConditionAttribute
     {
@@ -70,6 +73,7 @@ namespace Remora.Commands.Conditions
     /// <summary>
     /// Marker interface for conditions.
     /// </summary>
+    [PublicAPI]
     public interface ICondition
     {
     }

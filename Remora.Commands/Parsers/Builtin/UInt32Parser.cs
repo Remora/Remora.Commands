@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="uint"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class UInt32Parser : AbstractTypeParser<uint>
     {
         /// <inheritdoc />

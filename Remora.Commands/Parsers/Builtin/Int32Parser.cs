@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="int"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Int32Parser : AbstractTypeParser<int>
     {
         /// <inheritdoc />

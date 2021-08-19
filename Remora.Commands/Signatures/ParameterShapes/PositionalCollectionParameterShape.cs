@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
@@ -34,6 +35,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a single value without a name.
     /// </summary>
+    [PublicAPI]
     public class PositionalCollectionParameterShape : PositionalParameterShape, ICollectionParameterShape
     {
         private static readonly MethodInfo EmptyArrayMethod;

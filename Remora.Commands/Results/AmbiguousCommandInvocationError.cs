@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
 using Remora.Results;
 
 namespace Remora.Commands.Results
@@ -27,5 +28,7 @@ namespace Remora.Commands.Results
     /// <summary>
     /// Raised when two or more commands pass all preconditions and are otherwise acceptable as execution candidates.
     /// </summary>
-    public record AmbiguousCommandInvocationError() : ResultError("Two or more commands could have been executed by that.");
+    [PublicAPI]
+    public record AmbiguousCommandInvocationError()
+        : ResultError("Two or more commands could have been executed by that.");
 }

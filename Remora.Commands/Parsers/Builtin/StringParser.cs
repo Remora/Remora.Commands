@@ -30,7 +30,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses strings.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class StringParser : AbstractTypeParser<string>
     {
         /// <inheritdoc />

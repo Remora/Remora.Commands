@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="bool"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class BooleanParser : AbstractTypeParser<bool>
     {
         /// <inheritdoc />

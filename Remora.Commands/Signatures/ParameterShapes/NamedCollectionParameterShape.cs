@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
@@ -33,6 +34,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a named parameter with a single value.
     /// </summary>
+    [PublicAPI]
     public class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
     {
         private static readonly MethodInfo EmptyArrayMethod;

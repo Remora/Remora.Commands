@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="byte"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class ByteParser : AbstractTypeParser<byte>
     {
         /// <inheritdoc />

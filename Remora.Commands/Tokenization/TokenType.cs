@@ -20,11 +20,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
+
 namespace Remora.Commands.Tokenization
 {
     /// <summary>
     /// Enumerates token types.
     /// </summary>
+    [PublicAPI]
     public enum TokenType
     {
         /// <summary>

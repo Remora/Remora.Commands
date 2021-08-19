@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using JetBrains.Annotations;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 
@@ -31,6 +32,7 @@ namespace Remora.Commands.Signatures
     /// <summary>
     /// Represents a switch parameter that maps to a boolean value.
     /// </summary>
+    [PublicAPI]
     public class SwitchParameterShape : IParameterShape
     {
         /// <summary>

@@ -24,12 +24,14 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Extensions
 {
     /// <summary>
     /// Defines extension methods for the <see cref="ICustomAttributeProvider"/> interface.
     /// </summary>
+    [PublicAPI]
     public static class CustomAttributeProviderExtensions
     {
         /// <summary>

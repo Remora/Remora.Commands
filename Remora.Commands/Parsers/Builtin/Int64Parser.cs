@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="long"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Int64Parser : AbstractTypeParser<long>
     {
         /// <inheritdoc />

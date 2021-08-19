@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Services
 {
@@ -30,6 +31,7 @@ namespace Remora.Commands.Services
     /// Acts as a container for various registered types.
     /// </summary>
     /// <typeparam name="TType">The base type of types that can be registered.</typeparam>
+    [PublicAPI]
     public class TypeRepository<TType> where TType : class
     {
         private readonly List<Type> _registeredTypes = new();

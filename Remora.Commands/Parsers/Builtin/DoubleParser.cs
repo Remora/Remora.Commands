@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="double"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class DoubleParser : AbstractTypeParser<double>
     {
         /// <inheritdoc />

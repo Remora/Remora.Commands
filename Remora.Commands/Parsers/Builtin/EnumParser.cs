@@ -33,7 +33,7 @@ namespace Remora.Commands.Parsers
     /// Parses <see cref="Enum"/>s.
     /// </summary>
     /// <typeparam name="TEnum">The enum type.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class EnumParser<TEnum> : AbstractTypeParser<TEnum>
         where TEnum : struct, Enum
     {

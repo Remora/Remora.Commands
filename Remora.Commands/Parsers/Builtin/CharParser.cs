@@ -31,7 +31,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses <see cref="char"/>s.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class CharParser : AbstractTypeParser<char>
     {
         /// <inheritdoc />
