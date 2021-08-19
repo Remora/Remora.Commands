@@ -111,6 +111,7 @@ namespace Remora.Commands.Extensions
                 .AddParser<BigInteger, BigIntegerParser>()
                 .AddParser<string, StringParser>()
                 .AddParser<DateTimeOffset, DateTimeOffsetParser>()
+                .AddParser<DateTime, DateTimeParser>()
                 .TryAddSingleton(typeof(ITypeParser<>), typeof(EnumParser<>));
 
             return serviceCollection;

@@ -130,6 +130,12 @@ namespace Remora.Commands.Tests.Data.Modules
             return Task.FromResult<IResult>(Result.FromSuccess());
         }
 
+        [Command("date-time")]
+        public Task<IResult> DateTime(DateTimeOffset value)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
         [Command("enum")]
         public Task<IResult> Enum(TestEnum value)
         {
