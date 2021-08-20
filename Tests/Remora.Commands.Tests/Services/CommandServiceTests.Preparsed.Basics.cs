@@ -245,32 +245,6 @@ namespace Remora.Commands.Tests.Services
 
                     Assert.True(executionResult.IsSuccess);
                 }
-
-                /// <summary>
-                /// Tests whether the command service can execute a pre-determined <see cref="BoundCommandNode"/>.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecutePredeterminedCommandNode()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BasicCommandGroup>()
-                        .BuildServiceProvider();
-
-                    var commandService = services.GetRequiredService<CommandService>();
-
-                    List<BoundCommandNode> commands = commandService.Tree.Search("test predetermined-command-node").ToList();
-                    BoundCommandNode node = commands.Single();
-
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        node,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-                }
             }
         }
     }

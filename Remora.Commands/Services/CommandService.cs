@@ -99,13 +99,23 @@ namespace Remora.Commands.Services
         {
             additionalParameters ??= Array.Empty<object>();
 
-            var searchResults = this.Tree.Search(commandString, tokenizerOptions, searchOptions).ToList();
-            if (searchResults.Count == 0)
+            var prepareCommand = await TryPrepareCommandAsync
+            (
+                commandString,
+                services,
+                additionalParameters,
+                tokenizerOptions,
+                searchOptions,
+                ct
+            );
+
+            if (!prepareCommand.IsSuccess)
             {
-                return new CommandNotFoundError(commandString);
+                return Result<IResult>.FromError(prepareCommand);
             }
 
-            return await TryExecuteAsync(searchResults, services, additionalParameters, ct);
+            var preparedCommand = prepareCommand.Entity;
+            return await TryExecuteAsync(preparedCommand, services, additionalParameters, ct);
         }
 
         /// <summary>
@@ -137,6 +147,92 @@ namespace Remora.Commands.Services
         {
             additionalParameters ??= Array.Empty<object>();
 
+            var prepareCommand = await TryPrepareCommandAsync
+            (
+                commandNameString,
+                namedParameters,
+                services,
+                additionalParameters,
+                tokenizerOptions,
+                searchOptions,
+                ct
+            );
+
+            if (!prepareCommand.IsSuccess)
+            {
+                return Result<IResult>.FromError(prepareCommand);
+            }
+
+            // At this point, a single candidate remains, so we execute it
+            var preparedCommand = prepareCommand.Entity;
+            return await TryExecuteAsync(preparedCommand, services, additionalParameters, ct);
+        }
+
+        /// <summary>
+        /// Attempts to find and prepare a command for execution, but does not actually execute it.
+        /// </summary>
+        /// <param name="commandString">The command string.</param>
+        /// <param name="services">The services available to the invocation.</param>
+        /// <param name="additionalParameters">
+        /// Any additional parameters that should be available during instantiation of the command group.
+        /// </param>
+        /// <param name="tokenizerOptions">The tokenizer options.</param>
+        /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>
+        /// A result which may or may not have succeeded, containing the node and its materialized parameters.
+        /// </returns>
+        public async Task<Result<PreparedCommand>> TryPrepareCommandAsync
+        (
+            string commandString,
+            IServiceProvider services,
+            object[]? additionalParameters = null,
+            TokenizerOptions? tokenizerOptions = null,
+            TreeSearchOptions? searchOptions = null,
+            CancellationToken ct = default
+        )
+        {
+            additionalParameters ??= Array.Empty<object>();
+
+            var searchResults = this.Tree.Search(commandString, tokenizerOptions, searchOptions).ToList();
+            if (searchResults.Count == 0)
+            {
+                return new CommandNotFoundError(commandString);
+            }
+
+            return await TryPrepareCommandAsync(searchResults, services, additionalParameters, ct);
+        }
+
+        /// <summary>
+        /// Attempts to find and prepare a command for execution, but does not actually execute it.
+        /// </summary>
+        /// <param name="commandNameString">
+        /// The command name string. This string should not contain any parameters or their values.
+        /// </param>
+        /// <param name="namedParameters">The named parameters.</param>
+        /// <param name="services">The services available to the invocation.</param>
+        /// <param name="additionalParameters">
+        /// Any additional parameters that should be available during instantiation of the command group.
+        /// </param>
+        /// <param name="tokenizerOptions">The tokenizer options.</param>
+        /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>
+        /// A result which may or may not have succeeded, containing the node and its materialized parameters.
+        /// </returns>
+        public async Task<Result<PreparedCommand>> TryPrepareCommandAsync
+        (
+            string commandNameString,
+            IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
+            IServiceProvider services,
+            object[]? additionalParameters = null,
+            TokenizerOptions? tokenizerOptions = null,
+            TreeSearchOptions? searchOptions = null,
+            CancellationToken ct = default
+        )
+        {
+            additionalParameters ??= Array.Empty<object>();
+
             var searchResults = this.Tree.Search
             (
                 commandNameString,
@@ -150,166 +246,29 @@ namespace Remora.Commands.Services
                 return new CommandNotFoundError(commandNameString);
             }
 
-            return await TryExecuteAsync(searchResults, services, additionalParameters, ct);
+            return await TryPrepareCommandAsync(searchResults, services, additionalParameters, ct);
         }
 
         /// <summary>
-        /// Attempts to execute a command.
+        /// Attempts to execute the given prepared command.
         /// </summary>
-        /// <param name="command">The command to execute.</param>
+        /// <param name="preparedCommand">The prepared command.</param>
         /// <param name="services">The services available to the invocation.</param>
-        /// <param name="additionalParameters">Any additional parameters that should be available during instantiation of the command group.</param>
+        /// <param name="additionalParameters">
+        /// Any additional parameters that should be available during instantiation of the command group.
+        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
         public async Task<Result<IResult>> TryExecuteAsync
         (
-            BoundCommandNode command,
+            PreparedCommand preparedCommand,
             IServiceProvider services,
-            object[]? additionalParameters = null,
-            CancellationToken ct = default
-        )
-        {
-            additionalParameters ??= Array.Empty<object>();
-            return await TryExecuteAsync(new List<BoundCommandNode> { command }, services, additionalParameters, ct);
-        }
-
-        private async Task<Result<IResult>> TryExecuteAsync
-        (
-            IReadOnlyList<BoundCommandNode> commandCandidates,
-            IServiceProvider services,
-            object[] additionalParameters,
-            CancellationToken ct
-        )
-        {
-            // First, walk through the candidates and do the following:
-            // 1) Check group conditions
-            // 2) Check method conditions
-            // 3) Materialize parameters, parsing strings to concrete instances
-            // 4) Check parameter conditions
-            var preparedCommands = await Task.WhenAll
-            (
-                commandCandidates.Select(c => PrepareCommandAsync(services, c, additionalParameters, ct))
-            );
-
-            // Then, check if we have to bail out at this point
-            if (preparedCommands.Count(r => r.IsSuccess) > 1)
-            {
-                return Result<IResult>.FromError(new AmbiguousCommandInvocationError());
-            }
-
-            if (preparedCommands.Count(r => r.IsSuccess) == 0)
-            {
-                return Result<IResult>.FromError(preparedCommands.Last(r => !r.IsSuccess));
-            }
-
-            // At this point, a single candidate remains, so we execute it
-            var (node, parameters) = preparedCommands.Single(r => r.IsSuccess).Entity;
-            return await TryExecuteAsync(node, services, additionalParameters, parameters, ct);
-        }
-
-        private async Task<Result<(BoundCommandNode Node, object?[] Parameters)>> PrepareCommandAsync
-        (
-            IServiceProvider services,
-            BoundCommandNode boundCommandNode,
             object[] additionalParameters,
             CancellationToken ct = default
         )
         {
-            // Check group-level conditions, if any
-            var groupTypeWithConditions = boundCommandNode.Node.GroupType;
-            var groupNode = boundCommandNode.Node.Parent as GroupNode;
+            var (boundCommandNode, parameters) = preparedCommand;
 
-            while (true)
-            {
-                var groupConditionsResult = await CheckConditionsAsync
-                (
-                    services,
-                    groupNode,
-                    groupTypeWithConditions,
-                    additionalParameters,
-                    ct
-                );
-
-                if (!groupConditionsResult.IsSuccess)
-                {
-                    return Result<(BoundCommandNode, object?[])>.FromError(groupConditionsResult);
-                }
-
-                if (!typeof(CommandGroup).IsAssignableFrom(groupTypeWithConditions.DeclaringType))
-                {
-                    break;
-                }
-
-                groupTypeWithConditions = groupTypeWithConditions.DeclaringType;
-                if (groupNode is not null && !groupNode.GroupTypes.Contains(groupTypeWithConditions))
-                {
-                    groupNode = groupNode.Parent as GroupNode;
-                }
-            }
-
-            // Check method-level conditions, if any
-            var method = boundCommandNode.Node.CommandMethod;
-            var methodConditionsResult = await CheckConditionsAsync
-            (
-                services,
-                boundCommandNode.Node,
-                method,
-                additionalParameters,
-                ct
-            );
-
-            if (!methodConditionsResult.IsSuccess)
-            {
-                return Result<(BoundCommandNode, object?[])>.FromError(methodConditionsResult);
-            }
-
-            var materializeResult = await MaterializeParametersAsync
-            (
-                boundCommandNode,
-                services,
-                additionalParameters,
-                ct
-            );
-
-            if (!materializeResult.IsSuccess)
-            {
-                return Result<(BoundCommandNode, object?[])>.FromError(materializeResult);
-            }
-
-            var materializedParameters = materializeResult.Entity;
-
-            // Check parameter-level conditions, if any
-            var methodParameters = method.GetParameters();
-            foreach (var (parameter, value) in methodParameters.Zip(materializedParameters, (info, o) => (info, o)))
-            {
-                var parameterConditionResult = await CheckConditionsAsync
-                (
-                    services,
-                    boundCommandNode.Node,
-                    parameter,
-                    value,
-                    additionalParameters,
-                    ct
-                );
-
-                if (!parameterConditionResult.IsSuccess)
-                {
-                    return Result<(BoundCommandNode, object?[])>.FromError(parameterConditionResult);
-                }
-            }
-
-            return (boundCommandNode, materializedParameters);
-        }
-
-        private async Task<Result<IResult>> TryExecuteAsync
-        (
-            BoundCommandNode boundCommandNode,
-            IServiceProvider services,
-            object[] additionalParameters,
-            object?[] materializedParameters,
-            CancellationToken ct = default
-        )
-        {
             var groupType = boundCommandNode.Node.GroupType;
             var groupInstance = CreateInstance<CommandGroup>(services, groupType, additionalParameters);
 
@@ -329,7 +288,7 @@ namespace Remora.Commands.Services
                     var unwrapMethod = genericUnwrapMethod
                             .MakeGenericMethod(method.ReturnType.GetGenericArguments().Single());
 
-                    var invocationResult = method.Invoke(groupInstance, materializedParameters);
+                    var invocationResult = method.Invoke(groupInstance, parameters);
                     var unwrapTask = (Task<IResult>)(unwrapMethod.Invoke
                     (
                         null, new[] { invocationResult }
@@ -339,7 +298,7 @@ namespace Remora.Commands.Services
                 }
                 else
                 {
-                    var invocationResult = (Task)(method.Invoke(groupInstance, materializedParameters)
+                    var invocationResult = (Task)(method.Invoke(groupInstance, parameters)
                                                     ?? throw new InvalidOperationException());
                     await invocationResult;
 
@@ -367,6 +326,132 @@ namespace Remora.Commands.Services
                     await a.DisposeAsync();
                 }
             }
+        }
+
+        private async Task<Result<PreparedCommand>> TryPrepareCommandAsync
+        (
+            IReadOnlyList<BoundCommandNode> commandCandidates,
+            IServiceProvider services,
+            object[] additionalParameters,
+            CancellationToken ct
+        )
+        {
+            // First, walk through the candidates and do the following:
+            // 1) Check group conditions
+            // 2) Check method conditions
+            // 3) Materialize parameters, parsing strings to concrete instances
+            // 4) Check parameter conditions
+            var preparedCommands = await Task.WhenAll
+            (
+                commandCandidates.Select(c => TryPrepareCommandAsync(c, services, additionalParameters, ct))
+            );
+
+            // Then, check if we have to bail out at this point
+            if (preparedCommands.Count(r => r.IsSuccess) > 1)
+            {
+                return Result<PreparedCommand>.FromError(new AmbiguousCommandInvocationError());
+            }
+
+            if (preparedCommands.Count(r => r.IsSuccess) == 0)
+            {
+                return Result<PreparedCommand>.FromError(preparedCommands.Last(r => !r.IsSuccess));
+            }
+
+            return preparedCommands.Single(r => r.IsSuccess).Entity;
+        }
+
+        private async Task<Result<PreparedCommand>> TryPrepareCommandAsync
+        (
+            BoundCommandNode boundCommandNode,
+            IServiceProvider services,
+            object[] additionalParameters,
+            CancellationToken ct = default
+        )
+        {
+            // Check group-level conditions, if any
+            var groupTypeWithConditions = boundCommandNode.Node.GroupType;
+            var groupNode = boundCommandNode.Node.Parent as GroupNode;
+
+            while (true)
+            {
+                var groupConditionsResult = await CheckConditionsAsync
+                (
+                    services,
+                    groupNode,
+                    groupTypeWithConditions,
+                    additionalParameters,
+                    ct
+                );
+
+                if (!groupConditionsResult.IsSuccess)
+                {
+                    return Result<PreparedCommand>.FromError(groupConditionsResult);
+                }
+
+                if (!typeof(CommandGroup).IsAssignableFrom(groupTypeWithConditions.DeclaringType))
+                {
+                    break;
+                }
+
+                groupTypeWithConditions = groupTypeWithConditions.DeclaringType;
+                if (groupNode is not null && !groupNode.GroupTypes.Contains(groupTypeWithConditions))
+                {
+                    groupNode = groupNode.Parent as GroupNode;
+                }
+            }
+
+            // Check method-level conditions, if any
+            var method = boundCommandNode.Node.CommandMethod;
+            var methodConditionsResult = await CheckConditionsAsync
+            (
+                services,
+                boundCommandNode.Node,
+                method,
+                additionalParameters,
+                ct
+            );
+
+            if (!methodConditionsResult.IsSuccess)
+            {
+                return Result<PreparedCommand>.FromError(methodConditionsResult);
+            }
+
+            var materializeResult = await MaterializeParametersAsync
+            (
+                boundCommandNode,
+                services,
+                additionalParameters,
+                ct
+            );
+
+            if (!materializeResult.IsSuccess)
+            {
+                return Result<PreparedCommand>.FromError(materializeResult);
+            }
+
+            var materializedParameters = materializeResult.Entity;
+
+            // Check parameter-level conditions, if any
+            var methodParameters = method.GetParameters();
+            foreach (var (parameter, value) in methodParameters.Zip(materializedParameters, (info, o) => (info, o)))
+            {
+                var parameterConditionResult = await CheckConditionsAsync
+                (
+                    services,
+                    boundCommandNode.Node,
+                    parameter,
+                    value,
+                    additionalParameters,
+                    ct
+                );
+
+                if (!parameterConditionResult.IsSuccess)
+                {
+                    return Result<PreparedCommand>.FromError(parameterConditionResult);
+                }
+            }
+
+            return new PreparedCommand(boundCommandNode, materializedParameters);
         }
 
         /// <summary>
@@ -447,18 +532,6 @@ namespace Remora.Commands.Services
             }
 
             return Result.FromSuccess();
-        }
-
-        /// <summary>
-        /// Helper method for unwrapping instances of <see cref="ValueTask{TResult}"/>.
-        /// </summary>
-        /// <param name="task">The task.</param>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        private static async Task<IResult> UnwrapCommandValueTask<TEntity>(ValueTask<TEntity> task)
-            where TEntity : IResult
-        {
-            return await task;
         }
 
         /// <summary>
@@ -698,6 +771,18 @@ namespace Remora.Commands.Services
             }
 
             return materializedParameters.ToArray();
+        }
+
+        /// <summary>
+        /// Helper method for unwrapping instances of <see cref="ValueTask{TResult}"/>.
+        /// </summary>
+        /// <param name="task">The task.</param>
+        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        private static async Task<IResult> UnwrapCommandValueTask<TEntity>(ValueTask<TEntity> task)
+            where TEntity : IResult
+        {
+            return await task;
         }
 
         private TInstance CreateInstance<TInstance>
