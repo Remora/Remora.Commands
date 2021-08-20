@@ -263,10 +263,12 @@ namespace Remora.Commands.Services
         (
             PreparedCommand preparedCommand,
             IServiceProvider services,
-            object[] additionalParameters,
+            object[]? additionalParameters = null,
             CancellationToken ct = default
         )
         {
+            additionalParameters ??= Array.Empty<object>();
+
             var (boundCommandNode, parameters) = preparedCommand;
 
             var groupType = boundCommandNode.Node.GroupType;
