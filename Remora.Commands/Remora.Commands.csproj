@@ -6,14 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>5.2.0</Version>
+        <Version>6.0.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Add TimeSpanParser.
-            Add DateTime parser.
-            Enforce invariant DateTimeOffset parsing.
-            Update nuget packages.
-            Add CommandService#TryExecuteAsync overload to enable executing an existing command node, rather than forcing it to be searched for.
+            Rework the ability to prepare commands without executing them.
         </PackageReleaseNotes>
     </PropertyGroup>
 
