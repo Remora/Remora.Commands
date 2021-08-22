@@ -74,7 +74,9 @@ namespace Remora.Commands.Extensions
         {
             if (!commandModule.IsSubclassOf(typeof(CommandGroup)))
             {
-                throw new ArgumentException($"{nameof(commandModule)} must inherit from {typeof(CommandGroup).FullName}");
+                throw new ArgumentException(
+                    $"{nameof(commandModule)} should inherit from {nameof(CommandGroup)}.",
+                    nameof(commandModule));
             }
 
             serviceCollection.Configure<CommandTreeBuilder>
