@@ -55,6 +55,18 @@ namespace Remora.Commands.Trees
         }
 
         /// <summary>
+        /// Registers a module type with the builder.
+        /// </summary>
+        /// <param name="commandModule">The module type.</param>
+        public void RegisterModule(Type commandModule)
+        {
+            if (!_registeredModuleTypes.Contains(commandModule))
+            {
+                _registeredModuleTypes.Add(commandModule);
+            }
+        }
+
+        /// <summary>
         /// Builds a command tree from the registered types.
         /// </summary>
         /// <returns>The command tree.</returns>
