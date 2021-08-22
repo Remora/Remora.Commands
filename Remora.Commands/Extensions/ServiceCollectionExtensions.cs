@@ -52,12 +52,7 @@ namespace Remora.Commands.Extensions
         )
             where TCommandModule : CommandGroup
         {
-            serviceCollection.Configure<CommandTreeBuilder>
-            (
-                builder => builder.RegisterModule<TCommandModule>()
-            );
-
-            return serviceCollection;
+            return serviceCollection.AddCommandGroup(typeof(TCommandModule));
         }
 
         /// <summary>

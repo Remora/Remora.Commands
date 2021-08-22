@@ -48,10 +48,7 @@ namespace Remora.Commands.Trees
         /// <typeparam name="TModule">The module type.</typeparam>
         public void RegisterModule<TModule>() where TModule : CommandGroup
         {
-            if (!_registeredModuleTypes.Contains(typeof(TModule)))
-            {
-                _registeredModuleTypes.Add(typeof(TModule));
-            }
+            RegisterModule(typeof(TModule));
         }
 
         /// <summary>
