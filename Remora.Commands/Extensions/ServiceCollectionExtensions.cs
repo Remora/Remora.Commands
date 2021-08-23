@@ -52,9 +52,31 @@ namespace Remora.Commands.Extensions
         )
             where TCommandModule : CommandGroup
         {
+            return serviceCollection.AddCommandGroup(typeof(TCommandModule));
+        }
+
+        /// <summary>
+        /// Adds a command module to the available services.
+        /// </summary>
+        /// <param name="serviceCollection">The service collection.</param>
+        /// <param name="commandModule">The command module to register.</param>
+        /// <returns>The service collection with the configured modules.</returns>
+        public static IServiceCollection AddCommandGroup
+        (
+            this IServiceCollection serviceCollection,
+            Type commandModule
+        )
+        {
+            if (!commandModule.IsSubclassOf(typeof(CommandGroup)))
+            {
+                throw new ArgumentException(
+                    $"{nameof(commandModule)} should inherit from {nameof(CommandGroup)}.",
+                    nameof(commandModule));
+            }
+
             serviceCollection.Configure<CommandTreeBuilder>
             (
-                builder => builder.RegisterModule<TCommandModule>()
+                builder => builder.RegisterModule(commandModule)
             );
 
             return serviceCollection;
