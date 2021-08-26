@@ -6,11 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>6.0.1</Version>
+        <Version>6.1.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Make `additionalParameters` optional.
-            Rework the ability to prepare commands without executing them.
+            Allow registration of command groups via their plain type.
         </PackageReleaseNotes>
     </PropertyGroup>
 
