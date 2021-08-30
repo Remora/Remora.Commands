@@ -26,6 +26,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Remora.Commands.Attributes;
+using Remora.Commands.Groups;
 using Remora.Results;
 
 namespace Remora.Commands.Extensions
@@ -141,6 +142,16 @@ namespace Remora.Commands.Extensions
 
             var innerType = type.GetGenericArguments().Single();
             return typeof(IResult).IsAssignableFrom(innerType);
+        }
+
+        /// <summary>
+        /// Checks if the <see cref="Type"/> is a subclass of <see cref="CommandGroup"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> to check against.</param>
+        /// <returns>True if the type is a subclass of <see cref="CommandGroup"/>.</returns>
+        public static bool IsCommandGroup(this Type type)
+        {
+            return type.IsSubclassOf(typeof(CommandGroup));
         }
     }
 }
