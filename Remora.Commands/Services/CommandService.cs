@@ -597,7 +597,7 @@ namespace Remora.Commands.Services
                 if (boundParameter.ParameterShape.Parameter.AllowsNull())
                 {
                     // Support null literals
-                    if (boundParameter.Tokens.Count == 1 && boundParameter.Tokens[0] is "null")
+                    if (boundParameter.Tokens.Count == 1 && boundParameter.Tokens[0].Trim() is "null")
                     {
                         materializedParameters.Add(null);
                         continue;
