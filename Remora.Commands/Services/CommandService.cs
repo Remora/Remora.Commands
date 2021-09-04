@@ -348,15 +348,16 @@ namespace Remora.Commands.Services
             // Then, check if we have to bail out at this point
             if (preparedCommands.Count(r => r.IsSuccess) > 1)
             {
-                return Result<PreparedCommand>.FromError(new AmbiguousCommandInvocationError());
+                return new AmbiguousCommandInvocationError();
             }
 
-            if (preparedCommands.Count(r => r.IsSuccess) == 0)
+            if (preparedCommands.Any(r => r.IsSuccess))
             {
-                return Result<PreparedCommand>.FromError(preparedCommands.Last(r => !r.IsSuccess));
+                return preparedCommands.Single(r => r.IsSuccess).Entity;
             }
 
-            return preparedCommands.Single(r => r.IsSuccess).Entity;
+            var errors = preparedCommands.Where(r => !r.IsSuccess).Select(r => r.Error!).ToList();
+            return new AggregateError(errors);
         }
 
         private async Task<Result<PreparedCommand>> TryPrepareCommandAsync
