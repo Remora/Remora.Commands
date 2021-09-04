@@ -6,10 +6,20 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>6.1.0</Version>
+        <Version>7.0.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Allow registration of command groups via their plain type.
+            Remove now-unused method.
+            Trim before checking for null.
+            Improve support for nullable literals.
+            Add a method for checking the nullability of a parameter.
+            Add tests where a null literal is passed.
+            Eliminate the use of TypeRepository.
+            Remove now-redundant disposal calls.
+            Properly register command groups and conditions.
+            Return an aggregate error to improve error data.
+            Fix warnings.
+            Rework the parser infrastructure.
         </PackageReleaseNotes>
     </PropertyGroup>
 
