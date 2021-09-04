@@ -27,7 +27,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Remora.Commands.Parsers;
 using Remora.Commands.Results;
 using Remora.Results;
@@ -40,17 +39,6 @@ namespace Remora.Commands.Services
     [PublicAPI]
     public class TypeParserService
     {
-        private readonly TypeRepository<ITypeParser> _parserRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TypeParserService"/> class.
-        /// </summary>
-        /// <param name="parserRepository">The parser repository.</param>
-        public TypeParserService(IOptions<TypeRepository<ITypeParser>> parserRepository)
-        {
-            _parserRepository = parserRepository.Value;
-        }
-
         /// <summary>
         /// Attempts to parse the given string into an instance of <typeparamref name="TType"/>.
         /// </summary>
@@ -184,41 +172,28 @@ namespace Remora.Commands.Services
         internal IEnumerable<ITypeParser> GetCompatibleParsers(IServiceProvider services, Type type)
         {
             var parserType = typeof(ITypeParser<>).MakeGenericType(type);
-            var directParsers = _parserRepository.GetTypes(parserType).ToList();
+            var directParsers = services
+                .GetServices(parserType)
+                .Where(p => p is not null)
+                .Cast<ITypeParser>()
+                .ToList();
+
             foreach (var directParser in directParsers)
             {
-                var instance = (ITypeParser)ActivatorUtilities.CreateInstance(services, directParser);
-                yield return instance;
+                if (directParser is null)
+                {
+                    continue;
+                }
+
+                yield return directParser;
             }
 
-            var indirectParsers = _parserRepository.GetTypes<ITypeParser>().Except(directParsers);
+            var indirectParsers = services.GetServices<ITypeParser>().Except(directParsers);
             foreach (var indirectParser in indirectParsers)
             {
-                if (indirectParser.IsGenericTypeDefinition)
+                if (indirectParser.CanParse(type))
                 {
-                    var genericArgument = indirectParser.GetGenericArguments().Single();
-                    var constraints = genericArgument.GetGenericParameterConstraints();
-                    if (constraints.Any(c => !c.IsAssignableFrom(type)))
-                    {
-                        // Constraint violation
-                        continue;
-                    }
-
-                    var concreteParser = indirectParser.MakeGenericType(type);
-
-                    var parser = (ITypeParser)ActivatorUtilities.CreateInstance(services, concreteParser);
-                    if (parser.CanParse(type))
-                    {
-                        yield return parser;
-                    }
-                }
-                else
-                {
-                    var parser = (ITypeParser)ActivatorUtilities.CreateInstance(services, indirectParser);
-                    if (parser.CanParse(type))
-                    {
-                        yield return parser;
-                    }
+                    yield return indirectParser;
                 }
             }
         }

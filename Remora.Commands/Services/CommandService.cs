@@ -28,7 +28,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Remora.Commands.Conditions;
 using Remora.Commands.Groups;
 using Remora.Commands.Results;
@@ -46,7 +45,6 @@ namespace Remora.Commands.Services
     [PublicAPI]
     public class CommandService
     {
-        private readonly TypeRepository<ICondition> _conditionRepository;
         private readonly TypeParserService _typeParserService;
 
         /// <summary>
@@ -58,17 +56,14 @@ namespace Remora.Commands.Services
         /// Initializes a new instance of the <see cref="CommandService"/> class.
         /// </summary>
         /// <param name="tree">The command tree.</param>
-        /// <param name="conditionRepository">The condition type repository.</param>
         /// <param name="typeParserService">The parser service.</param>
         internal CommandService
         (
             CommandTree tree,
-            IOptions<TypeRepository<ICondition>> conditionRepository,
             TypeParserService typeParserService
         )
         {
             this.Tree = tree;
-            _conditionRepository = conditionRepository.Value;
             _typeParserService = typeParserService;
         }
 
@@ -439,19 +434,19 @@ namespace Remora.Commands.Services
                     throw new InvalidOperationException();
                 }
 
-                var conditionTypes = _conditionRepository.GetTypes(conditionType).ToList();
-                if (conditionTypes.Count == 0)
+                var conditions = services
+                    .GetServices(conditionType)
+                    .Where(c => c is not null)
+                    .Cast<ICondition>()
+                    .ToList();
+
+                if (conditions.Count == 0)
                 {
                     throw new InvalidOperationException
                     (
                         "Condition attributes were applied, but no matching condition was registered."
                     );
                 }
-
-                var conditions = conditionTypes.Select
-                (
-                    c => (ICondition)services.GetRequiredService(c)
-                );
 
                 foreach (var condition in conditions)
                 {
@@ -521,19 +516,19 @@ namespace Remora.Commands.Services
                     throw new InvalidOperationException();
                 }
 
-                var conditionTypes = _conditionRepository.GetTypes(conditionType).ToList();
-                if (conditionTypes.Count == 0)
+                var conditions = services
+                    .GetServices(conditionType)
+                    .Where(c => c is not null)
+                    .Cast<ICondition>()
+                    .ToList();
+
+                if (conditions.Count == 0)
                 {
                     throw new InvalidOperationException
                     (
                         "Condition attributes were applied, but no matching condition was registered."
                     );
                 }
-
-                var conditions = conditionTypes.Select
-                (
-                    c => (ICondition)services.GetRequiredService(c)
-                );
 
                 foreach (var condition in conditions)
                 {

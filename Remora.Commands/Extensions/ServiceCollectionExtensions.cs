@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -122,16 +123,13 @@ namespace Remora.Commands.Extensions
                 services =>
                 {
                     var tree = services.GetRequiredService<CommandTree>();
-                    var conditionRepository = services.GetRequiredService<IOptions<TypeRepository<ICondition>>>();
                     var parserService = services.GetRequiredService<TypeParserService>();
 
-                    return new CommandService(tree, conditionRepository, parserService);
+                    return new CommandService(tree, parserService);
                 }
             );
 
             serviceCollection.TryAddSingleton<TypeParserService>();
-            serviceCollection.AddOptions<TypeRepository<ICondition>>();
-            serviceCollection.AddOptions<TypeRepository<ITypeParser>>();
 
             serviceCollection
                 .AddParser<CharParser>()
@@ -153,6 +151,7 @@ namespace Remora.Commands.Extensions
                 .AddParser<DateTimeParser>()
                 .AddParser<TimeSpanParser>()
                 .AddParser<CollectionParser>()
+                .AddParser<NullableStructParser>()
                 .AddParser(typeof(EnumParser<>))
                 .TryAddSingleton(typeof(ITypeParser<>), typeof(EnumParser<>));
 
@@ -193,7 +192,35 @@ namespace Remora.Commands.Extensions
                 throw new InvalidOperationException("An open parser type may accept one and only one generic type.");
             }
 
-            services.Configure<TypeRepository<ITypeParser>>(tr => tr.RegisterType(parserType));
+            if (parserType.IsGenericTypeDefinition)
+            {
+                // This is an open parser type
+                services.AddTransient(typeof(ITypeParser<>), parserType);
+            }
+            else
+            {
+                var interfaces = parserType.GetInterfaces();
+                var concreteTypeParserInterfaces = interfaces.Where
+                (
+                    i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ITypeParser<>)
+                )
+                .ToList();
+
+                if (concreteTypeParserInterfaces.Count > 0)
+                {
+                    // This type implements one or more direct parsing interfaces
+                    foreach (var concreteTypeParserInterface in concreteTypeParserInterfaces)
+                    {
+                        services.AddTransient(concreteTypeParserInterface, parserType);
+                    }
+                }
+                else
+                {
+                    // This type is an indirect parser
+                    services.AddTransient(typeof(ITypeParser), parserType);
+                }
+            }
+
             return services;
         }
 
@@ -212,8 +239,20 @@ namespace Remora.Commands.Extensions
             this IServiceCollection serviceCollection
         ) where TCondition : class, ICondition
         {
-            serviceCollection.Configure<TypeRepository<ICondition>>(tr => tr.RegisterType<TCondition>());
             serviceCollection.TryAddScoped<TCondition>();
+            foreach (var implementedInterface in typeof(TCondition).GetInterfaces())
+            {
+                if (!implementedInterface.IsGenericType)
+                {
+                    continue;
+                }
+
+                var genericType = implementedInterface.GetGenericTypeDefinition();
+                if (genericType == typeof(ICondition<>) || genericType == typeof(ICondition<,>))
+                {
+                    serviceCollection.TryAddScoped(implementedInterface, typeof(TCondition));
+                }
+            }
 
             return serviceCollection;
         }
