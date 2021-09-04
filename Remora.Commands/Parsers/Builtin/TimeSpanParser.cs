@@ -45,8 +45,13 @@ namespace Remora.Commands.Parsers
         );
 
         /// <inheritdoc />
-        public override ValueTask<Result<TimeSpan>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<TimeSpan>> TryParseAsync(string? value, CancellationToken ct)
         {
+            if (value is null)
+            {
+                return new(new ParsingError<TimeSpan>(value));
+            }
+
             value = value.Trim();
 
             if (TimeSpan.TryParse(value, DateTimeFormatInfo.InvariantInfo, out var parsedTimespan))

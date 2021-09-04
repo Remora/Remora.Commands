@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class UInt16Parser : AbstractTypeParser<ushort>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<ushort>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<ushort>> TryParseAsync(string? value, CancellationToken ct)
         {
             return new ValueTask<Result<ushort>>
             (

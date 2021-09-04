@@ -107,7 +107,7 @@ namespace Remora.Commands.Signatures
             ParameterInfo parameter
         )
         {
-            var isCollection = parameter.ParameterType.IsSupportedEnumerable();
+            var isCollection = parameter.ParameterType.IsSupportedCollection();
 
             IParameterShape newNamedParameter;
             if (optionAttribute is SwitchAttribute)
@@ -326,7 +326,7 @@ namespace Remora.Commands.Signatures
         )
         {
             var description = parameter.GetDescriptionOrDefault();
-            var isCollection = parameter.ParameterType.IsSupportedEnumerable();
+            var isCollection = parameter.ParameterType.IsSupportedCollection();
 
             IParameterShape newPositionalParameter;
             if (!isCollection)

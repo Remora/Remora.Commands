@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class UInt64Parser : AbstractTypeParser<ulong>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<ulong>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<ulong>> TryParseAsync(string? value, CancellationToken ct)
         {
             return new ValueTask<Result<ulong>>
             (

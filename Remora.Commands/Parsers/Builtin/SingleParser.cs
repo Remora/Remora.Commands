@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class SingleParser : AbstractTypeParser<float>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<float>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<float>> TryParseAsync(string? value, CancellationToken ct)
         {
             return new ValueTask<Result<float>>
             (

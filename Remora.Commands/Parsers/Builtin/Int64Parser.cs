@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class Int64Parser : AbstractTypeParser<long>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<long>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<long>> TryParseAsync(string? value, CancellationToken ct)
         {
             return new ValueTask<Result<long>>
             (

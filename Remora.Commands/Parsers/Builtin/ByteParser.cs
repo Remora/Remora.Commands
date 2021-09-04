@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class ByteParser : AbstractTypeParser<byte>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<byte>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<byte>> TryParseAsync(string? value, CancellationToken ct)
         {
             return new ValueTask<Result<byte>>
             (

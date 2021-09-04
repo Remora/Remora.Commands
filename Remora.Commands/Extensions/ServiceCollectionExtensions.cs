@@ -21,7 +21,6 @@
 //
 
 using System;
-using System.Numerics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -107,55 +106,78 @@ namespace Remora.Commands.Extensions
                 {
                     var tree = services.GetRequiredService<CommandTree>();
                     var conditionRepository = services.GetRequiredService<IOptions<TypeRepository<ICondition>>>();
-                    var parserRepository = services.GetRequiredService<IOptions<TypeRepository<ITypeParser>>>();
+                    var parserService = services.GetRequiredService<TypeParserService>();
 
-                    return new CommandService(tree, conditionRepository, parserRepository);
+                    return new CommandService(tree, conditionRepository, parserService);
                 }
             );
 
+            serviceCollection.TryAddSingleton<TypeParserService>();
             serviceCollection.AddOptions<TypeRepository<ICondition>>();
             serviceCollection.AddOptions<TypeRepository<ITypeParser>>();
 
             serviceCollection
-                .AddParser<char, CharParser>()
-                .AddParser<bool, BooleanParser>()
-                .AddParser<byte, ByteParser>()
-                .AddParser<sbyte, SByteParser>()
-                .AddParser<ushort, UInt16Parser>()
-                .AddParser<short, Int16Parser>()
-                .AddParser<uint, UInt32Parser>()
-                .AddParser<int, Int32Parser>()
-                .AddParser<ulong, UInt64Parser>()
-                .AddParser<long, Int64Parser>()
-                .AddParser<float, SingleParser>()
-                .AddParser<double, DoubleParser>()
-                .AddParser<decimal, DecimalParser>()
-                .AddParser<BigInteger, BigIntegerParser>()
-                .AddParser<string, StringParser>()
-                .AddParser<DateTimeOffset, DateTimeOffsetParser>()
-                .AddParser<DateTime, DateTimeParser>()
-                .AddParser<TimeSpan, TimeSpanParser>()
+                .AddParser<CharParser>()
+                .AddParser<BooleanParser>()
+                .AddParser<ByteParser>()
+                .AddParser<SByteParser>()
+                .AddParser<UInt16Parser>()
+                .AddParser<Int16Parser>()
+                .AddParser<UInt32Parser>()
+                .AddParser<Int32Parser>()
+                .AddParser<UInt64Parser>()
+                .AddParser<Int64Parser>()
+                .AddParser<SingleParser>()
+                .AddParser<DoubleParser>()
+                .AddParser<DecimalParser>()
+                .AddParser<BigIntegerParser>()
+                .AddParser<StringParser>()
+                .AddParser<DateTimeOffsetParser>()
+                .AddParser<DateTimeParser>()
+                .AddParser<TimeSpanParser>()
+                .AddParser<CollectionParser>()
+                .AddParser(typeof(EnumParser<>))
                 .TryAddSingleton(typeof(ITypeParser<>), typeof(EnumParser<>));
 
             return serviceCollection;
         }
 
         /// <summary>
-        /// Adds a type parser as a singleton service.
+        /// Adds a type parser.
         /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
-        /// <typeparam name="TType">The type to parse.</typeparam>
+        /// <param name="services">The service collection.</param>
         /// <typeparam name="TParser">The type parser.</typeparam>
         /// <returns>The service collection, with the parser.</returns>
-        public static IServiceCollection AddParser<TType, TParser>
+        public static IServiceCollection AddParser<TParser>
         (
-            this IServiceCollection serviceCollection
+            this IServiceCollection services
         )
-            where TType : notnull
-            where TParser : AbstractTypeParser<TType>
+            where TParser : ITypeParser
         {
-            serviceCollection.Configure<TypeRepository<ITypeParser>>(tr => tr.RegisterType<TParser>());
-            return serviceCollection;
+            services.AddParser(typeof(TParser));
+            return services;
+        }
+
+        /// <summary>
+        /// Adds a type parser.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="parserType">The type parser.</param>
+        /// <returns>The service collection, with the parser.</returns>
+        public static IServiceCollection AddParser(this IServiceCollection services, Type parserType)
+        {
+            if (!parserType.IsTypeParser())
+            {
+                throw new InvalidOperationException($"The parser type must implement {nameof(ITypeParser)}.");
+            }
+
+            if (parserType.IsGenericTypeDefinition && parserType.GetGenericArguments().Length != 1)
+            {
+                throw new InvalidOperationException("An open parser type may accept one and only one generic type.");
+            }
+
+            services.Configure<TypeRepository<ITypeParser>>(tr => tr.RegisterType(parserType));
+            return services;
         }
 
         /// <summary>

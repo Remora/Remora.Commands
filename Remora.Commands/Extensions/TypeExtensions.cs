@@ -26,6 +26,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Remora.Commands.Attributes;
+using Remora.Commands.Parsers;
 using Remora.Commands.Groups;
 using Remora.Results;
 
@@ -36,6 +37,9 @@ namespace Remora.Commands.Extensions
     /// </summary>
     internal static class TypeExtensions
     {
+        private static readonly Type TypeParserType = typeof(ITypeParser);
+        private static readonly Type GenericTypeParserType = typeof(ITypeParser<>);
+
         /// <summary>
         /// Attempts to get an annotated group name from the given type.
         /// </summary>
@@ -57,11 +61,23 @@ namespace Remora.Commands.Extensions
         }
 
         /// <summary>
+        /// Determines whether the given typ is a type parser.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>true if the type is a type parser; otherwise, false.</returns>
+        public static bool IsTypeParser(this Type type)
+        {
+            var interfaces = type.GetInterfaces();
+            return interfaces.Contains(TypeParserType) ||
+                   interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == GenericTypeParserType);
+        }
+
+        /// <summary>
         /// Determines whether the type is a supported enumerable type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>true if the type is an enumerable type; otherwise, false.</returns>
-        public static bool IsSupportedEnumerable(this Type type)
+        public static bool IsSupportedCollection(this Type type)
         {
             if (type.IsGenericType)
             {
@@ -104,7 +120,7 @@ namespace Remora.Commands.Extensions
 
         /// <summary>
         /// Gets the element type of the given type. The type is assumed to return true if
-        /// <see cref="IsSupportedEnumerable"/> were to be called on it.
+        /// <see cref="IsSupportedCollection"/> were to be called on it.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The element type.</returns>

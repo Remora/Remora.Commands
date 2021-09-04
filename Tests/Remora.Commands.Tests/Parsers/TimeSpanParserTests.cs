@@ -105,7 +105,7 @@ namespace Remora.Commands.Tests.Parsers
         {
             var parser = new TimeSpanParser();
 
-            var result = await parser.TryParse(value, default);
+            var result = await parser.TryParseAsync(value, default);
 
             Assert.True(result.IsSuccess);
             Assert.Equal(expected(), result.Entity);

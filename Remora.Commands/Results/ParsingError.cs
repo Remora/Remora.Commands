@@ -42,8 +42,8 @@ namespace Remora.Commands.Results
         /// </summary>
         /// <param name="value">The value that failed to parse.</param>
         /// <param name="reason">The reason why the parsing failed.</param>
-        public ParsingError(string value, string? reason = null)
-            : base($"Failed to parse \"{value}\" as an instance of the type \"{typeof(TType)}\"")
+        public ParsingError(string? value, string? reason = null)
+            : base($"Failed to parse \"{value ?? "null"}\" as an instance of the type \"{typeof(TType)}\"")
         {
             this.Reason = reason ?? "No reason given.";
         }

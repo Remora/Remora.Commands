@@ -36,8 +36,13 @@ namespace Remora.Commands.Parsers
     public class BigIntegerParser : AbstractTypeParser<BigInteger>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<BigInteger>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<BigInteger>> TryParseAsync(string? value, CancellationToken ct)
         {
+            if (value is null)
+            {
+                return new(new ParsingError<BigInteger>(value));
+            }
+
             return new
             (
                 !BigInteger.TryParse(value, out var result)

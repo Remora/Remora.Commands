@@ -21,12 +21,10 @@
 //
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
-using Remora.Commands.Signatures;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 

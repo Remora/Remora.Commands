@@ -20,8 +20,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Remora.Results;
 
 #pragma warning disable CS1591, SA1402
@@ -29,31 +32,58 @@ using Remora.Results;
 namespace Remora.Commands.Parsers
 {
     /// <summary>
-    /// Represents the public API of a specialized type parser.
+    /// Represents the internal API of a specialized type parser.
     /// </summary>
     /// <typeparam name="TType">The type to parse.</typeparam>
-    internal interface ITypeParser<TType> : ITypeParser where TType : notnull
+    [PublicAPI]
+    public interface ITypeParser<TType> : ITypeParser
     {
         /// <summary>
         /// Attempts to parse the given string into an instance of <typeparamref name="TType"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="token">The token.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A retrieval result which may or may not have succeeded.</returns>
-        ValueTask<Result<TType>> TryParse(string value, CancellationToken ct);
+        ValueTask<Result<TType>> TryParseAsync(string token, CancellationToken ct = default);
+
+        /// <summary>
+        /// Attempts to parse the given set of tokens into an instance of <typeparamref name="TType"/>.
+        /// </summary>
+        /// <param name="tokens">The tokens.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>A retrieval result which may or may not have succeeded.</returns>
+        ValueTask<Result<TType>> TryParseAsync(IReadOnlyList<string> tokens, CancellationToken ct = default);
     }
 
     /// <summary>
     /// Represents the internal API of a general type parser.
     /// </summary>
-    internal interface ITypeParser
+    [PublicAPI]
+    public interface ITypeParser
     {
+        /// <summary>
+        /// Determines whether the parser can parse the given type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>true if the parser can parse the type; otherwise, false.</returns>
+        bool CanParse(Type type);
+
         /// <summary>
         /// Attempts to parse the given string into a CLR object.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="type">The type to parse.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A retrieval result which may or may not have succeeded.</returns>
-        ValueTask<Result<object>> TryParseAsync(string value, CancellationToken ct);
+        ValueTask<Result<object?>> TryParseAsync(string token, Type type, CancellationToken ct);
+
+        /// <summary>
+        /// Attempts to parse the given string into a CLR object.
+        /// </summary>
+        /// <param name="tokens">The token.</param>
+        /// <param name="type">The type to parse.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>A retrieval result which may or may not have succeeded.</returns>
+        ValueTask<Result<object?>> TryParseAsync(IReadOnlyList<string> tokens, Type type, CancellationToken ct);
     }
 }

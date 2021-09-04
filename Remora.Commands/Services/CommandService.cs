@@ -21,7 +21,6 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -31,9 +30,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Remora.Commands.Conditions;
-using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
-using Remora.Commands.Parsers;
 using Remora.Commands.Results;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;
@@ -50,7 +47,7 @@ namespace Remora.Commands.Services
     public class CommandService
     {
         private readonly TypeRepository<ICondition> _conditionRepository;
-        private readonly TypeRepository<ITypeParser> _parserRepository;
+        private readonly TypeParserService _typeParserService;
 
         /// <summary>
         /// Gets the tree of registered commands.
@@ -62,17 +59,17 @@ namespace Remora.Commands.Services
         /// </summary>
         /// <param name="tree">The command tree.</param>
         /// <param name="conditionRepository">The condition type repository.</param>
-        /// <param name="parserRepository">The parser type repository.</param>
+        /// <param name="typeParserService">The parser service.</param>
         internal CommandService
         (
             CommandTree tree,
             IOptions<TypeRepository<ICondition>> conditionRepository,
-            IOptions<TypeRepository<ITypeParser>> parserRepository
+            TypeParserService typeParserService
         )
         {
             this.Tree = tree;
             _conditionRepository = conditionRepository.Value;
-            _parserRepository = parserRepository.Value;
+            _typeParserService = typeParserService;
         }
 
         /// <summary>
@@ -661,115 +658,63 @@ namespace Remora.Commands.Services
 
                 var typeToParse = parameter.ParameterType;
 
-                var isCollection = typeToParse.IsSupportedEnumerable();
-                if (isCollection)
+                // Special case: switches
+                if (boundParameter.ParameterShape is SwitchParameterShape)
                 {
-                    typeToParse = typeToParse.GetCollectionElementType();
+                    // No need for parsing; if a switch is present it means it's the inverse of the parameter's
+                    // default value
+                    var defaultValue = (bool)(parameter.DefaultValue ?? throw new InvalidOperationException());
+                    materializedParameters.Add(!defaultValue);
+                    continue;
                 }
 
-                var isNullable = typeToParse.IsNullableStruct();
-                if (isNullable)
+                var isCollection = boundParameter.ParameterShape is
+                    NamedCollectionParameterShape or PositionalCollectionParameterShape;
+
+                var isGreedy = boundParameter.ParameterShape is
+                    NamedGreedyParameterShape or PositionalGreedyParameterShape;
+
+                Result<object?> tryParse;
+                if (!isCollection || isGreedy)
                 {
-                    typeToParse = typeToParse.GetGenericArguments()[0];
-                }
-
-                var parserType = typeof(ITypeParser<>).MakeGenericType(typeToParse);
-                var registeredParser = _parserRepository.GetTypes(parserType).LastOrDefault();
-
-                if (registeredParser is null)
-                {
-                    if (typeToParse.IsEnum)
-                    {
-                        // We'll use our fallback parser
-                        registeredParser = typeof(EnumParser<>).MakeGenericType(typeToParse);
-                    }
-                    else
-                    {
-                        return new MissingParserError(typeToParse);
-                    }
-                }
-
-                var parser = CreateInstance<ITypeParser>(services, registeredParser, additionalParameters);
-                if (isCollection)
-                {
-                    var collectionType = typeof(List<>).MakeGenericType(typeToParse);
-                    IList collection = (IList)Activator.CreateInstance(collectionType)!;
-                    foreach (var value in boundParameter.Tokens)
-                    {
-                        var parseResult = await parser.TryParseAsync(value, ct);
-                        if (!parseResult.IsSuccess)
-                        {
-                            return Result<object?[]>.FromError(new ParameterParsingError(boundParameter), parseResult);
-                        }
-
-                        collection.Add(parseResult.Entity);
-                    }
-
-                    if (parameter.ParameterType.IsArray)
-                    {
-                        // Special case for array support
-                        var toArrayMethod = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))
-                            ?? throw new MissingMethodException();
-
-                        var typedToArrayMethod = toArrayMethod.MakeGenericMethod(typeToParse);
-
-                        materializedParameters.Add(typedToArrayMethod.Invoke(null, new object?[] { collection }));
-                    }
-                    else
-                    {
-                        materializedParameters.Add(collection);
-                    }
-                }
-                else
-                {
-                    // Special case: switches
-                    if (boundParameter.ParameterShape is SwitchParameterShape)
-                    {
-                        // No need for parsing; if a switch is present it means it's the inverse of the parameter's
-                        // default value
-                        var defaultValue = (bool)(parameter.DefaultValue ?? throw new InvalidOperationException());
-                        materializedParameters.Add(!defaultValue);
-                        continue;
-                    }
-
                     // Special case: greedy parameters
-                    string value;
-                    if (boundParameter.ParameterShape is NamedGreedyParameterShape or PositionalGreedyParameterShape)
+                    var value = boundParameter.Tokens[0];
+                    if (isGreedy)
                     {
                         // Merge the bound tokens
                         value = string.Join(' ', boundParameter.Tokens);
                     }
-                    else
-                    {
-                        if (boundParameter.Tokens.Count > 1)
-                        {
-                            throw new InvalidOperationException
-                            (
-                                "More than one token was provided for a single-value parameter."
-                            );
-                        }
 
-                        value = boundParameter.Tokens[0];
-                    }
+                    tryParse = await _typeParserService.TryParseAsync
+                    (
+                        services,
+                        value,
+                        typeToParse,
+                        ct
+                    );
 
-                    var parseResult = await parser.TryParseAsync(value, ct);
-                    if (!parseResult.IsSuccess)
+                    if (!tryParse.IsSuccess)
                     {
-                        return Result<object?[]>.FromError(new ParameterParsingError(boundParameter), parseResult);
-                    }
-
-                    if (isNullable)
-                    {
-                        var constructor = parameter.ParameterType.GetConstructor(new[] { typeToParse })
-                            ?? throw new MissingMethodException();
-
-                        materializedParameters.Add(constructor.Invoke(new[] { parseResult.Entity }));
-                    }
-                    else
-                    {
-                        materializedParameters.Add(parseResult.Entity);
+                        return Result<object?[]>.FromError(new ParameterParsingError(boundParameter), tryParse);
                     }
                 }
+                else
+                {
+                    tryParse = await _typeParserService.TryParseAsync
+                    (
+                        services,
+                        boundParameter.Tokens,
+                        typeToParse,
+                        ct
+                    );
+
+                    if (!tryParse.IsSuccess)
+                    {
+                        return Result<object?[]>.FromError(new ParameterParsingError(boundParameter), tryParse);
+                    }
+                }
+
+                materializedParameters.Add(tryParse.Entity);
             }
 
             return materializedParameters.ToArray();

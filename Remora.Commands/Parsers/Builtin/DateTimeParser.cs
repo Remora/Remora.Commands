@@ -37,7 +37,7 @@ namespace Remora.Commands.Parsers
     public class DateTimeParser : AbstractTypeParser<DateTime>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<DateTime>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<DateTime>> TryParseAsync(string? value, CancellationToken ct)
         {
             return new ValueTask<Result<DateTime>>
             (

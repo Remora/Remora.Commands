@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class UInt32Parser : AbstractTypeParser<uint>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<uint>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<uint>> TryParseAsync(string? value, CancellationToken ct)
         {
             return new ValueTask<Result<uint>>
             (
