@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class DecimalParser : AbstractTypeParser<decimal>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<decimal>> TryParseAsync(string? value, CancellationToken ct)
+        public override ValueTask<Result<decimal>> TryParseAsync(string? value, CancellationToken ct = default)
         {
             return new ValueTask<Result<decimal>>
             (

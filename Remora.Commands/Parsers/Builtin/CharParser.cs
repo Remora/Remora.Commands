@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class CharParser : AbstractTypeParser<char>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<char>> TryParseAsync(string? value, CancellationToken ct)
+        public override ValueTask<Result<char>> TryParseAsync(string? value, CancellationToken ct = default)
         {
             return new ValueTask<Result<char>>
             (

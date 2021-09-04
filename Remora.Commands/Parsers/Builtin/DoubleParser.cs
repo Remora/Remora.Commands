@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class DoubleParser : AbstractTypeParser<double>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<double>> TryParseAsync(string? value, CancellationToken ct)
+        public override ValueTask<Result<double>> TryParseAsync(string? value, CancellationToken ct = default)
         {
             return new ValueTask<Result<double>>
             (

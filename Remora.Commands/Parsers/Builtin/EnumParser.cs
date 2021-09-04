@@ -38,7 +38,7 @@ namespace Remora.Commands.Parsers
         where TEnum : struct, Enum
     {
         /// <inheritdoc />
-        public override ValueTask<Result<TEnum>> TryParseAsync(string? value, CancellationToken ct)
+        public override ValueTask<Result<TEnum>> TryParseAsync(string? value, CancellationToken ct = default)
         {
             return new ValueTask<Result<TEnum>>
             (

@@ -35,7 +35,7 @@ namespace Remora.Commands.Parsers
     public class BooleanParser : AbstractTypeParser<bool>
     {
         /// <inheritdoc />
-        public override ValueTask<Result<bool>> TryParseAsync(string? value, CancellationToken ct)
+        public override ValueTask<Result<bool>> TryParseAsync(string? value, CancellationToken ct = default)
         {
             return new ValueTask<Result<bool>>
             (
