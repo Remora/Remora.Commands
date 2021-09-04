@@ -213,7 +213,7 @@ namespace Remora.Commands.Tests.Services
                 /// </summary>
                 /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
                 [Fact]
-                public async Task CanExecuteNullableStructWithDefaultCommand()
+                public async Task CanExecuteNullableStructCommandWithDefaultValue()
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
@@ -233,6 +233,29 @@ namespace Remora.Commands.Tests.Services
                     executionResult = await commandService.TryExecuteAsync
                     (
                         "test nullable-struct-with-default",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a nullable struct parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNullableStructCommandWithNullLiteral()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test nullable-struct -v null",
                         services
                     );
 
