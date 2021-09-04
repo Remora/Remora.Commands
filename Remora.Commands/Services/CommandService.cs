@@ -77,9 +77,6 @@ namespace Remora.Commands.Services
         /// </summary>
         /// <param name="commandString">The command string.</param>
         /// <param name="services">The services available to the invocation.</param>
-        /// <param name="additionalParameters">
-        /// Any additional parameters that should be available during instantiation of the command group.
-        /// </param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
@@ -88,19 +85,15 @@ namespace Remora.Commands.Services
         (
             string commandString,
             IServiceProvider services,
-            object[]? additionalParameters = null,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
             CancellationToken ct = default
         )
         {
-            additionalParameters ??= Array.Empty<object>();
-
             var prepareCommand = await TryPrepareCommandAsync
             (
                 commandString,
                 services,
-                additionalParameters,
                 tokenizerOptions,
                 searchOptions,
                 ct
@@ -112,7 +105,7 @@ namespace Remora.Commands.Services
             }
 
             var preparedCommand = prepareCommand.Entity;
-            return await TryExecuteAsync(preparedCommand, services, additionalParameters, ct);
+            return await TryExecuteAsync(preparedCommand, services, ct);
         }
 
         /// <summary>
@@ -124,9 +117,6 @@ namespace Remora.Commands.Services
         /// </param>
         /// <param name="namedParameters">The named parameters.</param>
         /// <param name="services">The services available to the invocation.</param>
-        /// <param name="additionalParameters">
-        /// Any additional parameters that should be available during instantiation of the command group.
-        /// </param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
@@ -136,20 +126,16 @@ namespace Remora.Commands.Services
             string commandNameString,
             IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
             IServiceProvider services,
-            object[]? additionalParameters = null,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
             CancellationToken ct = default
         )
         {
-            additionalParameters ??= Array.Empty<object>();
-
             var prepareCommand = await TryPrepareCommandAsync
             (
                 commandNameString,
                 namedParameters,
                 services,
-                additionalParameters,
                 tokenizerOptions,
                 searchOptions,
                 ct
@@ -162,7 +148,7 @@ namespace Remora.Commands.Services
 
             // At this point, a single candidate remains, so we execute it
             var preparedCommand = prepareCommand.Entity;
-            return await TryExecuteAsync(preparedCommand, services, additionalParameters, ct);
+            return await TryExecuteAsync(preparedCommand, services, ct);
         }
 
         /// <summary>
@@ -170,9 +156,6 @@ namespace Remora.Commands.Services
         /// </summary>
         /// <param name="commandString">The command string.</param>
         /// <param name="services">The services available to the invocation.</param>
-        /// <param name="additionalParameters">
-        /// Any additional parameters that should be available during instantiation of the command group.
-        /// </param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
@@ -183,21 +166,18 @@ namespace Remora.Commands.Services
         (
             string commandString,
             IServiceProvider services,
-            object[]? additionalParameters = null,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
             CancellationToken ct = default
         )
         {
-            additionalParameters ??= Array.Empty<object>();
-
             var searchResults = this.Tree.Search(commandString, tokenizerOptions, searchOptions).ToList();
             if (searchResults.Count == 0)
             {
                 return new CommandNotFoundError(commandString);
             }
 
-            return await TryPrepareCommandAsync(searchResults, services, additionalParameters, ct);
+            return await TryPrepareCommandAsync(searchResults, services, ct);
         }
 
         /// <summary>
@@ -208,9 +188,6 @@ namespace Remora.Commands.Services
         /// </param>
         /// <param name="namedParameters">The named parameters.</param>
         /// <param name="services">The services available to the invocation.</param>
-        /// <param name="additionalParameters">
-        /// Any additional parameters that should be available during instantiation of the command group.
-        /// </param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
@@ -222,14 +199,11 @@ namespace Remora.Commands.Services
             string commandNameString,
             IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
             IServiceProvider services,
-            object[]? additionalParameters = null,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
             CancellationToken ct = default
         )
         {
-            additionalParameters ??= Array.Empty<object>();
-
             var searchResults = this.Tree.Search
             (
                 commandNameString,
@@ -243,7 +217,7 @@ namespace Remora.Commands.Services
                 return new CommandNotFoundError(commandNameString);
             }
 
-            return await TryPrepareCommandAsync(searchResults, services, additionalParameters, ct);
+            return await TryPrepareCommandAsync(searchResults, services, ct);
         }
 
         /// <summary>
@@ -251,25 +225,19 @@ namespace Remora.Commands.Services
         /// </summary>
         /// <param name="preparedCommand">The prepared command.</param>
         /// <param name="services">The services available to the invocation.</param>
-        /// <param name="additionalParameters">
-        /// Any additional parameters that should be available during instantiation of the command group.
-        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
         public async Task<Result<IResult>> TryExecuteAsync
         (
             PreparedCommand preparedCommand,
             IServiceProvider services,
-            object[]? additionalParameters = null,
             CancellationToken ct = default
         )
         {
-            additionalParameters ??= Array.Empty<object>();
-
             var (boundCommandNode, parameters) = preparedCommand;
 
             var groupType = boundCommandNode.Node.GroupType;
-            var groupInstance = CreateInstance<CommandGroup>(services, groupType, additionalParameters);
+            var groupInstance = (CommandGroup)services.GetRequiredService(groupType);
 
             groupInstance.SetCancellationToken(ct);
 
@@ -331,7 +299,6 @@ namespace Remora.Commands.Services
         (
             IReadOnlyList<BoundCommandNode> commandCandidates,
             IServiceProvider services,
-            object[] additionalParameters,
             CancellationToken ct
         )
         {
@@ -342,7 +309,7 @@ namespace Remora.Commands.Services
             // 4) Check parameter conditions
             var preparedCommands = await Task.WhenAll
             (
-                commandCandidates.Select(c => TryPrepareCommandAsync(c, services, additionalParameters, ct))
+                commandCandidates.Select(c => TryPrepareCommandAsync(c, services, ct))
             );
 
             // Then, check if we have to bail out at this point
@@ -357,14 +324,17 @@ namespace Remora.Commands.Services
             }
 
             var errors = preparedCommands.Where(r => !r.IsSuccess).Select(r => r.Error!).ToList();
-            return new AggregateError(errors);
+            return errors.Count switch
+            {
+                1 => Result<PreparedCommand>.FromError(errors[0]),
+                _ => new AggregateError(errors)
+            };
         }
 
         private async Task<Result<PreparedCommand>> TryPrepareCommandAsync
         (
             BoundCommandNode boundCommandNode,
             IServiceProvider services,
-            object[] additionalParameters,
             CancellationToken ct = default
         )
         {
@@ -379,7 +349,6 @@ namespace Remora.Commands.Services
                     services,
                     groupNode,
                     groupTypeWithConditions,
-                    additionalParameters,
                     ct
                 );
 
@@ -407,7 +376,6 @@ namespace Remora.Commands.Services
                 services,
                 boundCommandNode.Node,
                 method,
-                additionalParameters,
                 ct
             );
 
@@ -420,7 +388,6 @@ namespace Remora.Commands.Services
             (
                 boundCommandNode,
                 services,
-                additionalParameters,
                 ct
             );
 
@@ -441,7 +408,6 @@ namespace Remora.Commands.Services
                     boundCommandNode.Node,
                     parameter,
                     value,
-                    additionalParameters,
                     ct
                 );
 
@@ -461,9 +427,6 @@ namespace Remora.Commands.Services
         /// <param name="services">The available services.</param>
         /// <param name="node">The node whose conditions are being checked.</param>
         /// <param name="attributeProvider">The group.</param>
-        /// <param name="additionalParameters">
-        /// Any additional parameters that should be available during instantiation of the command group.
-        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
         private async Task<Result> CheckConditionsAsync
@@ -471,7 +434,6 @@ namespace Remora.Commands.Services
             IServiceProvider services,
             IChildNode? node,
             ICustomAttributeProvider attributeProvider,
-            object[] additionalParameters,
             CancellationToken ct
         )
         {
@@ -502,7 +464,7 @@ namespace Remora.Commands.Services
 
                 var conditions = conditionTypes.Select
                 (
-                    c => CreateInstance<ICondition>(services, c, additionalParameters)
+                    c => (ICondition)services.GetRequiredService(c)
                 );
 
                 foreach (var condition in conditions)
@@ -542,9 +504,6 @@ namespace Remora.Commands.Services
         /// <param name="node">The node whose conditions are being checked.</param>
         /// <param name="parameter">The parameter.</param>
         /// <param name="value">The materialized value of the parameter.</param>
-        /// <param name="additionalParameters">
-        /// Any additional parameters that should be available during instantiation of the command group.
-        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A condition result which may or may not have succeeded.</returns>
         private async Task<Result> CheckConditionsAsync
@@ -553,7 +512,6 @@ namespace Remora.Commands.Services
             IChildNode node,
             ParameterInfo parameter,
             object? value,
-            object[] additionalParameters,
             CancellationToken ct
         )
         {
@@ -588,7 +546,7 @@ namespace Remora.Commands.Services
 
                 var conditions = conditionTypes.Select
                 (
-                    c => CreateInstance<ICondition>(services, c, additionalParameters)
+                    c => (ICondition)services.GetRequiredService(c)
                 );
 
                 foreach (var condition in conditions)
@@ -625,16 +583,12 @@ namespace Remora.Commands.Services
         /// </summary>
         /// <param name="boundCommandNode">The bound command node.</param>
         /// <param name="services">The available services.</param>
-        /// <param name="additionalParameters">
-        /// Any additional parameters that should be available during instantiation of the command group.
-        /// </param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>A sorted array of materialized parameters.</returns>
         private async Task<Result<object?[]>> MaterializeParametersAsync
         (
             BoundCommandNode boundCommandNode,
             IServiceProvider services,
-            object[] additionalParameters,
             CancellationToken ct
         )
         {
@@ -736,29 +690,14 @@ namespace Remora.Commands.Services
         private TInstance CreateInstance<TInstance>
         (
             IServiceProvider services,
-            Type typeToCreate,
-            object[] additionalParameters
+            Type typeToCreate
         )
         {
-            try
-            {
-                return (TInstance)ActivatorUtilities.CreateInstance
-                (
-                    services,
-                    typeToCreate,
-                    additionalParameters
-                );
-            }
-            catch (InvalidOperationException)
-            {
-                // Try without offering additional parameters; this method has a bad habit of throwing if it can't
-                // match all provided extra parameters.
-                return (TInstance)ActivatorUtilities.CreateInstance
-                (
-                    services,
-                    typeToCreate
-                );
-            }
+            return (TInstance)ActivatorUtilities.CreateInstance
+            (
+                services,
+                typeToCreate
+            );
         }
     }
 }

@@ -66,6 +66,20 @@ namespace Remora.Commands.Extensions
             Type commandModule
         )
         {
+            void AddGroupsScoped(Type groupType)
+            {
+                foreach (var nestedType in groupType.GetNestedTypes())
+                {
+                    if (!nestedType.IsSubclassOf(typeof(CommandGroup)))
+                    {
+                        continue;
+                    }
+
+                    serviceCollection.TryAddScoped(nestedType);
+                    AddGroupsScoped(nestedType);
+                }
+            }
+
             if (!commandModule.IsSubclassOf(typeof(CommandGroup)))
             {
                 throw new ArgumentException(
@@ -77,6 +91,9 @@ namespace Remora.Commands.Extensions
             (
                 builder => builder.RegisterModule(commandModule)
             );
+
+            serviceCollection.TryAddScoped(commandModule);
+            AddGroupsScoped(commandModule);
 
             return serviceCollection;
         }
@@ -196,6 +213,8 @@ namespace Remora.Commands.Extensions
         ) where TCondition : class, ICondition
         {
             serviceCollection.Configure<TypeRepository<ICondition>>(tr => tr.RegisterType<TCondition>());
+            serviceCollection.TryAddScoped<TCondition>();
+
             return serviceCollection;
         }
     }
