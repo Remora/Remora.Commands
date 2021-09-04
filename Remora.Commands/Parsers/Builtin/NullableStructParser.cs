@@ -24,6 +24,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
 using Remora.Results;
@@ -33,6 +34,7 @@ namespace Remora.Commands.Parsers
     /// <summary>
     /// Parses nullable structs.
     /// </summary>
+    [PublicAPI]
     public class NullableStructParser : AbstractTypeParser
     {
         private readonly TypeParserService _typeParserService;
@@ -58,16 +60,11 @@ namespace Remora.Commands.Parsers
         /// <inheritdoc/>
         public override async ValueTask<Result<object?>> TryParseAsync
         (
-            string? token,
+            string token,
             Type type,
             CancellationToken ct = default
         )
         {
-            if (token is null or "null")
-            {
-                return Result<object?>.FromSuccess(null);
-            }
-
             var concreteType = type.GetGenericArguments().Single();
 
             var tryParse = await _typeParserService.TryParseAsync(_services, token, concreteType, ct);

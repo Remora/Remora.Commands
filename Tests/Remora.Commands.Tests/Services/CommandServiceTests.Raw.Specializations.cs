@@ -261,6 +261,82 @@ namespace Remora.Commands.Tests.Services
 
                     Assert.True(executionResult.IsSuccess);
                 }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a nullable reference type parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNullableReferenceTypeCommand()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test nullable-reference-type -v 0",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a nullable reference type parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNullableReferenceTypeCommandWithDefaultValue()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test nullable-reference-type-with-default -v 0",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+
+                    executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test nullable-reference-type-with-default",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
+
+                /// <summary>
+                /// Tests whether the command service can execute a command with a nullable reference type parameter.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task CanExecuteNullableReferenceTypeCommandWithNullLiteral()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<SpecializedCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+
+                    var executionResult = await commandService.TryExecuteAsync
+                    (
+                        "test nullable-reference-type -v null",
+                        services
+                    );
+
+                    Assert.True(executionResult.IsSuccess);
+                }
             }
         }
     }

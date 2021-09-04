@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Conditions;
+using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
 using Remora.Commands.Results;
 using Remora.Commands.Signatures;
@@ -592,7 +593,16 @@ namespace Remora.Commands.Services
                     continue;
                 }
 
-                var typeToParse = parameter.ParameterType;
+                // Special case: nullability
+                if (boundParameter.ParameterShape.Parameter.AllowsNull())
+                {
+                    // Support null literals
+                    if (boundParameter.Tokens.Count == 1 && boundParameter.Tokens[0] is "null")
+                    {
+                        materializedParameters.Add(null);
+                        continue;
+                    }
+                }
 
                 // Special case: switches
                 if (boundParameter.ParameterShape is SwitchParameterShape)
@@ -625,7 +635,7 @@ namespace Remora.Commands.Services
                     (
                         services,
                         value,
-                        typeToParse,
+                        parameter.ParameterType,
                         ct
                     );
 
@@ -640,7 +650,7 @@ namespace Remora.Commands.Services
                     (
                         services,
                         boundParameter.Tokens,
-                        typeToParse,
+                        parameter.ParameterType,
                         ct
                     );
 

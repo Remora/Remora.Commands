@@ -79,5 +79,17 @@ namespace Remora.Commands.Tests.Data.Modules
         {
             return Task.FromResult<IResult>(Result.FromSuccess());
         }
+
+        [Command("nullable-reference-type")]
+        public Task<IResult> NullableReferenceType([Option('v', "value")] string? value)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+
+        [Command("nullable-reference-type-with-default")]
+        public Task<IResult> NullableReferenceTypeWithDefault([Option('v', "value")] string? value = default)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
     }
 }

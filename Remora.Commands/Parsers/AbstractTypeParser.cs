@@ -101,7 +101,7 @@ namespace Remora.Commands.Parsers
         /// <inheritdoc/>
         public virtual ValueTask<Result<object?>> TryParseAsync
         (
-            string? value,
+            string token,
             Type type,
             CancellationToken ct = default
         )
