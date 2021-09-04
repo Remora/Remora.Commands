@@ -47,7 +47,7 @@ namespace Remora.Commands.Parsers
         /// <inheritdoc />
         public virtual ValueTask<Result<TType>> TryParseAsync
         (
-            string? token,
+            string token,
             CancellationToken ct = default
         )
             => new(new InvalidOperationError("This parser doesn't support single-token parsing."));
