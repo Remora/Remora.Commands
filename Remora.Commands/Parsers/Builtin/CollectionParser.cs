@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Remora.Commands.Extensions;
@@ -68,7 +69,7 @@ namespace Remora.Commands.Parsers
             var concreteCollectionType = typeof(List<>).MakeGenericType(elementType);
 
             IList collection;
-            var errors = new List<IResultError>();
+            var errors = new List<Result<object?>>();
 
             if (type.IsArray)
             {
@@ -83,7 +84,7 @@ namespace Remora.Commands.Parsers
                     }
                     else
                     {
-                        errors.Add(tryParse.Error);
+                        errors.Add(tryParse);
                     }
                 }
             }
@@ -99,7 +100,7 @@ namespace Remora.Commands.Parsers
                     }
                     else
                     {
-                        errors.Add(tryParse.Error);
+                        errors.Add(tryParse);
                     }
                 }
             }
@@ -107,8 +108,8 @@ namespace Remora.Commands.Parsers
             return errors.Count switch
             {
                 0 => Result<object?>.FromSuccess(collection),
-                1 => Result<object?>.FromError(errors[0]),
-                _ => new AggregateError(errors)
+                1 => errors[0],
+                _ => new AggregateError(errors.Cast<IResult>().ToArray())
             };
         }
     }

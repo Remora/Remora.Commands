@@ -305,11 +305,11 @@ namespace Remora.Commands.Services
                 return preparedCommands.Single(r => r.IsSuccess).Entity;
             }
 
-            var errors = preparedCommands.Where(r => !r.IsSuccess).Select(r => r.Error!).ToList();
+            var errors = preparedCommands.Where(r => !r.IsSuccess).ToList();
             return errors.Count switch
             {
                 1 => Result<PreparedCommand>.FromError(errors[0]),
-                _ => new AggregateError(errors)
+                _ => new AggregateError(errors.Cast<IResult>().ToArray())
             };
         }
 

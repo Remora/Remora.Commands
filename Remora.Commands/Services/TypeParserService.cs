@@ -81,7 +81,7 @@ namespace Remora.Commands.Services
         {
             var compatibleParsers = GetCompatibleParsers(services, type);
 
-            var errors = new List<IResultError>();
+            var errors = new List<Result<object?>>();
             foreach (var compatibleParser in compatibleParsers)
             {
                 var tryParse = await compatibleParser.TryParseAsync(token, type, ct);
@@ -90,14 +90,14 @@ namespace Remora.Commands.Services
                     return tryParse;
                 }
 
-                errors.Add(tryParse.Error);
+                errors.Add(tryParse);
             }
 
             return errors.Count switch
             {
                 0 => new MissingParserError(type),
-                1 => Result<object?>.FromError(errors[0]),
-                _ => new AggregateError(errors)
+                1 => errors[0],
+                _ => new AggregateError(errors.Cast<IResult>().ToArray())
             };
         }
 
@@ -143,7 +143,7 @@ namespace Remora.Commands.Services
         {
             var compatibleParsers = GetCompatibleParsers(services, type);
 
-            var errors = new List<IResultError>();
+            var errors = new List<Result<object?>>();
             foreach (var compatibleParser in compatibleParsers)
             {
                 var tryParse = await compatibleParser.TryParseAsync(tokens, type, ct);
@@ -152,14 +152,14 @@ namespace Remora.Commands.Services
                     return tryParse;
                 }
 
-                errors.Add(tryParse.Error);
+                errors.Add(tryParse);
             }
 
             return errors.Count switch
             {
                 0 => new MissingParserError(type),
-                1 => Result<object?>.FromError(errors[0]),
-                _ => new AggregateError(errors)
+                1 => errors[0],
+                _ => new AggregateError(errors.Cast<IResult>().ToArray())
             };
         }
 

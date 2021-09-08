@@ -6,26 +6,16 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>7.0.1</Version>
+        <Version>7.0.2</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Remove now-unused method.
-            Trim before checking for null.
-            Improve support for nullable literals.
-            Add a method for checking the nullability of a parameter.
-            Add tests where a null literal is passed.
-            Eliminate the use of TypeRepository.
-            Remove now-redundant disposal calls.
-            Properly register command groups and conditions.
-            Return an aggregate error to improve error data.
-            Fix warnings.
-            Rework the parser infrastructure.
+            Update Remora.Results.
         </PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
-      <PackageReference Include="Remora.Results" Version="6.1.0" />
+      <PackageReference Include="Remora.Results" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
