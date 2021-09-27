@@ -111,6 +111,93 @@ namespace Remora.Commands.Trees
         }
 
         /// <summary>
+        /// Searches the command tree for a command that matches the shape of the given command name string, and its
+        /// named parameters. In this case, positional parameters are not supported; they are matched against their
+        /// in-source names instead.
+        /// </summary>
+        /// <param name="commandPath">The named command string.</param>
+        /// <param name="namedParameters">The named parameters.</param>
+        /// <param name="searchOptions">A set of search options.</param>
+        /// <returns>The matching command nodes.</returns>
+        public IEnumerable<BoundCommandNode> Search
+        (
+            IReadOnlyList<string> commandPath,
+            IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
+            TreeSearchOptions? searchOptions = null
+        )
+        {
+            searchOptions ??= new TreeSearchOptions();
+
+            var matchingNodes = Search(this.Root, commandPath, searchOptions);
+            var boundNodes = matchingNodes
+                .Select
+                (
+                    c =>
+                    (
+                        IsSuccess: c.TryBind(namedParameters, out var boundCommandNode, searchOptions),
+                        BoundCommandNode: boundCommandNode
+                    )
+                )
+                .Where(kvp => kvp.IsSuccess)
+                .Select(kvp => kvp.BoundCommandNode!);
+
+            return boundNodes;
+        }
+
+        /// <summary>
+        /// Performs a depth-first search of the given node.
+        /// </summary>
+        /// <param name="parentNode">The node.</param>
+        /// <param name="commandPath">The command path.</param>
+        /// <param name="searchOptions">A set of search options.</param>
+        /// <returns>The matching nodes.</returns>
+        private IEnumerable<CommandNode> Search
+        (
+            IParentNode parentNode,
+            IReadOnlyList<string> commandPath,
+            TreeSearchOptions searchOptions
+        )
+        {
+            var commandNodes = new List<CommandNode>();
+
+            foreach (var pathComponent in commandPath)
+            {
+                foreach (var child in parentNode.Children)
+                {
+                    if (!IsNodeMatch(child, pathComponent, searchOptions))
+                    {
+                        continue;
+                    }
+
+                    switch (child)
+                    {
+                        case CommandNode commandNode:
+                        {
+                            commandNodes.Add(commandNode);
+                            break;
+                        }
+                        case IParentNode groupNode:
+                        {
+                            var nestedResults = Search(groupNode, commandPath.Skip(1).ToList(), searchOptions);
+                            commandNodes.AddRange(nestedResults);
+
+                            continue;
+                        }
+                        default:
+                        {
+                            throw new InvalidOperationException
+                            (
+                                "Unknown node type encountered; tree is invalid and the search cannot continue."
+                            );
+                        }
+                    }
+                }
+            }
+
+            return commandNodes;
+        }
+
+        /// <summary>
         /// Performs a depth-first search of the given node.
         /// </summary>
         /// <param name="parentNode">The node.</param>
@@ -285,6 +372,31 @@ namespace Remora.Commands.Trees
             foreach (var alias in node.Aliases)
             {
                 if (tokenizer.Current.Value.Equals(alias, searchOptions.KeyComparison))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether a node matches the given path component.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <param name="pathComponent">The pathComponent.</param>
+        /// <param name="searchOptions">A set of search options.</param>
+        /// <returns>true if the node matches; otherwise, false.</returns>
+        private bool IsNodeMatch(IChildNode node, ReadOnlySpan<char> pathComponent, TreeSearchOptions searchOptions)
+        {
+            if (pathComponent.Equals(node.Key, searchOptions.KeyComparison))
+            {
+                return true;
+            }
+
+            foreach (var alias in node.Aliases)
+            {
+                if (pathComponent.Equals(alias, searchOptions.KeyComparison))
                 {
                     return true;
                 }

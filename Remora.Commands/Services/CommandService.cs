@@ -148,6 +148,49 @@ namespace Remora.Commands.Services
         }
 
         /// <summary>
+        /// Attempts to find and execute a command that matches the given command string and associated named
+        /// parameters.
+        /// </summary>
+        /// <param name="commandPath">
+        /// The command path, that is, the sequential components of the full command name.
+        /// </param>
+        /// <param name="namedParameters">The named parameters.</param>
+        /// <param name="services">The services available to the invocation.</param>
+        /// <param name="tokenizerOptions">The tokenizer options.</param>
+        /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>An execution result which may or may not have succeeded.</returns>
+        public async Task<Result<IResult>> TryExecuteAsync
+        (
+            IReadOnlyList<string> commandPath,
+            IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
+            IServiceProvider services,
+            TokenizerOptions? tokenizerOptions = null,
+            TreeSearchOptions? searchOptions = null,
+            CancellationToken ct = default
+        )
+        {
+            var prepareCommand = await TryPrepareCommandAsync
+            (
+                commandPath,
+                namedParameters,
+                services,
+                tokenizerOptions,
+                searchOptions,
+                ct
+            );
+
+            if (!prepareCommand.IsSuccess)
+            {
+                return Result<IResult>.FromError(prepareCommand);
+            }
+
+            // At this point, a single candidate remains, so we execute it
+            var preparedCommand = prepareCommand.Entity;
+            return await TryExecuteAsync(preparedCommand, services, ct);
+        }
+
+        /// <summary>
         /// Attempts to find and prepare a command for execution, but does not actually execute it.
         /// </summary>
         /// <param name="commandString">The command string.</param>
@@ -211,6 +254,45 @@ namespace Remora.Commands.Services
             if (searchResults.Count == 0)
             {
                 return new CommandNotFoundError(commandNameString);
+            }
+
+            return await TryPrepareCommandAsync(searchResults, services, ct);
+        }
+
+        /// <summary>
+        /// Attempts to find and prepare a command for execution, but does not actually execute it.
+        /// </summary>
+        /// <param name="commandPath">
+        /// The command path, that is, the sequential components of the full command name.
+        /// </param>
+        /// <param name="namedParameters">The named parameters.</param>
+        /// <param name="services">The services available to the invocation.</param>
+        /// <param name="tokenizerOptions">The tokenizer options.</param>
+        /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="ct">The cancellation token for this operation.</param>
+        /// <returns>
+        /// A result which may or may not have succeeded, containing the node and its materialized parameters.
+        /// </returns>
+        public async Task<Result<PreparedCommand>> TryPrepareCommandAsync
+        (
+            IReadOnlyList<string> commandPath,
+            IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
+            IServiceProvider services,
+            TokenizerOptions? tokenizerOptions = null,
+            TreeSearchOptions? searchOptions = null,
+            CancellationToken ct = default
+        )
+        {
+            var searchResults = this.Tree.Search
+            (
+                commandPath,
+                namedParameters,
+                searchOptions
+            ).ToList();
+
+            if (searchResults.Count == 0)
+            {
+                return new CommandNotFoundError(string.Join(' ', commandPath));
             }
 
             return await TryPrepareCommandAsync(searchResults, services, ct);
