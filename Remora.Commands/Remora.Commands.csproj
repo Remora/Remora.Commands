@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>7.0.2</Version>
+        <Version>7.1.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Update Remora.Results.
+            Add support for using a preparsed command path.
         </PackageReleaseNotes>
     </PropertyGroup>
 
