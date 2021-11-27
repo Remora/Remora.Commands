@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>7.1.4</Version>
+        <Version>7.1.5</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
             Update dependencies.
@@ -15,7 +15,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-      <PackageReference Include="Remora.Results" Version="7.0.3" />
+      <PackageReference Include="Remora.Results" Version="7.1.0" />
     </ItemGroup>
 
     <ItemGroup>
