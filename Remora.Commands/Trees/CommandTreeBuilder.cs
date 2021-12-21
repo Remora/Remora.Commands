@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -190,13 +191,16 @@ namespace Remora.Commands.Trees
                     );
                 }
 
+                var descriptionAttribute = method.GetCustomAttribute<DescriptionAttribute>();
+
                 yield return new CommandNode
                 (
                     parent,
                     commandAttribute.Name,
                     moduleType,
                     method,
-                    commandAttribute.Aliases
+                    commandAttribute.Aliases,
+                    descriptionAttribute?.Description ?? null
                 );
             }
         }
