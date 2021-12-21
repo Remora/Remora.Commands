@@ -42,6 +42,11 @@ namespace Remora.Commands.Trees.Nodes
         string Key { get; }
 
         /// <summary>
+        /// Gets a user-configured description of the node.
+        /// </summary>
+        string Description { get; }
+
+        /// <summary>
         /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
         /// </summary>
         IReadOnlyList<string> Aliases { get; }
