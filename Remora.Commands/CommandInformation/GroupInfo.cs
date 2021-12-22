@@ -31,6 +31,7 @@ namespace Remora.Commands.CommandInformation
         string? Description,
         IReadOnlyList<string> Aliases,
         bool Hidden,
+        string? HiddenFromHelpComment,
         IReadOnlyList<ICommandInfo> Commands,
         IReadOnlyList<IGroupInfo> ChildGroups
     ) : IGroupInfo;

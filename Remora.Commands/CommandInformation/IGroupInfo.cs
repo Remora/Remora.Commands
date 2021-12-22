@@ -50,6 +50,11 @@ namespace Remora.Commands.CommandInformation
         bool Hidden { get; }
 
         /// <summary>
+        /// Gets a comment describing why the group is hidden.
+        /// </summary>
+        string? HiddenFromHelpComment { get; }
+
+        /// <summary>
         /// Gets a list of commands contained in this group.
         /// </summary>
         IReadOnlyList<ICommandInfo> Commands { get; }
