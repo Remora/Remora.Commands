@@ -158,38 +158,39 @@ namespace Remora.Commands.Trees
             TreeSearchOptions searchOptions
         )
         {
-            var commandNodes = new List<CommandNode>();
-
-            foreach (var pathComponent in commandPath)
+            if (commandPath.Count < 1)
             {
-                foreach (var child in parentNode.Children)
+                return Array.Empty<CommandNode>();
+            }
+
+            var commandNodes = new List<CommandNode>();
+            foreach (var child in parentNode.Children)
+            {
+                if (!IsNodeMatch(child, commandPath[0], searchOptions))
                 {
-                    if (!IsNodeMatch(child, pathComponent, searchOptions))
+                    continue;
+                }
+
+                switch (child)
+                {
+                    case CommandNode commandNode:
                     {
+                        commandNodes.Add(commandNode);
+                        break;
+                    }
+                    case IParentNode groupNode:
+                    {
+                        var nestedResults = Search(groupNode, commandPath.Skip(1).ToList(), searchOptions);
+                        commandNodes.AddRange(nestedResults);
+
                         continue;
                     }
-
-                    switch (child)
+                    default:
                     {
-                        case CommandNode commandNode:
-                        {
-                            commandNodes.Add(commandNode);
-                            break;
-                        }
-                        case IParentNode groupNode:
-                        {
-                            var nestedResults = Search(groupNode, commandPath.Skip(1).ToList(), searchOptions);
-                            commandNodes.AddRange(nestedResults);
-
-                            continue;
-                        }
-                        default:
-                        {
-                            throw new InvalidOperationException
-                            (
-                                "Unknown node type encountered; tree is invalid and the search cannot continue."
-                            );
-                        }
+                        throw new InvalidOperationException
+                        (
+                            "Unknown node type encountered; tree is invalid and the search cannot continue."
+                        );
                     }
                 }
             }
