@@ -6,10 +6,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>7.1.5</Version>
+        <Version>7.2.0</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Update dependencies.
+            Fix an edge case where searching a tree would return invalid results.
+            Add ambigious commands parameter to AmbigiousCommandInvocationError.
         </PackageReleaseNotes>
     </PropertyGroup>
 
@@ -19,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="IsExternalInit" Version="1.0.1" PrivateAssets="all" />
+        <PackageReference Include="IsExternalInit" Version="1.0.2" PrivateAssets="all" />
     </ItemGroup>
 
 </Project>
