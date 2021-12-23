@@ -379,7 +379,12 @@ namespace Remora.Commands.Services
             // Then, check if we have to bail out at this point
             if (preparedCommands.Count(r => r.IsSuccess) > 1)
             {
-                return new AmbiguousCommandInvocationError();
+                var ambiguousCommands = preparedCommands
+                    .Where(r => r.IsSuccess)
+                    .Select(r => r.Entity)
+                    .ToArray();
+
+                return new AmbiguousCommandInvocationError(ambiguousCommands);
             }
 
             if (preparedCommands.Any(r => r.IsSuccess))
