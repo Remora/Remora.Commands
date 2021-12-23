@@ -37,6 +37,6 @@ namespace Remora.Commands.Results
         /// <summary>
         /// Gets the potential commands that could have been executed.
         /// </summary>
-        public IReadOnlyList<PreparedCommand> CommandCandidates { get; init; }
+        public IReadOnlyList<PreparedCommand>? CommandCandidates { get; init; }
     }
 }
