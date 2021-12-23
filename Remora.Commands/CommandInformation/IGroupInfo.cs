@@ -1,5 +1,5 @@
-//
-//  IChildNode.cs
+﻿//
+//  IGroupInfo.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -21,34 +21,47 @@
 //
 
 using System.Collections.Generic;
-using JetBrains.Annotations;
 
-namespace Remora.Commands.Trees.Nodes
+namespace Remora.Commands.CommandInformation
 {
     /// <summary>
-    /// Defines the public interface of a child node.
+    /// Contains information about a specific command group.
     /// </summary>
-    [PublicAPI]
-    public interface IChildNode
+    public interface IGroupInfo
     {
         /// <summary>
-        /// Gets the parent of this node.
+        /// Gets the name of the group.
         /// </summary>
-        IParentNode Parent { get; }
+        string Name { get; }
 
         /// <summary>
-        /// Gets the key value of this node. This value is not guaranteed to be unique among its siblings.
+        /// Gets the group's description, if any.
         /// </summary>
-        string Key { get; }
+        string? Description { get; }
 
         /// <summary>
-        /// Gets a user-configured description of the node.
-        /// </summary>
-        string Description { get; }
-
-        /// <summary>
-        /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
+        /// Gets a read-only list of the group's aliases.
         /// </summary>
         IReadOnlyList<string> Aliases { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the command group was requested to be hidden from help commands.
+        /// </summary>
+        bool Hidden { get; }
+
+        /// <summary>
+        /// Gets a comment describing why the group is hidden.
+        /// </summary>
+        string? HiddenFromHelpComment { get; }
+
+        /// <summary>
+        /// Gets a list of commands contained in this group.
+        /// </summary>
+        IReadOnlyList<ICommandInfo> Commands { get; }
+
+        /// <summary>
+        /// Gets a list of child groups contained in this group tree.
+        /// </summary>
+        IReadOnlyList<IGroupInfo> ChildGroups { get; }
     }
 }

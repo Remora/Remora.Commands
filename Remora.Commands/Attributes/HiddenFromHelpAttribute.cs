@@ -1,5 +1,5 @@
-//
-//  IChildNode.cs
+﻿//
+//  HiddenFromHelpAttribute.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,35 +20,31 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
-using JetBrains.Annotations;
+using System;
 
-namespace Remora.Commands.Trees.Nodes
+namespace Remora.Commands.Attributes
 {
     /// <summary>
-    /// Defines the public interface of a child node.
+    /// Marks a command or group as being hidden from the help service.
     /// </summary>
-    [PublicAPI]
-    public interface IChildNode
+    /// <remarks>
+    /// This attribute represents a request to be hidden. The implementing
+    /// service may or may not respect this request.
+    /// </remarks>
+    public sealed class HiddenFromHelpAttribute : Attribute
     {
         /// <summary>
-        /// Gets the parent of this node.
+        /// Gets a comment provided by the developer, if any.
         /// </summary>
-        IParentNode Parent { get; }
+        public string? Comment { get; }
 
         /// <summary>
-        /// Gets the key value of this node. This value is not guaranteed to be unique among its siblings.
+        /// Initializes a new instance of the <see cref="HiddenFromHelpAttribute"/> class.
         /// </summary>
-        string Key { get; }
-
-        /// <summary>
-        /// Gets a user-configured description of the node.
-        /// </summary>
-        string Description { get; }
-
-        /// <summary>
-        /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
-        /// </summary>
-        IReadOnlyList<string> Aliases { get; }
+        /// <param name="comment">A comment describing why this is hidden or any relevant notes. May be displayed by the help service.</param>
+        public HiddenFromHelpAttribute(string? comment = null)
+        {
+            Comment = comment;
+        }
     }
 }

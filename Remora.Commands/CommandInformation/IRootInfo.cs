@@ -1,5 +1,5 @@
-//
-//  IChildNode.cs
+﻿//
+//  IRootInfo.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -21,34 +21,22 @@
 //
 
 using System.Collections.Generic;
-using JetBrains.Annotations;
 
-namespace Remora.Commands.Trees.Nodes
+namespace Remora.Commands.CommandInformation
 {
     /// <summary>
-    /// Defines the public interface of a child node.
+    /// Provides information about the command root, gathering all children of root level.
     /// </summary>
-    [PublicAPI]
-    public interface IChildNode
+    public interface IRootInfo
     {
         /// <summary>
-        /// Gets the parent of this node.
+        /// Gets a read-only list of the groups which live at the root.
         /// </summary>
-        IParentNode Parent { get; }
+        IReadOnlyList<IGroupInfo> Groups { get; }
 
         /// <summary>
-        /// Gets the key value of this node. This value is not guaranteed to be unique among its siblings.
+        /// Gets a read-only list of the commands which live at the root.
         /// </summary>
-        string Key { get; }
-
-        /// <summary>
-        /// Gets a user-configured description of the node.
-        /// </summary>
-        string Description { get; }
-
-        /// <summary>
-        /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
-        /// </summary>
-        IReadOnlyList<string> Aliases { get; }
+        IReadOnlyList<ICommandInfo> Commands { get; }
     }
 }

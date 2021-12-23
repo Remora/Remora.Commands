@@ -1,5 +1,5 @@
-//
-//  IChildNode.cs
+﻿//
+//  IConditionInfo.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -21,34 +21,27 @@
 //
 
 using System.Collections.Generic;
-using JetBrains.Annotations;
 
-namespace Remora.Commands.Trees.Nodes
+namespace Remora.Commands.CommandInformation
 {
     /// <summary>
-    /// Defines the public interface of a child node.
+    /// Contains information about a specific command condition.
     /// </summary>
-    [PublicAPI]
-    public interface IChildNode
+    public interface IConditionInfo
     {
         /// <summary>
-        /// Gets the parent of this node.
+        /// Gets the display name of the condition.
         /// </summary>
-        IParentNode Parent { get; }
+        string Name { get; }
 
         /// <summary>
-        /// Gets the key value of this node. This value is not guaranteed to be unique among its siblings.
+        /// Gets the description of the condition, if any.
         /// </summary>
-        string Key { get; }
+        string? Description { get; }
 
         /// <summary>
-        /// Gets a user-configured description of the node.
+        /// Gets a list of properties belonging to the condition this type represents.
         /// </summary>
-        string Description { get; }
-
-        /// <summary>
-        /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
-        /// </summary>
-        IReadOnlyList<string> Aliases { get; }
+        IReadOnlyList<IConditionPropertyInfo> ConditionProperties { get; }
     }
 }

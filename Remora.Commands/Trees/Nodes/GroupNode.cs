@@ -55,9 +55,7 @@ namespace Remora.Commands.Trees.Nodes
         /// <inheritdoc />
         public IReadOnlyList<string> Aliases { get; }
 
-        /// <summary>
-        /// Gets a user-configured description of the group.
-        /// </summary>
+        /// <inheritdoc />
         public string Description { get; }
 
         /// <summary>
