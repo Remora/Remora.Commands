@@ -384,7 +384,7 @@ namespace Remora.Commands.Services
                     .Select(r => r.Entity)
                     .ToArray();
 
-                return new AmbiguousCommandInvocationError(ambiguousCommands);
+                return new AmbiguousCommandInvocationError() { CommandCandidates = ambiguousCommands };
             }
 
             if (preparedCommands.Any(r => r.IsSuccess))
