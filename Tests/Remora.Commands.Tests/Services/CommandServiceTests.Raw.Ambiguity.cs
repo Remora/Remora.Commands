@@ -58,6 +58,26 @@ namespace Remora.Commands.Tests.Services
                     Assert.False(executionResult.IsSuccess);
                     Assert.IsType<AmbiguousCommandInvocationError>(executionResult.Error);
                 }
+
+                /// <summary>
+                /// Tests whether the command service returns all ambiguous commands when a command route cannot be determined.
+                /// </summary>
+                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+                [Fact]
+                public async Task ReturnsAmbiguousCanidates()
+                {
+                    var services = new ServiceCollection()
+                        .AddCommands()
+                        .AddCommandGroup<AmbiguousCommandGroup>()
+                        .BuildServiceProvider();
+
+                    var commandService = services.GetRequiredService<CommandService>();
+                    var executionResult = await commandService.TryExecuteAsync("test command 0", services);
+
+                    Assert.False(executionResult.IsSuccess);
+                    Assert.IsType<AmbiguousCommandInvocationError>(executionResult.Error);
+                    Assert.Equal(2, ((AmbiguousCommandInvocationError?)executionResult.Error!)?.CommandCandidates?.Count ?? 0);
+                }
             }
         }
     }
