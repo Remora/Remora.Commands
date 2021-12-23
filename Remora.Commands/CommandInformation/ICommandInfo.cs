@@ -21,6 +21,7 @@
 //
 
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Remora.Commands.CommandInformation
 {
@@ -62,6 +63,6 @@ namespace Remora.Commands.CommandInformation
         /// <summary>
         /// Gets a read-only list of any command arguments.
         /// </summary>
-        IReadOnlyList<ICommandArgumentInfo> Arguments { get; }
+        IReadOnlyList<ParameterInfo> Arguments { get; }
     }
 }

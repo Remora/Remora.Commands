@@ -22,21 +22,22 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
+using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.CommandInformation;
 using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
-using Remora.Commands.Results;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
 namespace Remora.Commands.Services
 {
     /// <inheritdoc />
+    [PublicAPI]
     public sealed class CommandHelpService : ICommandHelpService
     {
         private readonly CommandService _commandService;
@@ -51,26 +52,115 @@ namespace Remora.Commands.Services
         }
 
         /// <inheritdoc />
-        public Result<ICommandInfo> GetCommandInfo(string commandPath)
+        public Result<OneOf<IGroupInfo, ICommandInfo, ICommandInfo[]>> FindInfo(string commandString, Tokenization.TokenizerOptions? tokenizerOptions = null, Trees.TreeSearchOptions? treeSearchOptions = null)
         {
-            throw new NotImplementedException();
+            tokenizerOptions ??= new Tokenization.TokenizerOptions();
+            treeSearchOptions ??= new Trees.TreeSearchOptions();
+
+            if (string.IsNullOrWhiteSpace(commandString))
+            {
+                return new ArgumentNullError(nameof(commandString), "Command String cannot be null, empty, or comprised entirely of whitespace.");
+            }
+
+            var parts = commandString.Split(tokenizerOptions.Delimiter);
+
+            // Walk the tree
+            IParentNode parentNode = _commandService.Tree.Root;
+            List<IChildNode> childNodes = new();
+            foreach (var part in parts)
+            {
+                // Search for a child node matching the name of the next item in the sequence.
+                var foundNodes = parentNode.Children.Where(child => child.Key.Equals(part, treeSearchOptions.KeyComparison)).ToList();
+                var firstNode = foundNodes.FirstOrDefault();
+
+                // We searched for a child node with that key, but nothing was found.
+                if (firstNode is null)
+                {
+                    return new NotFoundError($"Cound not find any nodes matching the specified search options.");
+                }
+
+                // A node was found and it is a parent node (probably a group).
+                // TODO: Handle edge case where a node and a command have the same key and we're at the end of the search.
+                if (firstNode is IParentNode parent)
+                {
+                    parentNode = parent;
+                    continue;
+                }
+
+                // A node was found and it is a child node (probably a command).
+                if (firstNode is IChildNode child)
+                {
+                    // Return any possible siblings too.
+                    childNodes = foundNodes;
+                }
+            }
+
+            if (!childNodes.Any() && parentNode is GroupNode group)
+            {
+                var getResult = GetGroupInfo(group);
+                if (getResult.IsDefined(out var groupInfo))
+                {
+                    return OneOf<IGroupInfo, ICommandInfo, ICommandInfo[]>.FromT0(groupInfo);
+                }
+
+                return Result<OneOf<IGroupInfo, ICommandInfo, ICommandInfo[]>>.FromError(getResult);
+            }
+
+            if (childNodes.Any())
+            {
+                if (childNodes.Count() == 1)
+                {
+                    if (childNodes[0] is CommandNode command)
+                    {
+                        var getResult = GetCommandInfo(command);
+                        if (getResult.IsDefined(out var commandInfo))
+                        {
+                            return OneOf<IGroupInfo, ICommandInfo, ICommandInfo[]>.FromT1(commandInfo);
+                        }
+                        return Result<OneOf<IGroupInfo, ICommandInfo, ICommandInfo[]>>.FromError(getResult);
+                    }
+
+                    return new NotSupportedError("Cannot get information for a child node that is not a command node.");
+                }
+
+                // Multiple nodes found
+                var commandInfos = new List<ICommandInfo>();
+                var resultErrors = new List<IResultError>();
+                foreach (var child in childNodes)
+                {
+                    if (child is CommandNode commandNode)
+                    {
+                        var getResult = GetCommandInfo(commandNode);
+                        if (getResult.IsDefined(out var commandInfo))
+                        {
+                            commandInfos.Add(commandInfo);
+                        }
+
+                        resultErrors.Add(getResult.Error!);
+                    }
+                    resultErrors.Add(new NotSupportedError("Cannot get information for a child node that is not a command node."));
+                }
+
+                if (commandInfos.Any())
+                {
+                    return OneOf<IGroupInfo, ICommandInfo, ICommandInfo[]>.FromT2(commandInfos.ToArray());
+                }
+
+                return new AggregateError((IReadOnlyCollection<IResult>)resultErrors.AsReadOnly());
+            }
+
+            return new InvalidOperationError("The search operation failed.");
         }
 
         /// <inheritdoc />
-        public Result<IGroupInfo> GetGroupInfo(string groupPath, bool buildChildGroups = false)
+        public Result<IGroupInfo> GetGroupInfo(Type commandGroupType, bool buildChildGroups = false)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public Result<IGroupInfo> GetGroupInfo<TCommandGroup>(bool buildChildGroups = false)
-            where TCommandGroup : CommandGroup
-        {
-            var groups = _commandService.Tree.Root.Children.Where(x => x is GroupNode && x.Key == typeof(TCommandGroup).Name).Cast<GroupNode>();
+            // TODO: This only finds root-level groups currently. This should also search child groups.
+            var groups = _commandService.Tree.Root.Children.Where(x => x is GroupNode && x.Key == commandGroupType.Name).Cast<GroupNode>();
 
             if (!groups.Any())
             {
-                return new NotFoundError($"Could not find any groups of type '{typeof(TCommandGroup).Name}' registered with the CommandService.");
+                return new NotFoundError($"Could not find any groups of type '{commandGroupType.Name}' registered with the CommandService.");
             }
             else if (groups.Count() == 1)
             {
@@ -83,13 +173,13 @@ namespace Remora.Commands.Services
             else
             {
                 // More than one with the same name.
-                var fullPath = typeof(TCommandGroup).FullName;
+                var fullPath = commandGroupType.FullName;
 
                 var group = groups.FirstOrDefault(group => fullPath.EndsWith(WalkNamespace(group)));
 
                 if (group is null)
                 {
-                    return new NotFoundError($"Could not find the requested group of type '{typeof(TCommandGroup).Name}' registered with the CommandService.");
+                    return new NotFoundError($"Could not find the requested group of type '{commandGroupType.Name}' registered with the CommandService.");
                 }
 
                 var infoResult = GetGroupInfo(group, buildChildGroups);
@@ -97,6 +187,11 @@ namespace Remora.Commands.Services
                 return infoResult;
             }
         }
+
+        /// <inheritdoc />
+        public Result<IGroupInfo> GetGroupInfo<TCommandGroup>(bool buildChildGroups = false)
+            where TCommandGroup : CommandGroup
+            => GetGroupInfo(typeof(TCommandGroup), buildChildGroups);
 
         /// <inheritdoc />
         public Result<IRootInfo> GetAllCommands()
@@ -134,19 +229,55 @@ namespace Remora.Commands.Services
             return new RootInfo(rootGroups.AsReadOnly(), rootCommands.AsReadOnly());
         }
 
-        private Result<ICommandInfo> GetCommandInfo(CommandNode node)
+        private Result<OneOf<ICommandInfo, ICommandInfo[]>> GetCommandInfo(ReadOnlySpan<char> commandString, Tokenization.TokenizerOptions? tokenizerOptions = null, Trees.TreeSearchOptions? searchOptions = null)
+        {
+            var searchResults = _commandService.Tree.Search(commandString, tokenizerOptions, searchOptions);
+
+            if (!searchResults.Any())
+            {
+                return new NotFoundError($"Cound not find any commands matching the specified search options.");
+            }
+
+            List<ICommandInfo> results = new();
+
+            foreach (var result in searchResults)
+            {
+                var hiddenAttribute = result.Node.CommandMethod.GetCustomAttribute<HiddenFromHelpAttribute>();
+
+                results.Add(new CommandInfo
+                (
+                    Name: result.Node.Key,
+                    Description: result.Node.Description,
+                    Aliases: result.Node.Aliases,
+                    Hidden: hiddenAttribute is not null,
+                    HiddenFromHelpComment: hiddenAttribute?.Comment ?? null,
+                    GetConditionInfo(result.Node),
+                    result.Node.CommandMethod.GetParameters()
+                ));
+            }
+
+            return results.Count == 1
+                ? OneOf<ICommandInfo, ICommandInfo[]>.FromT0(results[0])
+                : OneOf<ICommandInfo, ICommandInfo[]>.FromT1(results.ToArray());
+        }
+
+        /// <summary>
+        /// Gets a <see cref="ICommandInfo"/> for the provided <see cref="CommandNode"/>.
+        /// </summary>
+        /// <param name="node">The <see cref="CommandNode"/> to inspect.</param>
+        /// <returns>An <see cref="ICommandInfo"/> built from the provided node.</returns>
+        internal Result<ICommandInfo> GetCommandInfo(CommandNode node)
         {
             var name = node.Key;
             var description = node.Description;
             var aliases = node.Aliases;
 
-            var hiddenAttribute = node.CommandMethod.GetCustomAttribute<HiddenFromHelpAttribute>();
-
             var conditionInfo = GetConditionInfo(node);
-            var argumentInfo = GetCommandArgumentInfo(node);
+            var argumentInfo = node.CommandMethod.GetParameters();
 
             var commandInfo = new CommandInfo(name, description, aliases, false, null, conditionInfo, argumentInfo);
 
+            var hiddenAttribute = node.CommandMethod.GetCustomAttribute<HiddenFromHelpAttribute>();
             if (hiddenAttribute is { } present)
             {
                 return commandInfo with
@@ -159,13 +290,17 @@ namespace Remora.Commands.Services
             return commandInfo;
         }
 
-        private Result<IGroupInfo> GetGroupInfo(GroupNode node, bool buildChildGroups = false)
+        /// <summary>
+        /// Gets a <see cref="IGroupInfo"/> for the provided <see cref="GroupNode"/>.
+        /// </summary>
+        /// <param name="node">The <see cref="GroupNode"/> to inspect.</param>
+        /// <param name="buildChildGroups">If true, child nodes will be created and populated. If false, the <see cref="IGroupInfo.ChildGroups"/> collection will be empty.</param>
+        /// <returns>An <see cref="IGroupInfo"/> built from the provided node.</returns>
+        internal Result<IGroupInfo> GetGroupInfo(GroupNode node, bool buildChildGroups = false)
         {
             var name = node.Key;
             var description = node.Description;
             var aliases = node.Aliases;
-
-            var hiddenAttribute = node.GetType().GetCustomAttribute<HiddenFromHelpAttribute>();
 
             var childCommands = new List<ICommandInfo>();
             var childGroups = new List<IGroupInfo>();
@@ -197,6 +332,7 @@ namespace Remora.Commands.Services
 
             var info = new GroupInfo(name, description, aliases, false, null, childCommands.AsReadOnly(), childGroups.AsReadOnly());
 
+            var hiddenAttribute = node.GetType().GetCustomAttribute<HiddenFromHelpAttribute>();
             if (hiddenAttribute is { } present)
             {
                 return info with
@@ -209,14 +345,23 @@ namespace Remora.Commands.Services
             return info;
         }
 
-        private IReadOnlyList<IConditionInfo> GetConditionInfo(CommandNode node)
+        /// <summary>
+        /// Gets a read-only list of <see cref="IConditionInfo"/>s for the provided <see cref="CommandNode"/>.
+        /// </summary>
+        /// <param name="node">The <see cref="CommandNode"/> to inspect.</param>
+        /// <returns>A read-only list of <see cref="IConditionInfo"/>s built from the provided <see cref="CommandNode"/>.</returns>
+        internal IReadOnlyList<IConditionInfo> GetConditionInfo(CommandNode node)
         {
-            throw new NotImplementedException();
-        }
+            var conditionInfos = new List<IConditionInfo>();
 
-        private IReadOnlyList<ICommandArgumentInfo> GetCommandArgumentInfo(CommandNode node)
-        {
-            throw new NotImplementedException();
+            foreach (var attribute in node.CommandMethod.GetCustomAttributes<ConditionAttribute>())
+            {
+                var type = attribute.GetType();
+
+                conditionInfos.Add(new ConditionInfo(type.Name, type.GetDescriptionOrDefault()));
+            }
+
+            return conditionInfos;
         }
 
         /// <summary>
