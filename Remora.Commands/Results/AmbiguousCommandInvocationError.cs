@@ -20,7 +20,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using Remora.Commands.Services;
 using Remora.Results;
 
 namespace Remora.Commands.Results
@@ -30,5 +32,11 @@ namespace Remora.Commands.Results
     /// </summary>
     [PublicAPI]
     public record AmbiguousCommandInvocationError()
-        : ResultError("Two or more commands could have been executed by that.");
+        : ResultError("Two or more commands could have been executed by that.")
+    {
+        /// <summary>
+        /// Gets the potential commands that could have been executed.
+        /// </summary>
+        public IReadOnlyList<PreparedCommand>? CommandCandidates { get; init; }
+    }
 }
