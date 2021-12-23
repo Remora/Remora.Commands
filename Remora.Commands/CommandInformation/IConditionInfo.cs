@@ -20,6 +20,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Collections.Generic;
+
 namespace Remora.Commands.CommandInformation
 {
     /// <summary>
@@ -36,5 +38,10 @@ namespace Remora.Commands.CommandInformation
         /// Gets the description of the condition, if any.
         /// </summary>
         string? Description { get; }
+
+        /// <summary>
+        /// Gets a list of properties belonging to the condition this type represents.
+        /// </summary>
+        IReadOnlyList<IConditionPropertyInfo> ConditionProperties { get; }
     }
 }

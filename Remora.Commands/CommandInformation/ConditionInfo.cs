@@ -20,8 +20,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Collections.Generic;
+using System.Reflection;
+
 namespace Remora.Commands.CommandInformation
 {
     /// <inheritdoc />
-    public sealed record ConditionInfo(string Name, string? Description) : IConditionInfo;
+    public sealed record ConditionInfo(string Name, string? Description, IReadOnlyList<IConditionPropertyInfo> ConditionProperties) : IConditionInfo;
 }

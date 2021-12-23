@@ -1,5 +1,5 @@
 ﻿//
-//  CommandInfo.cs
+//  IConditionPropertyInfo.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,20 +20,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
+using System;
 using System.Reflection;
 
 namespace Remora.Commands.CommandInformation
 {
-    /// <inheritdoc />
-    public sealed record CommandInfo
-    (
-        string Name,
-        string? Description,
-        IReadOnlyList<string> Aliases,
-        bool Hidden,
-        string? HiddenFromHelpComment,
-        IReadOnlyList<IConditionInfo> Conditions,
-        IReadOnlyList<ParameterInfo> Arguments
-    ) : ICommandInfo;
+    /// <inheritdoc cref="PropertyInfo" />
+    public interface IConditionPropertyInfo
+    {
+        /// <inheritdoc cref="MemberInfo.Name"/>
+        string Name { get; }
+
+        /// <inheritdoc cref="PropertyInfo.CanRead"/>
+        bool CanRead { get; }
+
+        /// <inheritdoc cref="PropertyInfo.CanWrite"/>
+        bool CanWrite { get; }
+
+        /// <inheritdoc cref="PropertyInfo.PropertyType"/>;
+        Type PropertyType { get; }
+
+        /// <summary>
+        /// Gets the value contained in this property.
+        /// </summary>
+        object Value { get; }
+    }
 }
