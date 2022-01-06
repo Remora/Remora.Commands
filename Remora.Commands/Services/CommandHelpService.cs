@@ -244,7 +244,7 @@ namespace Remora.Commands.Services
         }
 
         /// <inheritdoc />
-        public Result<IGroupInfo> GetGroupInfo<TCommandGroup>(bool buildChildGroups = false)
+        public Result<IGroupInfo> GetGroupInfo<TCommandGroup>(bool buildChildGroups = true)
             where TCommandGroup : CommandGroup
             => GetGroupInfo(typeof(TCommandGroup), buildChildGroups);
 
@@ -270,7 +270,7 @@ namespace Remora.Commands.Services
 
                 if (child is GroupNode group)
                 {
-                    var infoResult = GetGroupInfo(group, true);
+                    var infoResult = GetGroupInfo(group);
                     if (infoResult.IsDefined(out var groupInfo))
                     {
                         rootGroups.Add(groupInfo);
@@ -317,7 +317,7 @@ namespace Remora.Commands.Services
         /// <param name="node">The <see cref="GroupNode"/> to inspect.</param>
         /// <param name="buildChildGroups">If true, child nodes will be created and populated. If false, the <see cref="IGroupInfo.ChildGroups"/> collection will be empty.</param>
         /// <returns>An <see cref="IGroupInfo"/> built from the provided node.</returns>
-        internal Result<IGroupInfo> GetGroupInfo(GroupNode node, bool buildChildGroups = false)
+        internal Result<IGroupInfo> GetGroupInfo(GroupNode node, bool buildChildGroups = true)
         {
             var name = node.Key;
             var description = node.Description;

@@ -25,5 +25,9 @@ using OneOf;
 namespace Remora.Commands.CommandInformation
 {
     /// <inheritdoc />
-    public sealed record CommandBranch(IGroupInfo GroupInfo, OneOf<ICommandInfo, ICommandInfo[]> Commands) : ICommandBranch;
+    public sealed record CommandBranch
+    (
+        IGroupInfo GroupInfo,
+        OneOf<ICommandInfo, ICommandInfo[]> Commands
+    ) : ICommandBranch;
 }
