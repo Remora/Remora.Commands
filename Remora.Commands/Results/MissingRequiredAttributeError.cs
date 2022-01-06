@@ -1,5 +1,5 @@
 ﻿//
-//  ConditionInfo.cs
+//  MissingRequiredAttributeError.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,10 +20,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
+using Remora.Results;
 
-namespace Remora.Commands.CommandInformation
+namespace Remora.Commands.Results
 {
-    /// <inheritdoc />
-    public sealed record ConditionInfo(string Name, string? Description, IReadOnlyList<IConditionPropertyInfo> ConditionProperties) : IConditionInfo;
+    /// <summary>
+    /// An error representing when a specific attribute is required but is not present.
+    /// </summary>
+    /// <param name="AttributeName">The name of the attribute, e.g. <i>GroupAttribute</i>.</param>
+    public sealed record MissingRequiredAttributeError(string AttributeName) : ResultError($"Type was expected to be adorned with {AttributeName} but the attribute is not present.");
 }

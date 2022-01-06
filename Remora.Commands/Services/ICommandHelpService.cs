@@ -45,7 +45,7 @@ namespace Remora.Commands.Services
         /// Where "options reload" would normally be the command string passed in place of help.
         /// This would locate a "reload" command located in the "commands" module.
         /// </example>
-        Result<OneOf<IGroupInfo, ICommandInfo, ICommandInfo[]>> FindInfo(string commandString, Tokenization.TokenizerOptions? tokenizerOptions = null, Trees.TreeSearchOptions? treeSearchOptions = null);
+        Result<OneOf<IGroupInfo, ICommandInfo, ICommandInfo[], ICommandBranch>> FindInfo(string commandString, Tokenization.TokenizerOptions? tokenizerOptions = null, Trees.TreeSearchOptions? treeSearchOptions = null);
 
         /// <summary>
         /// Gets information about the specified group.

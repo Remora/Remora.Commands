@@ -27,5 +27,5 @@ namespace Remora.Commands.CommandInformation
 {
     /// <inheritdoc />
     [PublicAPI]
-    public sealed record ConditionPropertyInfo(string Name, bool CanRead, bool CanWrite, Type PropertyType, object Value) : IConditionPropertyInfo;
+    public sealed record ConditionPropertyInfo(string Name, bool CanRead, bool CanWrite, Type PropertyType, object? Value) : IConditionPropertyInfo;
 }

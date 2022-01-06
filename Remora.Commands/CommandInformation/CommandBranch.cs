@@ -1,5 +1,5 @@
 ﻿//
-//  ConditionInfo.cs
+//  CommandBranch.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,10 +20,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
+using OneOf;
 
 namespace Remora.Commands.CommandInformation
 {
     /// <inheritdoc />
-    public sealed record ConditionInfo(string Name, string? Description, IReadOnlyList<IConditionPropertyInfo> ConditionProperties) : IConditionInfo;
+    public sealed record CommandBranch(IGroupInfo GroupInfo, OneOf<ICommandInfo, ICommandInfo[]> Commands) : ICommandBranch;
 }

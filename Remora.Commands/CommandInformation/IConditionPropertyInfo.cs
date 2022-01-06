@@ -43,6 +43,6 @@ namespace Remora.Commands.CommandInformation
         /// <summary>
         /// Gets the value contained in this property.
         /// </summary>
-        object Value { get; }
+        object? Value { get; }
     }
 }
