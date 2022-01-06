@@ -31,6 +31,7 @@ namespace Remora.Commands.Attributes
     /// This attribute represents a request to be hidden. The implementing
     /// service may or may not respect this request.
     /// </remarks>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class HiddenFromHelpAttribute : Attribute
     {
         /// <summary>
