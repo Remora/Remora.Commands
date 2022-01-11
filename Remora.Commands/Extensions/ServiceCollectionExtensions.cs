@@ -25,12 +25,11 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Remora.Commands.Conditions;
+using Remora.Commands.DependencyInjection;
 using Remora.Commands.Groups;
 using Remora.Commands.Parsers;
 using Remora.Commands.Services;
-using Remora.Commands.Trees;
 
 namespace Remora.Commands.Extensions
 {
@@ -41,19 +40,36 @@ namespace Remora.Commands.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Adds a named command tree to the service collection.
+        /// </summary>
+        /// <remarks>
+        /// This method may be called multiple times using the same name; the effects will be cumulative.
+        /// </remarks>
+        /// <param name="serviceCollection">The service collection.</param>
+        /// <param name="treeName">The name of the tree to configure.</param>
+        /// <returns>A builder type that can be used to configure the tree.</returns>
+        public static TreeRegistrationBuilder AddCommandTree
+        (
+            this IServiceCollection serviceCollection,
+            string? treeName = null
+        )
+        {
+            serviceCollection.Configure<CommandTreeAccessorOptions>(o => o.AddTreeName(treeName));
+            return new TreeRegistrationBuilder(treeName, serviceCollection);
+        }
+
+        /// <summary>
         /// Adds a command module to the available services.
         /// </summary>
         /// <typeparam name="TCommandModule">The command module to register.</typeparam>
         /// <param name="serviceCollection">The service collection.</param>
         /// <returns>The service collection, with the configured modules.</returns>
+        [Obsolete("Call AddCommandTree with no arguments instead, and add the group there.")]
         public static IServiceCollection AddCommandGroup<TCommandModule>
         (
             this IServiceCollection serviceCollection
-        )
-            where TCommandModule : CommandGroup
-        {
-            return serviceCollection.AddCommandGroup(typeof(TCommandModule));
-        }
+        ) where TCommandModule : CommandGroup
+            => serviceCollection.AddCommandGroup(typeof(TCommandModule));
 
         /// <summary>
         /// Adds a command module to the available services.
@@ -61,42 +77,17 @@ namespace Remora.Commands.Extensions
         /// <param name="serviceCollection">The service collection.</param>
         /// <param name="commandModule">The command module to register.</param>
         /// <returns>The service collection with the configured modules.</returns>
+        [Obsolete("Call AddCommandTree with no arguments instead, and add the group there.")]
         public static IServiceCollection AddCommandGroup
         (
             this IServiceCollection serviceCollection,
             Type commandModule
         )
         {
-            void AddGroupsScoped(Type groupType)
-            {
-                foreach (var nestedType in groupType.GetNestedTypes())
-                {
-                    if (!nestedType.IsSubclassOf(typeof(CommandGroup)))
-                    {
-                        continue;
-                    }
-
-                    serviceCollection.TryAddScoped(nestedType);
-                    AddGroupsScoped(nestedType);
-                }
-            }
-
-            if (!commandModule.IsSubclassOf(typeof(CommandGroup)))
-            {
-                throw new ArgumentException(
-                    $"{nameof(commandModule)} should inherit from {nameof(CommandGroup)}.",
-                    nameof(commandModule));
-            }
-
-            serviceCollection.Configure<CommandTreeBuilder>
-            (
-                builder => builder.RegisterModule(commandModule)
-            );
-
-            serviceCollection.TryAddScoped(commandModule);
-            AddGroupsScoped(commandModule);
-
-            return serviceCollection;
+            return serviceCollection
+                .AddCommandTree()
+                .WithCommandGroup(commandModule)
+                .Done();
         }
 
         /// <summary>
@@ -109,28 +100,25 @@ namespace Remora.Commands.Extensions
             this IServiceCollection serviceCollection
         )
         {
+            serviceCollection.TryAddSingleton<CommandTreeAccessor>();
+            serviceCollection.TryAddScoped<CommandService>();
+
+            // Default tree access (injecting CommandTree directly)
             serviceCollection.TryAddSingleton
             (
                 services =>
                 {
-                    var treeBuilder = services.GetRequiredService<IOptions<CommandTreeBuilder>>();
-                    return treeBuilder.Value.Build();
-                }
-            );
+                    var treeAccessor = services.GetRequiredService<CommandTreeAccessor>();
+                    if (!treeAccessor.TryGetNamedTree(null, out var tree))
+                    {
+                        throw new InvalidOperationException("No default tree available. Bug?");
+                    }
 
-            serviceCollection.TryAddScoped
-            (
-                services =>
-                {
-                    var tree = services.GetRequiredService<CommandTree>();
-                    var parserService = services.GetRequiredService<TypeParserService>();
-
-                    return new CommandService(tree, parserService);
+                    return tree;
                 }
             );
 
             serviceCollection.TryAddSingleton<TypeParserService>();
-
             serviceCollection
                 .AddParser<CharParser>()
                 .AddParser<BooleanParser>()

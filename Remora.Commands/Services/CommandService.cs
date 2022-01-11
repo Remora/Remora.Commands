@@ -49,22 +49,22 @@ namespace Remora.Commands.Services
         private readonly TypeParserService _typeParserService;
 
         /// <summary>
-        /// Gets the tree of registered commands.
+        /// Gets the service through which trees of registered commands can be accessed.
         /// </summary>
-        public CommandTree Tree { get; }
+        public CommandTreeAccessor TreeAccessor { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandService"/> class.
         /// </summary>
-        /// <param name="tree">The command tree.</param>
+        /// <param name="treeAccessor">The command tree accessor.</param>
         /// <param name="typeParserService">The parser service.</param>
-        internal CommandService
+        public CommandService
         (
-            CommandTree tree,
+            CommandTreeAccessor treeAccessor,
             TypeParserService typeParserService
         )
         {
-            this.Tree = tree;
+            this.TreeAccessor = treeAccessor;
             _typeParserService = typeParserService;
         }
 
@@ -75,6 +75,7 @@ namespace Remora.Commands.Services
         /// <param name="services">The services available to the invocation.</param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="treeName">The name of the tree to search for the command in.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
         public async Task<Result<IResult>> TryExecuteAsync
@@ -83,6 +84,7 @@ namespace Remora.Commands.Services
             IServiceProvider services,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
+            string? treeName = null,
             CancellationToken ct = default
         )
         {
@@ -92,6 +94,7 @@ namespace Remora.Commands.Services
                 services,
                 tokenizerOptions,
                 searchOptions,
+                treeName,
                 ct
             );
 
@@ -115,6 +118,7 @@ namespace Remora.Commands.Services
         /// <param name="services">The services available to the invocation.</param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="treeName">The name of the tree to search for the command in.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
         public async Task<Result<IResult>> TryExecuteAsync
@@ -124,6 +128,7 @@ namespace Remora.Commands.Services
             IServiceProvider services,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
+            string? treeName = null,
             CancellationToken ct = default
         )
         {
@@ -134,6 +139,7 @@ namespace Remora.Commands.Services
                 services,
                 tokenizerOptions,
                 searchOptions,
+                treeName,
                 ct
             );
 
@@ -158,6 +164,7 @@ namespace Remora.Commands.Services
         /// <param name="services">The services available to the invocation.</param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="treeName">The name of the tree to search for the command in.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>An execution result which may or may not have succeeded.</returns>
         public async Task<Result<IResult>> TryExecuteAsync
@@ -167,6 +174,7 @@ namespace Remora.Commands.Services
             IServiceProvider services,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
+            string? treeName = null,
             CancellationToken ct = default
         )
         {
@@ -177,6 +185,7 @@ namespace Remora.Commands.Services
                 services,
                 tokenizerOptions,
                 searchOptions,
+                treeName,
                 ct
             );
 
@@ -197,6 +206,7 @@ namespace Remora.Commands.Services
         /// <param name="services">The services available to the invocation.</param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="treeName">The name of the tree to search for the command in.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>
         /// A result which may or may not have succeeded, containing the node and its materialized parameters.
@@ -207,10 +217,16 @@ namespace Remora.Commands.Services
             IServiceProvider services,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
+            string? treeName = null,
             CancellationToken ct = default
         )
         {
-            var searchResults = this.Tree.Search(commandString, tokenizerOptions, searchOptions).ToList();
+            if (!this.TreeAccessor.TryGetNamedTree(treeName, out var tree))
+            {
+                return new TreeNotFoundError(treeName);
+            }
+
+            var searchResults = tree.Search(commandString, tokenizerOptions, searchOptions).ToList();
             if (searchResults.Count == 0)
             {
                 return new CommandNotFoundError(commandString);
@@ -229,6 +245,7 @@ namespace Remora.Commands.Services
         /// <param name="services">The services available to the invocation.</param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="treeName">The name of the tree to search for the command in.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>
         /// A result which may or may not have succeeded, containing the node and its materialized parameters.
@@ -240,10 +257,16 @@ namespace Remora.Commands.Services
             IServiceProvider services,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
+            string? treeName = null,
             CancellationToken ct = default
         )
         {
-            var searchResults = this.Tree.Search
+            if (!this.TreeAccessor.TryGetNamedTree(treeName, out var tree))
+            {
+                return new TreeNotFoundError(treeName);
+            }
+
+            var searchResults = tree.Search
             (
                 commandNameString,
                 namedParameters,
@@ -269,6 +292,7 @@ namespace Remora.Commands.Services
         /// <param name="services">The services available to the invocation.</param>
         /// <param name="tokenizerOptions">The tokenizer options.</param>
         /// <param name="searchOptions">A set of search options.</param>
+        /// <param name="treeName">The name of the tree to search for the command in.</param>
         /// <param name="ct">The cancellation token for this operation.</param>
         /// <returns>
         /// A result which may or may not have succeeded, containing the node and its materialized parameters.
@@ -280,10 +304,16 @@ namespace Remora.Commands.Services
             IServiceProvider services,
             TokenizerOptions? tokenizerOptions = null,
             TreeSearchOptions? searchOptions = null,
+            string? treeName = null,
             CancellationToken ct = default
         )
         {
-            var searchResults = this.Tree.Search
+            if (!this.TreeAccessor.TryGetNamedTree(treeName, out var tree))
+            {
+                return new TreeNotFoundError(treeName);
+            }
+
+            var searchResults = tree.Search
             (
                 commandPath,
                 namedParameters,
