@@ -44,7 +44,7 @@ public class TreeRegistrationBuilder
     /// <param name="serviceCollection">The service collection.</param>
     public TreeRegistrationBuilder(string? treeName, IServiceCollection serviceCollection)
     {
-        _treeName = treeName ?? CommandTreeAccessor.DefaultTreeName;
+        _treeName = treeName ?? Constants.DefaultTreeName;
         _serviceCollection = serviceCollection;
     }
 
@@ -92,7 +92,7 @@ public class TreeRegistrationBuilder
 
         _serviceCollection.Configure<CommandTreeBuilder>
         (
-            CommandTreeAccessor.AllTreeName,
+            Constants.AllTreeName,
             builder => builder.RegisterModule(commandGroup)
         );
 

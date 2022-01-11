@@ -48,7 +48,7 @@ public class CommandTreeAccessorOptions
     /// <param name="treeName">The tree name.</param>
     internal void AddTreeName(string? treeName)
     {
-        treeName ??= CommandTreeAccessor.DefaultTreeName;
+        treeName ??= Constants.DefaultTreeName;
         if (_treeNames.Contains(treeName))
         {
             return;

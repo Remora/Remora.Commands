@@ -32,4 +32,4 @@ namespace Remora.Commands.Results;
 /// <param name="TreeName">The name of the tree. Defaults to the default tree name if null.</param>
 [PublicAPI]
 public record TreeNotFoundError(string? TreeName)
-    : NotFoundError($"No tree named \"{TreeName ?? CommandTreeAccessor.DefaultTreeName}\" found.");
+    : NotFoundError($"No tree named \"{TreeName ?? Constants.DefaultTreeName}\" found.");

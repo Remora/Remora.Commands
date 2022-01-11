@@ -35,19 +35,6 @@ namespace Remora.Commands.Services;
 [PublicAPI]
 public class CommandTreeAccessor
 {
-    /// <summary>
-    /// Gets the name of the default tree.
-    /// </summary>
-    public static string DefaultTreeName => "__default";
-
-    /// <summary>
-    /// Gets the name of the tree that contains all configured modules.
-    /// </summary>
-    /// <remarks>
-    /// This is mainly useful for help services.
-    /// </remarks>
-    public static string AllTreeName => "__all";
-
     private readonly CommandTreeAccessorOptions _accessorOptions;
     private readonly IOptionsSnapshot<CommandTreeBuilder> _treeBuilderSnapshot;
     private readonly Dictionary<string, CommandTree> _trees = new();
@@ -85,7 +72,7 @@ public class CommandTreeAccessor
     /// <returns>true if a tree with that name was found; otherwise, false.</returns>
     public bool TryGetNamedTree(string? treeName, [NotNullWhen(true)] out CommandTree? tree)
     {
-        treeName ??= DefaultTreeName;
+        treeName ??= Constants.DefaultTreeName;
         tree = null;
 
         if (!_accessorOptions.TreeNames.Contains(treeName))
