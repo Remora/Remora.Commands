@@ -414,7 +414,7 @@ public class CommandService
                     .Select(r => r.Entity)
                     .ToArray();
 
-                return new AmbiguousCommandInvocationError() { CommandCandidates = ambiguousCommands };
+            return new AmbiguousCommandInvocationError(ambiguousCommands);
         }
 
         if (preparedCommands.Any(r => r.IsSuccess))
