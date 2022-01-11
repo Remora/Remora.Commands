@@ -48,7 +48,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<NestedCommandGroup>()
+                        .AddCommandTree()
+                        .WithCommandGroup<NestedCommandGroup>()
+                        .Done()
                         .BuildServiceProvider();
 
                     var commandService = services.GetRequiredService<CommandService>();
@@ -73,7 +75,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<NestedCommandGroup>()
+                        .AddCommandTree()
+                        .WithCommandGroup<NestedCommandGroup>()
+                        .Done()
                         .BuildServiceProvider();
 
                     var commandService = services.GetRequiredService<CommandService>();
