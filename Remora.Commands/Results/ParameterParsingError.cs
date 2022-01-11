@@ -29,22 +29,8 @@ namespace Remora.Commands.Results
     /// <summary>
     /// Represents a failure to parse a bound parameter.
     /// </summary>
+    /// <param name="Parameter">The parameter that failed to parse.</param>
     [PublicAPI]
-    public record ParameterParsingError : ResultError
-    {
-        /// <summary>
-        /// Gets the parameter that failed to parse.
-        /// </summary>
-        public BoundParameterShape Parameter { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParameterParsingError"/> class.
-        /// </summary>
-        /// <param name="parameter">The parameter that failed to parse.</param>
-        public ParameterParsingError(BoundParameterShape parameter)
-            : base($"Failed to parse the value of {parameter.ParameterShape.HintName}.")
-        {
-            this.Parameter = parameter;
-        }
-    }
+    public record ParameterParsingError(BoundParameterShape Parameter) :
+        ResultError($"Failed to parse the value of {Parameter.ParameterShape.HintName}.");
 }

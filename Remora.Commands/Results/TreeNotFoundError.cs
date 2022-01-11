@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
 using Remora.Commands.Services;
 using Remora.Results;
 
@@ -29,5 +30,6 @@ namespace Remora.Commands.Results;
 /// Represents a failure to find a tree.
 /// </summary>
 /// <param name="TreeName">The name of the tree. Defaults to the default tree name if null.</param>
+[PublicAPI]
 public record TreeNotFoundError(string? TreeName)
     : NotFoundError($"No tree named \"{TreeName ?? CommandTreeAccessor.DefaultTreeName}\" found.");

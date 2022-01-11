@@ -29,22 +29,8 @@ namespace Remora.Commands.Results
     /// <summary>
     /// Represents the lack of a value for a required parameter.
     /// </summary>
+    /// <param name="ParameterShape">The shape of the missing parameter.</param>
     [PublicAPI]
-    public record RequiredParameterValueMissingError : ResultError
-    {
-        /// <summary>
-        /// Gets the shape of the missing parameter.
-        /// </summary>
-        public IParameterShape ParameterShape { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequiredParameterValueMissingError"/> class.
-        /// </summary>
-        /// <param name="parameterShape">The shape of the missing parameter.</param>
-        public RequiredParameterValueMissingError(IParameterShape parameterShape)
-            : base($"No value was provided for the required parameter \"{parameterShape.HintName}\".")
-        {
-            this.ParameterShape = parameterShape;
-        }
-    }
+    public record RequiredParameterValueMissingError(IParameterShape ParameterShape) :
+        ResultError($"No value was provided for the required parameter \"{ParameterShape.HintName}\".");
 }
