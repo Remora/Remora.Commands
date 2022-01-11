@@ -22,27 +22,26 @@
 
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Tokenization
+namespace Remora.Commands.Tokenization;
+
+/// <summary>
+/// Enumerates token types.
+/// </summary>
+[PublicAPI]
+public enum TokenType
 {
     /// <summary>
-    /// Enumerates token types.
+    /// The token is a value.
     /// </summary>
-    [PublicAPI]
-    public enum TokenType
-    {
-        /// <summary>
-        /// The token is a value.
-        /// </summary>
-        Value,
+    Value,
 
-        /// <summary>
-        /// The token is the long name of an option.
-        /// </summary>
-        LongName,
+    /// <summary>
+    /// The token is the long name of an option.
+    /// </summary>
+    LongName,
 
-        /// <summary>
-        /// The token is the short name of an option.
-        /// </summary>
-        ShortName
-    }
+    /// <summary>
+    /// The token is the short name of an option.
+    /// </summary>
+    ShortName
 }

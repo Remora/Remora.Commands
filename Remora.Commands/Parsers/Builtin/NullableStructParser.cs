@@ -29,48 +29,47 @@ using Remora.Commands.Extensions;
 using Remora.Commands.Services;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses nullable structs.
+/// </summary>
+[PublicAPI]
+public class NullableStructParser : AbstractTypeParser
 {
+    private readonly TypeParserService _typeParserService;
+    private readonly IServiceProvider _services;
+
     /// <summary>
-    /// Parses nullable structs.
+    /// Initializes a new instance of the <see cref="NullableStructParser"/> class.
     /// </summary>
-    [PublicAPI]
-    public class NullableStructParser : AbstractTypeParser
+    /// <param name="typeParserService">The type parser service.</param>
+    /// <param name="services">The available services.</param>
+    public NullableStructParser(TypeParserService typeParserService, IServiceProvider services)
     {
-        private readonly TypeParserService _typeParserService;
-        private readonly IServiceProvider _services;
+        _typeParserService = typeParserService;
+        _services = services;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NullableStructParser"/> class.
-        /// </summary>
-        /// <param name="typeParserService">The type parser service.</param>
-        /// <param name="services">The available services.</param>
-        public NullableStructParser(TypeParserService typeParserService, IServiceProvider services)
-        {
-            _typeParserService = typeParserService;
-            _services = services;
-        }
+    /// <inheritdoc />
+    public override bool CanParse(Type type)
+    {
+        return type.IsNullableStruct();
+    }
 
-        /// <inheritdoc />
-        public override bool CanParse(Type type)
-        {
-            return type.IsNullableStruct();
-        }
+    /// <inheritdoc/>
+    public override async ValueTask<Result<object?>> TryParseAsync
+    (
+        string token,
+        Type type,
+        CancellationToken ct = default
+    )
+    {
+        var concreteType = type.GetGenericArguments().Single();
 
-        /// <inheritdoc/>
-        public override async ValueTask<Result<object?>> TryParseAsync
-        (
-            string token,
-            Type type,
-            CancellationToken ct = default
-        )
-        {
-            var concreteType = type.GetGenericArguments().Single();
-
-            var tryParse = await _typeParserService.TryParseAsync(_services, token, concreteType, ct);
-            return tryParse.IsSuccess
-                ? tryParse.Entity
-                : Result<object?>.FromError(tryParse);
-        }
+        var tryParse = await _typeParserService.TryParseAsync(_services, token, concreteType, ct);
+        return tryParse.IsSuccess
+            ? tryParse.Entity
+            : Result<object?>.FromError(tryParse);
     }
 }

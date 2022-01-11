@@ -29,91 +29,90 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1402
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Represents an abstract type parser.
+/// </summary>
+/// <typeparam name="TType">The type to parse.</typeparam>
+[PublicAPI]
+public abstract class AbstractTypeParser<TType> : ITypeParser<TType>
 {
-    /// <summary>
-    /// Represents an abstract type parser.
-    /// </summary>
-    /// <typeparam name="TType">The type to parse.</typeparam>
-    [PublicAPI]
-    public abstract class AbstractTypeParser<TType> : ITypeParser<TType>
+    /// <inheritdoc/>
+    bool ITypeParser.CanParse(Type type)
     {
-        /// <inheritdoc/>
-        bool ITypeParser.CanParse(Type type)
-        {
-            return type.IsAssignableFrom(typeof(TType));
-        }
-
-        /// <inheritdoc />
-        public virtual ValueTask<Result<TType>> TryParseAsync
-        (
-            string token,
-            CancellationToken ct = default
-        )
-            => new(new InvalidOperationError("This parser doesn't support single-token parsing."));
-
-        /// <inheritdoc/>
-        public virtual ValueTask<Result<TType>> TryParseAsync
-        (
-            IReadOnlyList<string> tokens,
-            CancellationToken ct = default
-        )
-            => new(new InvalidOperationError("This parser doesn't support multi-token parsing."));
-
-        /// <inheritdoc/>
-        async ValueTask<Result<object?>> ITypeParser.TryParseAsync
-        (
-            string token,
-            Type type,
-            CancellationToken ct
-        )
-        {
-            var result = await TryParseAsync(token, ct);
-            return result.IsSuccess
-                ? Result<object?>.FromSuccess(result.Entity)
-                : Result<object?>.FromError(result);
-        }
-
-        /// <inheritdoc/>
-        async ValueTask<Result<object?>> ITypeParser.TryParseAsync
-        (
-            IReadOnlyList<string> tokens,
-            Type type,
-            CancellationToken ct
-        )
-        {
-            var result = await TryParseAsync(tokens, ct);
-            return result.IsSuccess
-                ? Result<object?>.FromSuccess(result.Entity)
-                : Result<object?>.FromError(result);
-        }
+        return type.IsAssignableFrom(typeof(TType));
     }
 
-    /// <summary>
-    /// Represents an abstract type parser.
-    /// </summary>
-    [PublicAPI]
-    public abstract class AbstractTypeParser : ITypeParser
+    /// <inheritdoc />
+    public virtual ValueTask<Result<TType>> TryParseAsync
+    (
+        string token,
+        CancellationToken ct = default
+    )
+        => new(new InvalidOperationError("This parser doesn't support single-token parsing."));
+
+    /// <inheritdoc/>
+    public virtual ValueTask<Result<TType>> TryParseAsync
+    (
+        IReadOnlyList<string> tokens,
+        CancellationToken ct = default
+    )
+        => new(new InvalidOperationError("This parser doesn't support multi-token parsing."));
+
+    /// <inheritdoc/>
+    async ValueTask<Result<object?>> ITypeParser.TryParseAsync
+    (
+        string token,
+        Type type,
+        CancellationToken ct
+    )
     {
-        /// <inheritdoc/>
-        public abstract bool CanParse(Type type);
-
-        /// <inheritdoc/>
-        public virtual ValueTask<Result<object?>> TryParseAsync
-        (
-            string token,
-            Type type,
-            CancellationToken ct = default
-        )
-            => new(new InvalidOperationError("This parser doesn't support single-token parsing."));
-
-        /// <inheritdoc/>
-        public virtual ValueTask<Result<object?>> TryParseAsync
-        (
-            IReadOnlyList<string> tokens,
-            Type type,
-            CancellationToken ct = default
-        )
-            => new(new InvalidOperationError("This parser doesn't support multi-token parsing."));
+        var result = await TryParseAsync(token, ct);
+        return result.IsSuccess
+            ? Result<object?>.FromSuccess(result.Entity)
+            : Result<object?>.FromError(result);
     }
+
+    /// <inheritdoc/>
+    async ValueTask<Result<object?>> ITypeParser.TryParseAsync
+    (
+        IReadOnlyList<string> tokens,
+        Type type,
+        CancellationToken ct
+    )
+    {
+        var result = await TryParseAsync(tokens, ct);
+        return result.IsSuccess
+            ? Result<object?>.FromSuccess(result.Entity)
+            : Result<object?>.FromError(result);
+    }
+}
+
+/// <summary>
+/// Represents an abstract type parser.
+/// </summary>
+[PublicAPI]
+public abstract class AbstractTypeParser : ITypeParser
+{
+    /// <inheritdoc/>
+    public abstract bool CanParse(Type type);
+
+    /// <inheritdoc/>
+    public virtual ValueTask<Result<object?>> TryParseAsync
+    (
+        string token,
+        Type type,
+        CancellationToken ct = default
+    )
+        => new(new InvalidOperationError("This parser doesn't support single-token parsing."));
+
+    /// <inheritdoc/>
+    public virtual ValueTask<Result<object?>> TryParseAsync
+    (
+        IReadOnlyList<string> tokens,
+        Type type,
+        CancellationToken ct = default
+    )
+        => new(new InvalidOperationError("This parser doesn't support multi-token parsing."));
 }

@@ -24,33 +24,32 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Remora.Commands.Trees.Nodes;
 
-namespace Remora.Commands.Signatures
+namespace Remora.Commands.Signatures;
+
+/// <summary>
+/// Represents a command node that has been bound to a set of tokens.
+/// </summary>
+[PublicAPI]
+public class BoundCommandNode
 {
     /// <summary>
-    /// Represents a command node that has been bound to a set of tokens.
+    /// Gets the base node.
     /// </summary>
-    [PublicAPI]
-    public class BoundCommandNode
+    public CommandNode Node { get; }
+
+    /// <summary>
+    /// Gets the bound parameters.
+    /// </summary>
+    public IReadOnlyList<BoundParameterShape> BoundParameters { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BoundCommandNode"/> class.
+    /// </summary>
+    /// <param name="node">The command node.</param>
+    /// <param name="boundParameters">The bound parameters.</param>
+    public BoundCommandNode(CommandNode node, IReadOnlyList<BoundParameterShape> boundParameters)
     {
-        /// <summary>
-        /// Gets the base node.
-        /// </summary>
-        public CommandNode Node { get; }
-
-        /// <summary>
-        /// Gets the bound parameters.
-        /// </summary>
-        public IReadOnlyList<BoundParameterShape> BoundParameters { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BoundCommandNode"/> class.
-        /// </summary>
-        /// <param name="node">The command node.</param>
-        /// <param name="boundParameters">The bound parameters.</param>
-        public BoundCommandNode(CommandNode node, IReadOnlyList<BoundParameterShape> boundParameters)
-        {
-            this.Node = node;
-            this.BoundParameters = boundParameters;
-        }
+        this.Node = node;
+        this.BoundParameters = boundParameters;
     }
 }

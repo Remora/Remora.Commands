@@ -27,57 +27,56 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.Modules
+namespace Remora.Commands.Tests.Data.Modules;
+
+[Group("test")]
+public class BasicCommandGroup : CommandGroup
 {
-    [Group("test")]
-    public class BasicCommandGroup : CommandGroup
+    [Command("parameterless")]
+    public Task<IResult> Parameterless()
     {
-        [Command("parameterless")]
-        public Task<IResult> Parameterless()
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("single-positional")]
-        public Task<IResult> SinglePositional(string value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("single-positional")]
+    public Task<IResult> SinglePositional(string value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("single-optional-positional")]
-        public Task<IResult> SingleOptionalPositional(string value = "dooga")
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("single-optional-positional")]
+    public Task<IResult> SingleOptionalPositional(string value = "dooga")
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("single-named")]
-        public Task<IResult> SingleNamed([Option("value")] string value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("single-named")]
+    public Task<IResult> SingleNamed([Option("value")] string value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("single-optional-named")]
-        public Task<IResult> SingleOptionalNamed([Option("value")] string value = "dooga")
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("single-optional-named")]
+    public Task<IResult> SingleOptionalNamed([Option("value")] string value = "dooga")
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("single-named-with-short-name")]
-        public Task<IResult> SingleNamedWithShortName([Option('v')] string value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("single-named-with-short-name")]
+    public Task<IResult> SingleNamedWithShortName([Option('v')] string value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("single-named-with-long-and-short-name")]
-        public Task<IResult> SingleNamedWithLongAndShortName([Option('v', "value")] string value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("single-named-with-long-and-short-name")]
+    public Task<IResult> SingleNamedWithLongAndShortName([Option('v', "value")] string value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("predetermined-command-node")]
-        public Task<IResult> PredeterminedCommandNode()
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("predetermined-command-node")]
+    public Task<IResult> PredeterminedCommandNode()
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
     }
 }

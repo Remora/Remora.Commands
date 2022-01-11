@@ -27,69 +27,68 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.Modules
+namespace Remora.Commands.Tests.Data.Modules;
+
+[Group("test")]
+public class SpecializedCommandGroup : CommandGroup
 {
-    [Group("test")]
-    public class SpecializedCommandGroup : CommandGroup
+    [Command("switch")]
+    public Task<IResult> SingleBoolSwitch([Switch("enable")] bool value = false)
     {
-        [Command("switch")]
-        public Task<IResult> SingleBoolSwitch([Switch("enable")] bool value = false)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("switch-short-name")]
-        public Task<IResult> SingleShortBoolSwitch([Switch('e')] bool value = false)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("switch-short-name")]
+    public Task<IResult> SingleShortBoolSwitch([Switch('e')] bool value = false)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("switch-short-and-long-name")]
-        public Task<IResult> SingleShortAndLongBoolSwitch([Switch('e', "enable")] bool value = false)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("switch-short-and-long-name")]
+    public Task<IResult> SingleShortAndLongBoolSwitch([Switch('e', "enable")] bool value = false)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("option")]
-        public Task<IResult> SingleNamedBool([Option("enable")] bool value = false)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("option")]
+    public Task<IResult> SingleNamedBool([Option("enable")] bool value = false)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("option-short-name")]
-        public Task<IResult> SingleShortNamedBool([Option('e')] bool value = false)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("option-short-name")]
+    public Task<IResult> SingleShortNamedBool([Option('e')] bool value = false)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("option-short-and-long-name")]
-        public Task<IResult> SingleShortAndLongNamedBool([Option('e', "enable")] bool value = false)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("option-short-and-long-name")]
+    public Task<IResult> SingleShortAndLongNamedBool([Option('e', "enable")] bool value = false)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("nullable-struct")]
-        public Task<IResult> NullableStruct([Option('v', "value")] int? value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("nullable-struct")]
+    public Task<IResult> NullableStruct([Option('v', "value")] int? value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("nullable-struct-with-default")]
-        public Task<IResult> NullableStructWithDefault([Option('v', "value")] int? value = default)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("nullable-struct-with-default")]
+    public Task<IResult> NullableStructWithDefault([Option('v', "value")] int? value = default)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("nullable-reference-type")]
-        public Task<IResult> NullableReferenceType([Option('v', "value")] string? value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("nullable-reference-type")]
+    public Task<IResult> NullableReferenceType([Option('v', "value")] string? value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("nullable-reference-type-with-default")]
-        public Task<IResult> NullableReferenceTypeWithDefault([Option('v', "value")] string? value = default)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("nullable-reference-type-with-default")]
+    public Task<IResult> NullableReferenceTypeWithDefault([Option('v', "value")] string? value = default)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
     }
 }

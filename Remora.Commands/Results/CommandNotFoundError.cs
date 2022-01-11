@@ -23,12 +23,11 @@
 using JetBrains.Annotations;
 using Remora.Results;
 
-namespace Remora.Commands.Results
-{
-    /// <summary>
-    /// Represents a failure to find a command that matches the input.
-    /// </summary>
-    /// <param name="OriginalInput">The original input that was the basis for the search.</param>
-    [PublicAPI]
-    public record CommandNotFoundError(string OriginalInput) : NotFoundError("No matching command could be found.");
-}
+namespace Remora.Commands.Results;
+
+/// <summary>
+/// Represents a failure to find a command that matches the input.
+/// </summary>
+/// <param name="OriginalInput">The original input that was the basis for the search.</param>
+[PublicAPI]
+public record CommandNotFoundError(string OriginalInput) : NotFoundError("No matching command could be found.");

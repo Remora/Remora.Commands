@@ -24,13 +24,12 @@ using JetBrains.Annotations;
 using Remora.Commands.Signatures;
 using Remora.Results;
 
-namespace Remora.Commands.Results
-{
-    /// <summary>
-    /// Represents a failure to parse a bound parameter.
-    /// </summary>
-    /// <param name="Parameter">The parameter that failed to parse.</param>
-    [PublicAPI]
-    public record ParameterParsingError(BoundParameterShape Parameter) :
-        ResultError($"Failed to parse the value of {Parameter.ParameterShape.HintName}.");
-}
+namespace Remora.Commands.Results;
+
+/// <summary>
+/// Represents a failure to parse a bound parameter.
+/// </summary>
+/// <param name="Parameter">The parameter that failed to parse.</param>
+[PublicAPI]
+public record ParameterParsingError(BoundParameterShape Parameter) :
+    ResultError($"Failed to parse the value of {Parameter.ParameterShape.HintName}.");

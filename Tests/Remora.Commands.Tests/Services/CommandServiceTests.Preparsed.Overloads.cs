@@ -29,75 +29,74 @@ using Remora.Commands.Tests.Data.Modules;
 using Remora.Results;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class Preparsed
     {
-        public static partial class Preparsed
+        /// <summary>
+        /// Tests overloads.
+        /// </summary>
+        public class Overloads
         {
             /// <summary>
-            /// Tests overloads.
+            /// Tests whether the command service can execute an overloaded command.
             /// </summary>
-            public class Overloads
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteOverloadedCommand()
             {
-                /// <summary>
-                /// Tests whether the command service can execute an overloaded command.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteOverloadedCommand()
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<OverloadCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test overload",
+                    values,
+                    services
+                );
+
+                Assert.True(executionResult.IsSuccess);
+                Assert.Equal("overload-1", (Result<string>)executionResult.Entity);
+
+                values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<OverloadCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+                    { "value", new[] { "booga" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test overload",
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test overload",
-                        values,
-                        services
-                    );
+                Assert.True(executionResult.IsSuccess);
+                Assert.Equal("overload-2", (Result<string>)executionResult.Entity);
 
-                    Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-1", (Result<string>)executionResult.Entity);
+                values = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    { "value-2", new[] { "booga" } },
+                    { "value1", new[] { "wooga" } }
+                };
 
-                    values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "booga" } }
-                    };
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test overload",
+                    values,
+                    services
+                );
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test overload",
-                        values,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-2", (Result<string>)executionResult.Entity);
-
-                    values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value-2", new[] { "booga" } },
-                        { "value1", new[] { "wooga" } }
-                    };
-
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test overload",
-                        values,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-3", (Result<string>)executionResult.Entity);
-                }
+                Assert.True(executionResult.IsSuccess);
+                Assert.Equal("overload-3", (Result<string>)executionResult.Entity);
             }
         }
     }

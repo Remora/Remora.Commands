@@ -22,17 +22,16 @@
 
 using JetBrains.Annotations;
 
-namespace Remora.Commands
+namespace Remora.Commands;
+
+/// <summary>
+/// Holds various constants.
+/// </summary>
+[PublicAPI]
+public static class Constants
 {
     /// <summary>
-    /// Holds various constants.
+    /// Gets the default description used when no description is set.
     /// </summary>
-    [PublicAPI]
-    public static class Constants
-    {
-        /// <summary>
-        /// Gets the default description used when no description is set.
-        /// </summary>
-        public static string DefaultDescription => "No description set.";
-    }
+    public static string DefaultDescription => "No description set.";
 }

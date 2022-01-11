@@ -25,18 +25,12 @@ using JetBrains.Annotations;
 using Remora.Commands.Services;
 using Remora.Results;
 
-namespace Remora.Commands.Results
-{
-    /// <summary>
-    /// Raised when two or more commands pass all preconditions and are otherwise acceptable as execution candidates.
-    /// </summary>
-    [PublicAPI]
-    public record AmbiguousCommandInvocationError()
-        : ResultError("Two or more commands could have been executed by that.")
-    {
-        /// <summary>
-        /// Gets the potential commands that could have been executed.
-        /// </summary>
-        public IReadOnlyList<PreparedCommand>? CommandCandidates { get; init; }
-    }
-}
+namespace Remora.Commands.Results;
+
+/// <summary>
+/// Raised when two or more commands pass all preconditions and are otherwise acceptable as execution candidates.
+/// </summary>
+/// <param name="CommandCandidates">The potential commands that could have been executed.</param>
+[PublicAPI]
+public record AmbiguousCommandInvocationError(IReadOnlyList<PreparedCommand>? CommandCandidates)
+    : ResultError("Two or more commands could have been executed by that.");

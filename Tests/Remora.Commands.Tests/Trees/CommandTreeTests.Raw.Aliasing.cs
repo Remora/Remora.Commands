@@ -24,64 +24,63 @@ using Remora.Commands.Tests.Data.DummyModules;
 using Remora.Commands.Trees;
 using Xunit;
 
-namespace Remora.Commands.Tests.Trees
+namespace Remora.Commands.Tests.Trees;
+
+public static partial class CommandTreeTests
 {
-    public static partial class CommandTreeTests
+    public static partial class Raw
     {
-        public static partial class Raw
+        /// <summary>
+        /// Tests aliasing behaviour.
+        /// </summary>
+        public class Aliasing
         {
             /// <summary>
-            /// Tests aliasing behaviour.
+            /// Tests whether a command can be found by searching for its primary key and one of the aliases of the
+            /// group it is contained within.
             /// </summary>
-            public class Aliasing
+            [Fact]
+            public void CanFindCommandByCommandPrimaryKeyAndGroupAlias()
             {
-                /// <summary>
-                /// Tests whether a command can be found by searching for its primary key and one of the aliases of the
-                /// group it is contained within.
-                /// </summary>
-                [Fact]
-                public void CanFindCommandByCommandPrimaryKeyAndGroupAlias()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<AliasedGroupWithAliasedCommand>();
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<AliasedGroupWithAliasedCommand>();
 
-                    var tree = builder.Build();
+                var tree = builder.Build();
 
-                    var result = tree.Search("t command");
-                    Assert.NotEmpty(result);
-                }
+                var result = tree.Search("t command");
+                Assert.NotEmpty(result);
+            }
 
-                /// <summary>
-                /// Tests whether a command can be found by searching for one of its aliases and the primary key of the
-                /// group it is contained within.
-                /// </summary>
-                [Fact]
-                public void CanFindCommandByCommandAliasAndGroupPrimaryKey()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<AliasedGroupWithAliasedCommand>();
+            /// <summary>
+            /// Tests whether a command can be found by searching for one of its aliases and the primary key of the
+            /// group it is contained within.
+            /// </summary>
+            [Fact]
+            public void CanFindCommandByCommandAliasAndGroupPrimaryKey()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<AliasedGroupWithAliasedCommand>();
 
-                    var tree = builder.Build();
+                var tree = builder.Build();
 
-                    var result = tree.Search("test c");
-                    Assert.NotEmpty(result);
-                }
+                var result = tree.Search("test c");
+                Assert.NotEmpty(result);
+            }
 
-                /// <summary>
-                /// Tests whether a command can be found by searching for one of its aliases and one of the aliases of the
-                /// group it is contained within.
-                /// </summary>
-                [Fact]
-                public void CanFindCommandByCommandAliasAndGroupAlias()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<AliasedGroupWithAliasedCommand>();
+            /// <summary>
+            /// Tests whether a command can be found by searching for one of its aliases and one of the aliases of the
+            /// group it is contained within.
+            /// </summary>
+            [Fact]
+            public void CanFindCommandByCommandAliasAndGroupAlias()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<AliasedGroupWithAliasedCommand>();
 
-                    var tree = builder.Build();
+                var tree = builder.Build();
 
-                    var result = tree.Search("t c");
-                    Assert.NotEmpty(result);
-                }
+                var result = tree.Search("t c");
+                Assert.NotEmpty(result);
             }
         }
     }

@@ -29,56 +29,55 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.DummyModules
+namespace Remora.Commands.Tests.Data.DummyModules;
+
+public class GroupWithVariousCollectionTypes : CommandGroup
 {
-    public class GroupWithVariousCollectionTypes : CommandGroup
+    [Command("enumerable-interface")]
+    public Task<IResult> EnumerableInterface(IEnumerable<string> values)
     {
-        [Command("enumerable-interface")]
-        public Task<IResult> EnumerableInterface(IEnumerable<string> values)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
+    }
 
-        [Command("collection-interface")]
-        public Task<IResult> CollectionInterface(ICollection<string> values)
-        {
-            throw new NotImplementedException();
-        }
+    [Command("collection-interface")]
+    public Task<IResult> CollectionInterface(ICollection<string> values)
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("list-interface")]
-        public Task<IResult> ListInterface(IList<string> values)
-        {
-            throw new NotImplementedException();
-        }
+    [Command("list-interface")]
+    public Task<IResult> ListInterface(IList<string> values)
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("collection-readonly-interface")]
-        public Task<IResult> CollectionInterface(IReadOnlyCollection<string> values)
-        {
-            throw new NotImplementedException();
-        }
+    [Command("collection-readonly-interface")]
+    public Task<IResult> CollectionInterface(IReadOnlyCollection<string> values)
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("list-readonly-interface")]
-        public Task<IResult> ListInterface(IReadOnlyList<string> values)
-        {
-            throw new NotImplementedException();
-        }
+    [Command("list-readonly-interface")]
+    public Task<IResult> ListInterface(IReadOnlyList<string> values)
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("list")]
-        public Task<IResult> List(IReadOnlyList<string> values)
-        {
-            throw new NotImplementedException();
-        }
+    [Command("list")]
+    public Task<IResult> List(IReadOnlyList<string> values)
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("array")]
-        public Task<IResult> List(string[] values)
-        {
-            throw new NotImplementedException();
-        }
+    [Command("array")]
+    public Task<IResult> List(string[] values)
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("params")]
-        public Task<IResult> Params(params string[] values)
-        {
-            throw new NotImplementedException();
-        }
+    [Command("params")]
+    public Task<IResult> Params(params string[] values)
+    {
+        throw new NotImplementedException();
     }
 }

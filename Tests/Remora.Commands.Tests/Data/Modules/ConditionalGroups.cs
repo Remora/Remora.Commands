@@ -28,23 +28,137 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.Modules
+namespace Remora.Commands.Tests.Data.Modules;
+
+public static class ConditionalGroups
 {
-    public static class ConditionalGroups
+    [GroupCondition("booga")]
+    public class UnnamedGroupWithSuccessfulCondition : CommandGroup
     {
-        [GroupCondition("booga")]
-        public class UnnamedGroupWithSuccessfulCondition : CommandGroup
+        [Command("a")]
+        public Task<IResult> A()
         {
-            [Command("a")]
-            public Task<IResult> A()
-            {
-                return Task.FromResult<IResult>(Result.FromSuccess());
-            }
+            return Task.FromResult<IResult>(Result.FromSuccess());
         }
+    }
 
-        [Group("a")]
-        [GroupCondition("booga")]
-        public class NamedGroupWithSuccessfulCondition : CommandGroup
+    [Group("a")]
+    [GroupCondition("booga")]
+    public class NamedGroupWithSuccessfulCondition : CommandGroup
+    {
+        [Command("b")]
+        public Task<IResult> B()
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    [GroupCondition("wooga")]
+    public class UnnamedGroupWithUnsuccessfulCondition : CommandGroup
+    {
+        [Command("a")]
+        public Task<IResult> A()
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    [Group("a")]
+    [GroupCondition("wooga")]
+    public class NamedGroupWithUnsuccessfulCondition : CommandGroup
+    {
+        [Command("b")]
+        public Task<IResult> B()
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    public class UnnamedGroupWithSuccessfulCommandCondition : CommandGroup
+    {
+        [Command("a")]
+        [CommandCondition("booga")]
+        public Task<IResult> A()
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    [Group("a")]
+    public class NamedGroupWithSuccessfulCommandCondition : CommandGroup
+    {
+        [Command("b")]
+        [CommandCondition("booga")]
+        public Task<IResult> B()
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    public class UnnamedGroupWithUnsuccessfulCommandCondition : CommandGroup
+    {
+        [Command("a")]
+        [CommandCondition("wooga")]
+        public Task<IResult> A()
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    [Group("a")]
+    public class NamedGroupWithUnsuccessfulCommandCondition : CommandGroup
+    {
+        [Command("b")]
+        [CommandCondition("wooga")]
+        public Task<IResult> B()
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    public class UnnamedGroupWithSuccessfulParameterCondition : CommandGroup
+    {
+        [Command("a")]
+        public Task<IResult> A([ParameterCondition("booga")] string value)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    [Group("a")]
+    public class NamedGroupWithSuccessfulParameterCondition : CommandGroup
+    {
+        [Command("b")]
+        public Task<IResult> B([ParameterCondition("booga")] string value)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    public class UnnamedGroupWithUnsuccessfulParameterCondition : CommandGroup
+    {
+        [Command("a")]
+        public Task<IResult> A([ParameterCondition("wooga")] string value)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    [Group("a")]
+    public class NamedGroupWithUnsuccessfulParameterCondition : CommandGroup
+    {
+        [Command("b")]
+        public Task<IResult> B([ParameterCondition("wooga")] string value)
+        {
+            return Task.FromResult<IResult>(Result.FromSuccess());
+        }
+    }
+
+    [Group("a")]
+    [GroupCondition("booga")]
+    public class NamedGroupWithSuccessfulConditionAndInnerUnnamedGroup : CommandGroup
+    {
+        public class Inner : CommandGroup
         {
             [Command("b")]
             public Task<IResult> B()
@@ -52,9 +166,27 @@ namespace Remora.Commands.Tests.Data.Modules
                 return Task.FromResult<IResult>(Result.FromSuccess());
             }
         }
+    }
 
-        [GroupCondition("wooga")]
-        public class UnnamedGroupWithUnsuccessfulCondition : CommandGroup
+    [Group("a")]
+    [GroupCondition("booga")]
+    public class NamedGroupWithSuccessfulConditionAndInnerNamedGroup : CommandGroup
+    {
+        [Group("b")]
+        public class Inner : CommandGroup
+        {
+            [Command("c")]
+            public Task<IResult> C()
+            {
+                return Task.FromResult<IResult>(Result.FromSuccess());
+            }
+        }
+    }
+
+    [GroupCondition("booga")]
+    public class UnnamedGroupWithSuccessfulConditionAndInnerUnnamedGroup : CommandGroup
+    {
+        public class Inner : CommandGroup
         {
             [Command("a")]
             public Task<IResult> A()
@@ -62,10 +194,13 @@ namespace Remora.Commands.Tests.Data.Modules
                 return Task.FromResult<IResult>(Result.FromSuccess());
             }
         }
+    }
 
+    [GroupCondition("booga")]
+    public class UnnamedGroupWithSuccessfulConditionAndInnerNamedGroup : CommandGroup
+    {
         [Group("a")]
-        [GroupCondition("wooga")]
-        public class NamedGroupWithUnsuccessfulCondition : CommandGroup
+        public class Inner : CommandGroup
         {
             [Command("b")]
             public Task<IResult> B()
@@ -73,196 +208,60 @@ namespace Remora.Commands.Tests.Data.Modules
                 return Task.FromResult<IResult>(Result.FromSuccess());
             }
         }
+    }
 
-        public class UnnamedGroupWithSuccessfulCommandCondition : CommandGroup
+    [Group("a")]
+    [GroupCondition("wooga")]
+    public class NamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup : CommandGroup
+    {
+        public class Inner : CommandGroup
+        {
+            [Command("b")]
+            public Task<IResult> B()
+            {
+                return Task.FromResult<IResult>(Result.FromSuccess());
+            }
+        }
+    }
+
+    [Group("a")]
+    [GroupCondition("wooga")]
+    public class NamedGroupWithUnsuccessfulConditionAndInnerNamedGroup : CommandGroup
+    {
+        [Group("b")]
+        public class Inner : CommandGroup
+        {
+            [Command("c")]
+            public Task<IResult> C()
+            {
+                return Task.FromResult<IResult>(Result.FromSuccess());
+            }
+        }
+    }
+
+    [GroupCondition("wooga")]
+    public class UnnamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup : CommandGroup
+    {
+        public class Inner : CommandGroup
         {
             [Command("a")]
-            [CommandCondition("booga")]
             public Task<IResult> A()
             {
                 return Task.FromResult<IResult>(Result.FromSuccess());
             }
         }
+    }
 
+    [GroupCondition("wooga")]
+    public class UnnamedGroupWithUnsuccessfulConditionAndInnerNamedGroup : CommandGroup
+    {
         [Group("a")]
-        public class NamedGroupWithSuccessfulCommandCondition : CommandGroup
+        public class Inner : CommandGroup
         {
             [Command("b")]
-            [CommandCondition("booga")]
             public Task<IResult> B()
             {
                 return Task.FromResult<IResult>(Result.FromSuccess());
-            }
-        }
-
-        public class UnnamedGroupWithUnsuccessfulCommandCondition : CommandGroup
-        {
-            [Command("a")]
-            [CommandCondition("wooga")]
-            public Task<IResult> A()
-            {
-                return Task.FromResult<IResult>(Result.FromSuccess());
-            }
-        }
-
-        [Group("a")]
-        public class NamedGroupWithUnsuccessfulCommandCondition : CommandGroup
-        {
-            [Command("b")]
-            [CommandCondition("wooga")]
-            public Task<IResult> B()
-            {
-                return Task.FromResult<IResult>(Result.FromSuccess());
-            }
-        }
-
-        public class UnnamedGroupWithSuccessfulParameterCondition : CommandGroup
-        {
-            [Command("a")]
-            public Task<IResult> A([ParameterCondition("booga")] string value)
-            {
-                return Task.FromResult<IResult>(Result.FromSuccess());
-            }
-        }
-
-        [Group("a")]
-        public class NamedGroupWithSuccessfulParameterCondition : CommandGroup
-        {
-            [Command("b")]
-            public Task<IResult> B([ParameterCondition("booga")] string value)
-            {
-                return Task.FromResult<IResult>(Result.FromSuccess());
-            }
-        }
-
-        public class UnnamedGroupWithUnsuccessfulParameterCondition : CommandGroup
-        {
-            [Command("a")]
-            public Task<IResult> A([ParameterCondition("wooga")] string value)
-            {
-                return Task.FromResult<IResult>(Result.FromSuccess());
-            }
-        }
-
-        [Group("a")]
-        public class NamedGroupWithUnsuccessfulParameterCondition : CommandGroup
-        {
-            [Command("b")]
-            public Task<IResult> B([ParameterCondition("wooga")] string value)
-            {
-                return Task.FromResult<IResult>(Result.FromSuccess());
-            }
-        }
-
-        [Group("a")]
-        [GroupCondition("booga")]
-        public class NamedGroupWithSuccessfulConditionAndInnerUnnamedGroup : CommandGroup
-        {
-            public class Inner : CommandGroup
-            {
-                [Command("b")]
-                public Task<IResult> B()
-                {
-                    return Task.FromResult<IResult>(Result.FromSuccess());
-                }
-            }
-        }
-
-        [Group("a")]
-        [GroupCondition("booga")]
-        public class NamedGroupWithSuccessfulConditionAndInnerNamedGroup : CommandGroup
-        {
-            [Group("b")]
-            public class Inner : CommandGroup
-            {
-                [Command("c")]
-                public Task<IResult> C()
-                {
-                    return Task.FromResult<IResult>(Result.FromSuccess());
-                }
-            }
-        }
-
-        [GroupCondition("booga")]
-        public class UnnamedGroupWithSuccessfulConditionAndInnerUnnamedGroup : CommandGroup
-        {
-            public class Inner : CommandGroup
-            {
-                [Command("a")]
-                public Task<IResult> A()
-                {
-                    return Task.FromResult<IResult>(Result.FromSuccess());
-                }
-            }
-        }
-
-        [GroupCondition("booga")]
-        public class UnnamedGroupWithSuccessfulConditionAndInnerNamedGroup : CommandGroup
-        {
-            [Group("a")]
-            public class Inner : CommandGroup
-            {
-                [Command("b")]
-                public Task<IResult> B()
-                {
-                    return Task.FromResult<IResult>(Result.FromSuccess());
-                }
-            }
-        }
-
-        [Group("a")]
-        [GroupCondition("wooga")]
-        public class NamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup : CommandGroup
-        {
-            public class Inner : CommandGroup
-            {
-                [Command("b")]
-                public Task<IResult> B()
-                {
-                    return Task.FromResult<IResult>(Result.FromSuccess());
-                }
-            }
-        }
-
-        [Group("a")]
-        [GroupCondition("wooga")]
-        public class NamedGroupWithUnsuccessfulConditionAndInnerNamedGroup : CommandGroup
-        {
-            [Group("b")]
-            public class Inner : CommandGroup
-            {
-                [Command("c")]
-                public Task<IResult> C()
-                {
-                    return Task.FromResult<IResult>(Result.FromSuccess());
-                }
-            }
-        }
-
-        [GroupCondition("wooga")]
-        public class UnnamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup : CommandGroup
-        {
-            public class Inner : CommandGroup
-            {
-                [Command("a")]
-                public Task<IResult> A()
-                {
-                    return Task.FromResult<IResult>(Result.FromSuccess());
-                }
-            }
-        }
-
-        [GroupCondition("wooga")]
-        public class UnnamedGroupWithUnsuccessfulConditionAndInnerNamedGroup : CommandGroup
-        {
-            [Group("a")]
-            public class Inner : CommandGroup
-            {
-                [Command("b")]
-                public Task<IResult> B()
-                {
-                    return Task.FromResult<IResult>(Result.FromSuccess());
-                }
             }
         }
     }

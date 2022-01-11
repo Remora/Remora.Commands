@@ -28,327 +28,326 @@ using JetBrains.Annotations;
 using Remora.Commands.Attributes;
 using Remora.Commands.Extensions;
 
-namespace Remora.Commands.Signatures
+namespace Remora.Commands.Signatures;
+
+/// <summary>
+/// Represents the general "shape" of a command. This type is used to determine whether a sequence of tokens could
+/// fit the associated command, provided all other things hold true.
+/// </summary>
+[PublicAPI]
+public class CommandShape
 {
     /// <summary>
-    /// Represents the general "shape" of a command. This type is used to determine whether a sequence of tokens could
-    /// fit the associated command, provided all other things hold true.
+    /// Gets the parameters for this command shape.
     /// </summary>
-    [PublicAPI]
-    public class CommandShape
+    public IReadOnlyList<IParameterShape> Parameters { get; }
+
+    /// <summary>
+    /// Gets a user-configured description of the command.
+    /// </summary>
+    public string Description { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CommandShape"/> class.
+    /// </summary>
+    /// <param name="parameters">The parameters.</param>
+    /// <param name="description">The description of the command.</param>
+    public CommandShape(IReadOnlyList<IParameterShape> parameters, string? description = null)
     {
-        /// <summary>
-        /// Gets the parameters for this command shape.
-        /// </summary>
-        public IReadOnlyList<IParameterShape> Parameters { get; }
+        this.Parameters = parameters;
+        this.Description = description ?? Constants.DefaultDescription;
+    }
 
-        /// <summary>
-        /// Gets a user-configured description of the command.
-        /// </summary>
-        public string Description { get; }
+    /// <summary>
+    /// Creates a new <see cref="CommandShape"/> from the given method.
+    /// </summary>
+    /// <param name="method">The method.</param>
+    /// <returns>The command shape.</returns>
+    public static CommandShape FromMethod(MethodInfo method)
+    {
+        var positionalParameters = new List<IParameterShape>();
+        var namedParameters = new List<IParameterShape>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandShape"/> class.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <param name="description">The description of the command.</param>
-        public CommandShape(IReadOnlyList<IParameterShape> parameters, string? description = null)
+        foreach (var parameter in method.GetParameters())
         {
-            this.Parameters = parameters;
-            this.Description = description ?? Constants.DefaultDescription;
-        }
+            var optionAttribute = parameter.GetCustomAttribute<OptionAttribute>();
+            var rangeAttribute = parameter.GetCustomAttribute<RangeAttribute>();
 
-        /// <summary>
-        /// Creates a new <see cref="CommandShape"/> from the given method.
-        /// </summary>
-        /// <param name="method">The method.</param>
-        /// <returns>The command shape.</returns>
-        public static CommandShape FromMethod(MethodInfo method)
-        {
-            var positionalParameters = new List<IParameterShape>();
-            var namedParameters = new List<IParameterShape>();
-
-            foreach (var parameter in method.GetParameters())
+            if (optionAttribute is null)
             {
-                var optionAttribute = parameter.GetCustomAttribute<OptionAttribute>();
-                var rangeAttribute = parameter.GetCustomAttribute<RangeAttribute>();
+                var newPositionalParameter = CreatePositionalParameterShape
+                (
+                    rangeAttribute,
+                    parameter
+                );
 
-                if (optionAttribute is null)
-                {
-                    var newPositionalParameter = CreatePositionalParameterShape
-                    (
-                        rangeAttribute,
-                        parameter
-                    );
-
-                    positionalParameters.Add(newPositionalParameter);
-                }
-                else
-                {
-                    var newNamedParameter = CreateNamedParameterShape
-                    (
-                        optionAttribute,
-                        rangeAttribute,
-                        parameter
-                    );
-
-                    namedParameters.Add(newNamedParameter);
-                }
-            }
-
-            var description = method.GetDescriptionOrDefault();
-            return new CommandShape(namedParameters.Concat(positionalParameters).ToList(), description);
-        }
-
-        private static IParameterShape CreateNamedParameterShape
-        (
-            OptionAttribute optionAttribute,
-            RangeAttribute? rangeAttribute,
-            ParameterInfo parameter
-        )
-        {
-            var isCollection = parameter.ParameterType.IsSupportedCollection();
-
-            IParameterShape newNamedParameter;
-            if (optionAttribute is SwitchAttribute)
-            {
-                newNamedParameter = CreateNamedSwitchParameterShape(optionAttribute, parameter);
-            }
-            else if (!isCollection)
-            {
-                var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
-
-                newNamedParameter = greedyAttribute is null
-                    ? CreateNamedSingleValueParameterShape(optionAttribute, parameter)
-                    : CreateGreedyNamedSingleValueParameterShape(optionAttribute, parameter);
+                positionalParameters.Add(newPositionalParameter);
             }
             else
             {
-                newNamedParameter = CreateNamedCollectionParameterShape(optionAttribute, rangeAttribute, parameter);
-            }
+                var newNamedParameter = CreateNamedParameterShape
+                (
+                    optionAttribute,
+                    rangeAttribute,
+                    parameter
+                );
 
-            return newNamedParameter;
+                namedParameters.Add(newNamedParameter);
+            }
         }
 
-        private static IParameterShape CreateNamedCollectionParameterShape
-        (
-            OptionAttribute optionAttribute,
-            RangeAttribute? rangeAttribute,
-            ParameterInfo parameter
-        )
+        var description = method.GetDescriptionOrDefault();
+        return new CommandShape(namedParameters.Concat(positionalParameters).ToList(), description);
+    }
+
+    private static IParameterShape CreateNamedParameterShape
+    (
+        OptionAttribute optionAttribute,
+        RangeAttribute? rangeAttribute,
+        ParameterInfo parameter
+    )
+    {
+        var isCollection = parameter.ParameterType.IsSupportedCollection();
+
+        IParameterShape newNamedParameter;
+        if (optionAttribute is SwitchAttribute)
         {
-            var description = parameter.GetDescriptionOrDefault();
-
-            IParameterShape newNamedParameter;
-            if (optionAttribute.ShortName is null)
-            {
-                newNamedParameter = new NamedCollectionParameterShape
-                (
-                    parameter,
-                    optionAttribute.LongName ?? throw new InvalidOperationException(),
-                    rangeAttribute?.GetMin(),
-                    rangeAttribute?.GetMax(),
-                    description
-                );
-            }
-            else if (optionAttribute.LongName is null)
-            {
-                newNamedParameter = new NamedCollectionParameterShape
-                (
-                    parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    rangeAttribute?.GetMin(),
-                    rangeAttribute?.GetMax(),
-                    description
-                );
-            }
-            else
-            {
-                newNamedParameter = new NamedCollectionParameterShape
-                (
-                    parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    optionAttribute.LongName ?? throw new InvalidOperationException(),
-                    rangeAttribute?.GetMin(),
-                    rangeAttribute?.GetMax(),
-                    description
-                );
-            }
-
-            return newNamedParameter;
+            newNamedParameter = CreateNamedSwitchParameterShape(optionAttribute, parameter);
         }
-
-        private static IParameterShape CreateNamedSwitchParameterShape
-        (
-            OptionAttribute optionAttribute,
-            ParameterInfo parameter
-        )
+        else if (!isCollection)
         {
-            if (!parameter.IsOptional)
-            {
-                throw new InvalidOperationException
-                (
-                    $"{parameter.Member.Name}::{parameter.Name} incorrectly declared: " +
-                    "switches must have a default value."
-                );
-            }
+            var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
 
-            if (parameter.ParameterType != typeof(bool))
-            {
-                throw new InvalidOperationException
-                (
-                    $"{parameter.Member.Name}::{parameter.Name} incorrectly declared: " +
-                    "switches must be booleans."
-                );
-            }
-
-            var description = parameter.GetDescriptionOrDefault();
-
-            IParameterShape newNamedParameter;
-            if (optionAttribute.ShortName is null)
-            {
-                newNamedParameter = new SwitchParameterShape
-                (
-                    parameter,
-                    optionAttribute.LongName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-            else if (optionAttribute.LongName is null)
-            {
-                newNamedParameter = new SwitchParameterShape
-                (
-                    parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-            else
-            {
-                newNamedParameter = new SwitchParameterShape
-                (
-                    parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    optionAttribute.LongName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-
-            return newNamedParameter;
+            newNamedParameter = greedyAttribute is null
+                ? CreateNamedSingleValueParameterShape(optionAttribute, parameter)
+                : CreateGreedyNamedSingleValueParameterShape(optionAttribute, parameter);
         }
-
-        private static IParameterShape CreateNamedSingleValueParameterShape
-        (
-            OptionAttribute optionAttribute,
-            ParameterInfo parameter
-        )
+        else
         {
-            var description = parameter.GetDescriptionOrDefault();
-
-            IParameterShape newNamedParameter;
-            if (optionAttribute.ShortName is null)
-            {
-                newNamedParameter = new NamedParameterShape
-                (
-                    parameter,
-                    optionAttribute.LongName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-            else if (optionAttribute.LongName is null)
-            {
-                newNamedParameter = new NamedParameterShape
-                (
-                    parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-            else
-            {
-                newNamedParameter = new NamedParameterShape
-                (
-                    parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    optionAttribute.LongName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-
-            return newNamedParameter;
+            newNamedParameter = CreateNamedCollectionParameterShape(optionAttribute, rangeAttribute, parameter);
         }
 
-        private static IParameterShape CreateGreedyNamedSingleValueParameterShape
-        (
-            OptionAttribute optionAttribute,
-            ParameterInfo parameter
-        )
+        return newNamedParameter;
+    }
+
+    private static IParameterShape CreateNamedCollectionParameterShape
+    (
+        OptionAttribute optionAttribute,
+        RangeAttribute? rangeAttribute,
+        ParameterInfo parameter
+    )
+    {
+        var description = parameter.GetDescriptionOrDefault();
+
+        IParameterShape newNamedParameter;
+        if (optionAttribute.ShortName is null)
         {
-            var description = parameter.GetDescriptionOrDefault();
-
-            IParameterShape newNamedParameter;
-            if (optionAttribute.ShortName is null)
-            {
-                newNamedParameter = new NamedGreedyParameterShape
-                (
-                    parameter,
-                    optionAttribute.LongName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-            else if (optionAttribute.LongName is null)
-            {
-                newNamedParameter = new NamedGreedyParameterShape
-                (
-                    parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-            else
-            {
-                newNamedParameter = new NamedGreedyParameterShape
-                (
-                    parameter,
-                    optionAttribute.ShortName ?? throw new InvalidOperationException(),
-                    optionAttribute.LongName ?? throw new InvalidOperationException(),
-                    description
-                );
-            }
-
-            return newNamedParameter;
+            newNamedParameter = new NamedCollectionParameterShape
+            (
+                parameter,
+                optionAttribute.LongName ?? throw new InvalidOperationException(),
+                rangeAttribute?.GetMin(),
+                rangeAttribute?.GetMax(),
+                description
+            );
         }
-
-        private static IParameterShape CreatePositionalParameterShape
-        (
-            RangeAttribute? rangeAttribute,
-            ParameterInfo parameter
-        )
+        else if (optionAttribute.LongName is null)
         {
-            var description = parameter.GetDescriptionOrDefault();
-            var isCollection = parameter.ParameterType.IsSupportedCollection();
-
-            IParameterShape newPositionalParameter;
-            if (!isCollection)
-            {
-                var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
-
-                newPositionalParameter = greedyAttribute is null
-                    ? new PositionalParameterShape(parameter, description)
-                    : new PositionalGreedyParameterShape(parameter, description);
-            }
-            else
-            {
-                newPositionalParameter = new PositionalCollectionParameterShape
-                (
-                    parameter,
-                    rangeAttribute?.GetMin(),
-                    rangeAttribute?.GetMax(),
-                    description
-                );
-            }
-
-            return newPositionalParameter;
+            newNamedParameter = new NamedCollectionParameterShape
+            (
+                parameter,
+                optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                rangeAttribute?.GetMin(),
+                rangeAttribute?.GetMax(),
+                description
+            );
         }
+        else
+        {
+            newNamedParameter = new NamedCollectionParameterShape
+            (
+                parameter,
+                optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                optionAttribute.LongName ?? throw new InvalidOperationException(),
+                rangeAttribute?.GetMin(),
+                rangeAttribute?.GetMax(),
+                description
+            );
+        }
+
+        return newNamedParameter;
+    }
+
+    private static IParameterShape CreateNamedSwitchParameterShape
+    (
+        OptionAttribute optionAttribute,
+        ParameterInfo parameter
+    )
+    {
+        if (!parameter.IsOptional)
+        {
+            throw new InvalidOperationException
+            (
+                $"{parameter.Member.Name}::{parameter.Name} incorrectly declared: " +
+                "switches must have a default value."
+            );
+        }
+
+        if (parameter.ParameterType != typeof(bool))
+        {
+            throw new InvalidOperationException
+            (
+                $"{parameter.Member.Name}::{parameter.Name} incorrectly declared: " +
+                "switches must be booleans."
+            );
+        }
+
+        var description = parameter.GetDescriptionOrDefault();
+
+        IParameterShape newNamedParameter;
+        if (optionAttribute.ShortName is null)
+        {
+            newNamedParameter = new SwitchParameterShape
+            (
+                parameter,
+                optionAttribute.LongName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+        else if (optionAttribute.LongName is null)
+        {
+            newNamedParameter = new SwitchParameterShape
+            (
+                parameter,
+                optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+        else
+        {
+            newNamedParameter = new SwitchParameterShape
+            (
+                parameter,
+                optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                optionAttribute.LongName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+
+        return newNamedParameter;
+    }
+
+    private static IParameterShape CreateNamedSingleValueParameterShape
+    (
+        OptionAttribute optionAttribute,
+        ParameterInfo parameter
+    )
+    {
+        var description = parameter.GetDescriptionOrDefault();
+
+        IParameterShape newNamedParameter;
+        if (optionAttribute.ShortName is null)
+        {
+            newNamedParameter = new NamedParameterShape
+            (
+                parameter,
+                optionAttribute.LongName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+        else if (optionAttribute.LongName is null)
+        {
+            newNamedParameter = new NamedParameterShape
+            (
+                parameter,
+                optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+        else
+        {
+            newNamedParameter = new NamedParameterShape
+            (
+                parameter,
+                optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                optionAttribute.LongName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+
+        return newNamedParameter;
+    }
+
+    private static IParameterShape CreateGreedyNamedSingleValueParameterShape
+    (
+        OptionAttribute optionAttribute,
+        ParameterInfo parameter
+    )
+    {
+        var description = parameter.GetDescriptionOrDefault();
+
+        IParameterShape newNamedParameter;
+        if (optionAttribute.ShortName is null)
+        {
+            newNamedParameter = new NamedGreedyParameterShape
+            (
+                parameter,
+                optionAttribute.LongName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+        else if (optionAttribute.LongName is null)
+        {
+            newNamedParameter = new NamedGreedyParameterShape
+            (
+                parameter,
+                optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+        else
+        {
+            newNamedParameter = new NamedGreedyParameterShape
+            (
+                parameter,
+                optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                optionAttribute.LongName ?? throw new InvalidOperationException(),
+                description
+            );
+        }
+
+        return newNamedParameter;
+    }
+
+    private static IParameterShape CreatePositionalParameterShape
+    (
+        RangeAttribute? rangeAttribute,
+        ParameterInfo parameter
+    )
+    {
+        var description = parameter.GetDescriptionOrDefault();
+        var isCollection = parameter.ParameterType.IsSupportedCollection();
+
+        IParameterShape newPositionalParameter;
+        if (!isCollection)
+        {
+            var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
+
+            newPositionalParameter = greedyAttribute is null
+                ? new PositionalParameterShape(parameter, description)
+                : new PositionalGreedyParameterShape(parameter, description);
+        }
+        else
+        {
+            newPositionalParameter = new PositionalCollectionParameterShape
+            (
+                parameter,
+                rangeAttribute?.GetMin(),
+                rangeAttribute?.GetMax(),
+                description
+            );
+        }
+
+        return newPositionalParameter;
     }
 }

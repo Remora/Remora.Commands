@@ -23,33 +23,32 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Tokenization
+namespace Remora.Commands.Tokenization;
+
+/// <summary>
+/// Represents a single token in a sequence.
+/// </summary>
+[PublicAPI]
+public readonly ref struct Token
 {
     /// <summary>
-    /// Represents a single token in a sequence.
+    /// Gets the type of the token.
     /// </summary>
-    [PublicAPI]
-    public readonly ref struct Token
+    public TokenType Type { get; }
+
+    /// <summary>
+    /// Gets the value that the token encompasses.
+    /// </summary>
+    public ReadOnlySpan<char> Value { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Token"/> struct.
+    /// </summary>
+    /// <param name="type">The type of the token.</param>
+    /// <param name="value">The value that the token encompasses.</param>
+    public Token(TokenType type, ReadOnlySpan<char> value)
     {
-        /// <summary>
-        /// Gets the type of the token.
-        /// </summary>
-        public TokenType Type { get; }
-
-        /// <summary>
-        /// Gets the value that the token encompasses.
-        /// </summary>
-        public ReadOnlySpan<char> Value { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Token"/> struct.
-        /// </summary>
-        /// <param name="type">The type of the token.</param>
-        /// <param name="value">The value that the token encompasses.</param>
-        public Token(TokenType type, ReadOnlySpan<char> value)
-        {
-            this.Type = type;
-            this.Value = value;
-        }
+        this.Type = type;
+        this.Value = value;
     }
 }

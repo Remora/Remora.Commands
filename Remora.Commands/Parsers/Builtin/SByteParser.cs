@@ -26,23 +26,22 @@ using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="sbyte"/>s.
+/// </summary>
+[PublicAPI]
+public class SByteParser : AbstractTypeParser<sbyte>
 {
-    /// <summary>
-    /// Parses <see cref="sbyte"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class SByteParser : AbstractTypeParser<sbyte>
+    /// <inheritdoc />
+    public override ValueTask<Result<sbyte>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<sbyte>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<sbyte>>
-            (
-                !sbyte.TryParse(value, out var result)
+        return new ValueTask<Result<sbyte>>
+        (
+            !sbyte.TryParse(value, out var result)
                 ? new ParsingError<sbyte>(value)
                 : Result<sbyte>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

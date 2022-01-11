@@ -27,340 +27,339 @@ using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class Raw
     {
-        public static partial class Raw
+        /// <summary>
+        /// Tests specialized behaviour.
+        /// </summary>
+        public class Specializations
         {
             /// <summary>
-            /// Tests specialized behaviour.
+            /// Tests whether the command service can execute a command with a single named boolean parameter - that is,
+            /// a switch.
             /// </summary>
-            public class Specializations
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSwitchCommand()
             {
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single named boolean parameter - that is,
-                /// a switch.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSwitchCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync("test switch --enable", services);
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync("test switch --enable", services);
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync("test switch", services);
+                executionResult = await commandService.TryExecuteAsync("test switch", services);
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single short-named boolean parameter -
-                /// that is, a switch.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteShortNameSwitchCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single short-named boolean parameter -
+            /// that is, a switch.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteShortNameSwitchCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync("test switch-short-name -e", services);
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync("test switch-short-name -e", services);
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single short and long-named boolean
-                /// parameter - that is, a switch.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteShortAndLongNameSwitchCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single short and long-named boolean
+            /// parameter - that is, a switch.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteShortAndLongNameSwitchCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test switch-short-and-long-name -e",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test switch-short-and-long-name -e",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test switch-short-and-long-name --enable",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test switch-short-and-long-name --enable",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single named boolean parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNamedBoolCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single named boolean parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNamedBoolCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync("test option --enable true", services);
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync("test option --enable true", services);
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync("test option", services);
+                executionResult = await commandService.TryExecuteAsync("test option", services);
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single short-named boolean parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteShortNameNamedBoolCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single short-named boolean parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteShortNameNamedBoolCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test option-short-name -e true",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test option-short-name -e true",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single short and long-named boolean
-                /// parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteShortAndLongNameNamedBoolCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single short and long-named boolean
+            /// parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteShortAndLongNameNamedBoolCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test option-short-and-long-name -e true",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test option-short-and-long-name -e true",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test option-short-and-long-name --enable true",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test option-short-and-long-name --enable true",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a nullable struct parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNullableStructCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a nullable struct parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNullableStructCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test nullable-struct -v 0",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test nullable-struct -v 0",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a nullable struct parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNullableStructCommandWithDefaultValue()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a nullable struct parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNullableStructCommandWithDefaultValue()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var commandService = services.GetRequiredService<CommandService>();
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test nullable-struct-with-default -v 0",
-                        services
-                    );
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test nullable-struct-with-default -v 0",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test nullable-struct-with-default",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test nullable-struct-with-default",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a nullable struct parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNullableStructCommandWithNullLiteral()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a nullable struct parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNullableStructCommandWithNullLiteral()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var commandService = services.GetRequiredService<CommandService>();
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test nullable-struct -v null",
-                        services
-                    );
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test nullable-struct -v null",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a nullable reference type parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNullableReferenceTypeCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a nullable reference type parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNullableReferenceTypeCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test nullable-reference-type -v 0",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test nullable-reference-type -v 0",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a nullable reference type parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNullableReferenceTypeCommandWithDefaultValue()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a nullable reference type parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNullableReferenceTypeCommandWithDefaultValue()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var commandService = services.GetRequiredService<CommandService>();
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test nullable-reference-type-with-default -v 0",
-                        services
-                    );
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test nullable-reference-type-with-default -v 0",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test nullable-reference-type-with-default",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test nullable-reference-type-with-default",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a nullable reference type parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNullableReferenceTypeCommandWithNullLiteral()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<SpecializedCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a nullable reference type parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNullableReferenceTypeCommandWithNullLiteral()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SpecializedCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var commandService = services.GetRequiredService<CommandService>();
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test nullable-reference-type -v null",
-                        services
-                    );
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test nullable-reference-type -v null",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
             }
         }
     }

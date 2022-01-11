@@ -28,43 +28,42 @@ using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class Preparsed
     {
-        public static partial class Preparsed
+        /// <summary>
+        /// Tests nonstandard return types.
+        /// </summary>
+        public class ReturnType
         {
             /// <summary>
-            /// Tests nonstandard return types.
+            /// Tests whether a method that returns a ValueTask{IResult} can be executed.
             /// </summary>
-            public class ReturnType
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteValueTaskCommand()
             {
-                /// <summary>
-                /// Tests whether a method that returns a ValueTask{IResult} can be executed.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteValueTaskCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<ReturnTypeCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<ReturnTypeCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var commandService = services.GetRequiredService<CommandService>();
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "a",
-                        values,
-                        services
-                    );
+                var values = new Dictionary<string, IReadOnlyList<string>>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "a",
+                    values,
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
             }
         }
     }

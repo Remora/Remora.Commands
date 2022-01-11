@@ -30,161 +30,160 @@ using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 using static Remora.Commands.Tokenization.TokenType;
 
-namespace Remora.Commands.Signatures
+namespace Remora.Commands.Signatures;
+
+/// <summary>
+/// Represents a single value without a name.
+/// </summary>
+[PublicAPI]
+public class PositionalCollectionParameterShape : PositionalParameterShape, ICollectionParameterShape
 {
-    /// <summary>
-    /// Represents a single value without a name.
-    /// </summary>
-    [PublicAPI]
-    public class PositionalCollectionParameterShape : PositionalParameterShape, ICollectionParameterShape
+    private static readonly MethodInfo EmptyArrayMethod;
+    private readonly object _emptyCollection;
+
+    /// <inheritdoc />
+    public ulong? Min { get; }
+
+    /// <inheritdoc />
+    public ulong? Max { get; }
+
+    /// <inheritdoc/>
+    public override object? DefaultValue
     {
-        private static readonly MethodInfo EmptyArrayMethod;
-        private readonly object _emptyCollection;
-
-        /// <inheritdoc />
-        public ulong? Min { get; }
-
-        /// <inheritdoc />
-        public ulong? Max { get; }
-
-        /// <inheritdoc/>
-        public override object? DefaultValue
+        get
         {
-            get
+            if (this.Parameter.IsOptional)
             {
-                if (this.Parameter.IsOptional)
-                {
-                    return this.Parameter.DefaultValue;
-                }
-
-                if (this.Min is null or 0)
-                {
-                    return _emptyCollection;
-                }
-
-                throw new InvalidOperationException();
-            }
-        }
-
-        static PositionalCollectionParameterShape()
-        {
-            var emptyArrayMethod = typeof(Array).GetMethod(nameof(Array.Empty));
-            EmptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PositionalCollectionParameterShape"/> class.
-        /// </summary>
-        /// <param name="parameter">The underlying parameter.</param>
-        /// <param name="min">The minimum number of elements.</param>
-        /// <param name="max">The maximum number of elements.</param>
-        /// <param name="description">The description of the parameter.</param>
-        public PositionalCollectionParameterShape
-        (
-            ParameterInfo parameter,
-            ulong? min,
-            ulong? max,
-            string? description = null
-        )
-            : base(parameter, description)
-        {
-            this.Min = min;
-            this.Max = max;
-
-            var elementType = this.Parameter.ParameterType.GetCollectionElementType();
-
-            var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
-            _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-        }
-
-        /// <inheritdoc />
-        public override bool Matches
-        (
-            TokenizingEnumerator tokenizer,
-            out ulong consumedTokens,
-            TreeSearchOptions? searchOptions = null
-        )
-        {
-            consumedTokens = 0;
-
-            ulong itemCount = 0;
-            while (this.Max is null || itemCount < this.Max.Value)
-            {
-                if (!tokenizer.MoveNext())
-                {
-                    break;
-                }
-
-                if (tokenizer.Current.Type != Value)
-                {
-                    break;
-                }
-
-                ++itemCount;
+                return this.Parameter.DefaultValue;
             }
 
-            if (this.Min is not null)
+            if (this.Min is null or 0)
             {
-                if (itemCount < this.Min.Value)
-                {
-                    return false;
-                }
+                return _emptyCollection;
             }
 
-            consumedTokens = itemCount;
-            return true;
+            throw new InvalidOperationException();
+        }
+    }
+
+    static PositionalCollectionParameterShape()
+    {
+        var emptyArrayMethod = typeof(Array).GetMethod(nameof(Array.Empty));
+        EmptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PositionalCollectionParameterShape"/> class.
+    /// </summary>
+    /// <param name="parameter">The underlying parameter.</param>
+    /// <param name="min">The minimum number of elements.</param>
+    /// <param name="max">The maximum number of elements.</param>
+    /// <param name="description">The description of the parameter.</param>
+    public PositionalCollectionParameterShape
+    (
+        ParameterInfo parameter,
+        ulong? min,
+        ulong? max,
+        string? description = null
+    )
+        : base(parameter, description)
+    {
+        this.Min = min;
+        this.Max = max;
+
+        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+
+        var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+        _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+    }
+
+    /// <inheritdoc />
+    public override bool Matches
+    (
+        TokenizingEnumerator tokenizer,
+        out ulong consumedTokens,
+        TreeSearchOptions? searchOptions = null
+    )
+    {
+        consumedTokens = 0;
+
+        ulong itemCount = 0;
+        while (this.Max is null || itemCount < this.Max.Value)
+        {
+            if (!tokenizer.MoveNext())
+            {
+                break;
+            }
+
+            if (tokenizer.Current.Type != Value)
+            {
+                break;
+            }
+
+            ++itemCount;
         }
 
-        /// <inheritdoc/>
-        public override bool Matches
-        (
-            KeyValuePair<string, IReadOnlyList<string>> namedValue,
-            out bool isFatal,
-            TreeSearchOptions? searchOptions = null
-        )
+        if (this.Min is not null)
         {
-            searchOptions ??= new TreeSearchOptions();
-            isFatal = false;
-
-            // This one is a bit of a special case. Since all parameters are named in the case of pre-bound parameters,
-            // we'll use the actual parameter name as a hint to match against.
-            var (name, value) = namedValue;
-
-            if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
+            if (itemCount < this.Min.Value)
             {
                 return false;
             }
+        }
 
-            var count = (ulong)value.LongCount();
-            if (count < this.Min)
-            {
-                isFatal = true;
-                return false;
-            }
+        consumedTokens = itemCount;
+        return true;
+    }
 
-            if (this.Max is null)
-            {
-                return true;
-            }
+    /// <inheritdoc/>
+    public override bool Matches
+    (
+        KeyValuePair<string, IReadOnlyList<string>> namedValue,
+        out bool isFatal,
+        TreeSearchOptions? searchOptions = null
+    )
+    {
+        searchOptions ??= new TreeSearchOptions();
+        isFatal = false;
 
-            if (count <= this.Max)
-            {
-                return true;
-            }
+        // This one is a bit of a special case. Since all parameters are named in the case of pre-bound parameters,
+        // we'll use the actual parameter name as a hint to match against.
+        var (name, value) = namedValue;
 
+        if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
+        {
+            return false;
+        }
+
+        var count = (ulong)value.LongCount();
+        if (count < this.Min)
+        {
             isFatal = true;
             return false;
         }
 
-        /// <inheritdoc/>
-        public override bool IsOmissible(TreeSearchOptions? searchOptions = null)
+        if (this.Max is null)
         {
-            if (this.Parameter.IsOptional)
-            {
-                return true;
-            }
-
-            return this.Min is null or 0;
+            return true;
         }
+
+        if (count <= this.Max)
+        {
+            return true;
+        }
+
+        isFatal = true;
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public override bool IsOmissible(TreeSearchOptions? searchOptions = null)
+    {
+        if (this.Parameter.IsOptional)
+        {
+            return true;
+        }
+
+        return this.Min is null or 0;
     }
 }

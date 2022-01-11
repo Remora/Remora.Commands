@@ -22,19 +22,18 @@
 
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Tokenization
-{
-    /// <summary>
-    /// Holds various options for the tokenizer.
-    /// </summary>
-    /// <param name="Delimiter">The string that delimits names and values.</param>
-    /// <param name="IgnoreEmptyValues">Whether empty values should be discarded.</param>
-    /// <param name="RetainQuotationMarks">Whether quotation marks should be retained in tokenized values.</param>
-    [PublicAPI]
-    public record TokenizerOptions
-    (
-        string Delimiter = " ",
-        bool IgnoreEmptyValues = true,
-        bool RetainQuotationMarks = false
-    );
-}
+namespace Remora.Commands.Tokenization;
+
+/// <summary>
+/// Holds various options for the tokenizer.
+/// </summary>
+/// <param name="Delimiter">The string that delimits names and values.</param>
+/// <param name="IgnoreEmptyValues">Whether empty values should be discarded.</param>
+/// <param name="RetainQuotationMarks">Whether quotation marks should be retained in tokenized values.</param>
+[PublicAPI]
+public record TokenizerOptions
+(
+    string Delimiter = " ",
+    bool IgnoreEmptyValues = true,
+    bool RetainQuotationMarks = false
+);

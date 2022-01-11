@@ -24,35 +24,34 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Attributes
+namespace Remora.Commands.Attributes;
+
+/// <summary>
+/// Marks a method as being a command.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method)]
+[MeansImplicitUse]
+[PublicAPI]
+public class CommandAttribute : Attribute
 {
     /// <summary>
-    /// Marks a method as being a command.
+    /// Gets the name of the command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
-    [MeansImplicitUse]
-    [PublicAPI]
-    public class CommandAttribute : Attribute
+    public string Name { get; }
+
+    /// <summary>
+    /// Gets the aliases for the command.
+    /// </summary>
+    public IReadOnlyList<string> Aliases { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CommandAttribute"/> class.
+    /// </summary>
+    /// <param name="name">The name of the command.</param>
+    /// <param name="aliases">Additional aliases for the command.</param>
+    public CommandAttribute(string name, params string[] aliases)
     {
-        /// <summary>
-        /// Gets the name of the command.
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// Gets the aliases for the command.
-        /// </summary>
-        public IReadOnlyList<string> Aliases { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandAttribute"/> class.
-        /// </summary>
-        /// <param name="name">The name of the command.</param>
-        /// <param name="aliases">Additional aliases for the command.</param>
-        public CommandAttribute(string name, params string[] aliases)
-        {
-            this.Name = name;
-            this.Aliases = aliases;
-        }
+        this.Name = name;
+        this.Aliases = aliases;
     }
 }

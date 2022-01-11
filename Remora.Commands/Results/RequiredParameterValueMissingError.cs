@@ -24,13 +24,12 @@ using JetBrains.Annotations;
 using Remora.Commands.Signatures;
 using Remora.Results;
 
-namespace Remora.Commands.Results
-{
-    /// <summary>
-    /// Represents the lack of a value for a required parameter.
-    /// </summary>
-    /// <param name="ParameterShape">The shape of the missing parameter.</param>
-    [PublicAPI]
-    public record RequiredParameterValueMissingError(IParameterShape ParameterShape) :
-        ResultError($"No value was provided for the required parameter \"{ParameterShape.HintName}\".");
-}
+namespace Remora.Commands.Results;
+
+/// <summary>
+/// Represents the lack of a value for a required parameter.
+/// </summary>
+/// <param name="ParameterShape">The shape of the missing parameter.</param>
+[PublicAPI]
+public record RequiredParameterValueMissingError(IParameterShape ParameterShape) :
+    ResultError($"No value was provided for the required parameter \"{ParameterShape.HintName}\".");

@@ -23,29 +23,28 @@
 using JetBrains.Annotations;
 using Remora.Results;
 
-namespace Remora.Commands.Results
+namespace Remora.Commands.Results;
+
+/// <summary>
+/// Represents a failure to parse the given type.
+/// </summary>
+/// <typeparam name="TType">The type that's being parsed.</typeparam>
+[PublicAPI]
+public record ParsingError<TType> : ResultError
 {
     /// <summary>
-    /// Represents a failure to parse the given type.
+    /// Gets the reason why the parsing failed.
     /// </summary>
-    /// <typeparam name="TType">The type that's being parsed.</typeparam>
-    [PublicAPI]
-    public record ParsingError<TType> : ResultError
-    {
-        /// <summary>
-        /// Gets the reason why the parsing failed.
-        /// </summary>
-        public string Reason { get; }
+    public string Reason { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParsingError{TType}"/> class.
-        /// </summary>
-        /// <param name="value">The value that failed to parse.</param>
-        /// <param name="reason">The reason why the parsing failed.</param>
-        public ParsingError(string? value, string? reason = null)
-            : base($"Failed to parse \"{value ?? "null"}\" as an instance of the type \"{typeof(TType)}\"")
-        {
-            this.Reason = reason ?? "No reason given.";
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ParsingError{TType}"/> class.
+    /// </summary>
+    /// <param name="value">The value that failed to parse.</param>
+    /// <param name="reason">The reason why the parsing failed.</param>
+    public ParsingError(string? value, string? reason = null)
+        : base($"Failed to parse \"{value ?? "null"}\" as an instance of the type \"{typeof(TType)}\"")
+    {
+        this.Reason = reason ?? "No reason given.";
     }
 }

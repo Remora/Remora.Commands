@@ -28,15 +28,14 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.DummyModules
+namespace Remora.Commands.Tests.Data.DummyModules;
+
+[Group("test", "t")]
+public class AliasedGroupWithCommand : CommandGroup
 {
-    [Group("test", "t")]
-    public class AliasedGroupWithCommand : CommandGroup
+    [Command("command")]
+    public Task<IResult> Command()
     {
-        [Command("command")]
-        public Task<IResult> Command()
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }

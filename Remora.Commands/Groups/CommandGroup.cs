@@ -23,26 +23,25 @@
 using System.Threading;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Groups
+namespace Remora.Commands.Groups;
+
+/// <summary>
+/// Represents an abstract base for command groups.
+/// </summary>
+[PublicAPI]
+public abstract class CommandGroup
 {
     /// <summary>
-    /// Represents an abstract base for command groups.
+    /// Gets the cancellation token for the command execution operation.
     /// </summary>
-    [PublicAPI]
-    public abstract class CommandGroup
-    {
-        /// <summary>
-        /// Gets the cancellation token for the command execution operation.
-        /// </summary>
-        protected CancellationToken CancellationToken { get; private set; }
+    protected CancellationToken CancellationToken { get; private set; }
 
-        /// <summary>
-        /// Sets the cancellation token of the module.
-        /// </summary>
-        /// <param name="ct">The token.</param>
-        internal void SetCancellationToken(CancellationToken ct)
-        {
-            this.CancellationToken = ct;
-        }
+    /// <summary>
+    /// Sets the cancellation token of the module.
+    /// </summary>
+    /// <param name="ct">The token.</param>
+    internal void SetCancellationToken(CancellationToken ct)
+    {
+        this.CancellationToken = ct;
     }
 }

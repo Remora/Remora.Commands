@@ -27,25 +27,24 @@ using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="Enum"/>s.
+/// </summary>
+/// <typeparam name="TEnum">The enum type.</typeparam>
+[PublicAPI]
+public class EnumParser<TEnum> : AbstractTypeParser<TEnum>
+    where TEnum : struct, Enum
 {
-    /// <summary>
-    /// Parses <see cref="Enum"/>s.
-    /// </summary>
-    /// <typeparam name="TEnum">The enum type.</typeparam>
-    [PublicAPI]
-    public class EnumParser<TEnum> : AbstractTypeParser<TEnum>
-        where TEnum : struct, Enum
+    /// <inheritdoc />
+    public override ValueTask<Result<TEnum>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<TEnum>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<TEnum>>
-            (
-                !Enum.TryParse<TEnum>(value, true, out var result)
+        return new ValueTask<Result<TEnum>>
+        (
+            !Enum.TryParse<TEnum>(value, true, out var result)
                 ? new ParsingError<TEnum>(value)
                 : Result<TEnum>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

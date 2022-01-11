@@ -26,35 +26,34 @@ using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
 using Xunit;
 
-namespace Remora.Commands.Tests.Trees
+namespace Remora.Commands.Tests.Trees;
+
+public static partial class CommandTreeBuilderTests
 {
-    public static partial class CommandTreeBuilderTests
+    /// <summary>
+    /// Tests description functionality.
+    /// </summary>
+    public class Descriptions
     {
         /// <summary>
-        /// Tests description functionality.
+        /// Tests that descriptions are correctly included.
         /// </summary>
-        public class Descriptions
+        [Fact]
+        public void IncludesConfiguredDescriptions()
         {
-            /// <summary>
-            /// Tests that descriptions are correctly included.
-            /// </summary>
-            [Fact]
-            public void IncludesConfiguredDescriptions()
-            {
-                var builder = new CommandTreeBuilder();
-                builder.RegisterModule<DescribedGroup>();
+            var builder = new CommandTreeBuilder();
+            builder.RegisterModule<DescribedGroup>();
 
-                var tree = builder.Build();
-                var root = tree.Root;
+            var tree = builder.Build();
+            var root = tree.Root;
 
-                var group = (GroupNode)root.Children.Single();
-                var command = (CommandNode)group.Children.Single();
-                var parameter = command.Shape.Parameters.Single();
+            var group = (GroupNode)root.Children.Single();
+            var command = (CommandNode)group.Children.Single();
+            var parameter = command.Shape.Parameters.Single();
 
-                Assert.Equal("Group description", group.Description);
-                Assert.Equal("Command description", command.Shape.Description);
-                Assert.Equal("Parameter description", parameter.Description);
-            }
+            Assert.Equal("Group description", group.Description);
+            Assert.Equal("Command description", command.Shape.Description);
+            Assert.Equal("Parameter description", parameter.Description);
         }
     }
 }

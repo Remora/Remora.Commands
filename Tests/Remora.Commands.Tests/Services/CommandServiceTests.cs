@@ -22,12 +22,11 @@
 
 using Remora.Commands.Services;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+/// <summary>
+/// Tests the <see cref="CommandService"/> class.
+/// </summary>
+public static partial class CommandServiceTests
 {
-    /// <summary>
-    /// Tests the <see cref="CommandService"/> class.
-    /// </summary>
-    public static partial class CommandServiceTests
-    {
-    }
 }

@@ -23,24 +23,23 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Trees.Nodes
-{
-    /// <summary>
-    /// Represents the root of a command tree.
-    /// </summary>
-    [PublicAPI]
-    public class RootNode : IParentNode
-    {
-        /// <inheritdoc/>
-        public IReadOnlyList<IChildNode> Children { get; }
+namespace Remora.Commands.Trees.Nodes;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RootNode"/> class.
-        /// </summary>
-        /// <param name="children">The children of this node.</param>
-        public RootNode(IReadOnlyList<IChildNode> children)
-        {
-            this.Children = children;
-        }
+/// <summary>
+/// Represents the root of a command tree.
+/// </summary>
+[PublicAPI]
+public class RootNode : IParentNode
+{
+    /// <inheritdoc/>
+    public IReadOnlyList<IChildNode> Children { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RootNode"/> class.
+    /// </summary>
+    /// <param name="children">The children of this node.</param>
+    public RootNode(IReadOnlyList<IChildNode> children)
+    {
+        this.Children = children;
     }
 }

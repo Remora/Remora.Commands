@@ -28,235 +28,234 @@ using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class PreparsedWithPath
     {
-        public static partial class PreparsedWithPath
+        /// <summary>
+        /// Tests basic requirements.
+        /// </summary>
+        public class Basics
         {
             /// <summary>
-            /// Tests basic requirements.
+            /// Tests whether the command service can execute a parameterless command.
             /// </summary>
-            public class Basics
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteParameterlessCommand()
             {
-                /// <summary>
-                /// Tests whether the command service can execute a parameterless command.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteParameterlessCommand()
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BasicCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "parameterless" },
+                    values,
+                    services
+                );
+
+                Assert.True(executionResult.IsSuccess);
+            }
+
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single positional parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSinglePositionalCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BasicCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<BasicCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+                    { "value", new[] { "booga" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "single-positional" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "parameterless" },
-                        values,
-                        services
-                    );
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single optional positional parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSingleOptionalPositionalCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BasicCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single positional parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSinglePositionalCommand()
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "single-optional-positional" },
+                    values,
+                    services
+                );
+
+                Assert.True(executionResult.IsSuccess);
+            }
+
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single positional parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSingleNamedCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BasicCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<BasicCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+                    { "value", new[] { "booga" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "single-named" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "booga" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "single-positional" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single positional parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSingleOptionalNamedCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BasicCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single optional positional parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSingleOptionalPositionalCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "single-optional-named" },
+                    values,
+                    services
+                );
+
+                Assert.True(executionResult.IsSuccess);
+            }
+
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single short-name parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSingleShortNameCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BasicCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<BasicCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+                    { "v", new[] { "booga" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "single-named-with-short-name" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "single-optional-positional" },
-                        values,
-                        services
-                    );
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+            /// <summary>
+            /// Tests whether the command service can execute a command with a single short and long-name parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSingleShortAndLongNameCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BasicCommandGroup>()
+                    .Done()
+                    .BuildServiceProvider();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single positional parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSingleNamedCommand()
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var shortValues = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<BasicCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+                    { "v", new[] { "booga" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "single-named-with-long-and-short-name" },
+                    shortValues,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "booga" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "single-named" },
-                        values,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-                }
-
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single positional parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSingleOptionalNamedCommand()
+                var longValues = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<BasicCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
+                    { "value", new[] { "booga" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "single-named-with-long-and-short-name" },
+                    longValues,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "single-optional-named" },
-                        values,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-                }
-
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single short-name parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSingleShortNameCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<BasicCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
-
-                    var commandService = services.GetRequiredService<CommandService>();
-
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "v", new[] { "booga" } }
-                    };
-
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "single-named-with-short-name" },
-                        values,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-                }
-
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single short and long-name parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSingleShortAndLongNameCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                            .WithCommandGroup<BasicCommandGroup>()
-                            .Done()
-                        .BuildServiceProvider();
-
-                    var commandService = services.GetRequiredService<CommandService>();
-
-                    var shortValues = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "v", new[] { "booga" } }
-                    };
-
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "single-named-with-long-and-short-name" },
-                        shortValues,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-
-                    var longValues = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "booga" } }
-                    };
-
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "single-named-with-long-and-short-name" },
-                        longValues,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
             }
         }
     }

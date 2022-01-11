@@ -28,23 +28,22 @@ using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="DateTimeOffset"/>s.
+/// </summary>
+[PublicAPI]
+public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
 {
-    /// <summary>
-    /// Parses <see cref="DateTimeOffset"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
+    /// <inheritdoc />
+    public override ValueTask<Result<DateTimeOffset>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<DateTimeOffset>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<DateTimeOffset>>
-            (
-                !DateTimeOffset.TryParse(value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result)
+        return new ValueTask<Result<DateTimeOffset>>
+        (
+            !DateTimeOffset.TryParse(value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result)
                 ? new ParsingError<DateTimeOffset>(value)
                 : Result<DateTimeOffset>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

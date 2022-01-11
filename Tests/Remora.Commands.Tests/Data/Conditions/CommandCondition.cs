@@ -26,21 +26,20 @@ using Remora.Commands.Conditions;
 using Remora.Commands.Tests.Data.Attributes;
 using Remora.Results;
 
-namespace Remora.Commands.Tests.Data.Conditions
+namespace Remora.Commands.Tests.Data.Conditions;
+
+/// <inheritdoc />
+public class CommandCondition : ICondition<CommandConditionAttribute>
 {
     /// <inheritdoc />
-    public class CommandCondition : ICondition<CommandConditionAttribute>
+    public ValueTask<Result> CheckAsync
+    (
+        CommandConditionAttribute attribute,
+        CancellationToken ct = default
+    )
     {
-        /// <inheritdoc />
-        public ValueTask<Result> CheckAsync
-        (
-            CommandConditionAttribute attribute,
-            CancellationToken ct = default
-        )
-        {
-            return attribute.Data == "booga"
-                ? new ValueTask<Result>(Result.FromSuccess())
-                : new ValueTask<Result>(new InvalidOperationError("No match :("));
-        }
+        return attribute.Data == "booga"
+            ? new ValueTask<Result>(Result.FromSuccess())
+            : new ValueTask<Result>(new InvalidOperationError("No match :("));
     }
 }

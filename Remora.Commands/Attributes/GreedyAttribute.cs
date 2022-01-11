@@ -23,15 +23,14 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Attributes
+namespace Remora.Commands.Attributes;
+
+/// <summary>
+/// Marks a parameter as being a greedy consumer, that is, it consumes a series of value tokens and treats them as
+/// one.
+/// </summary>
+[AttributeUsage(AttributeTargets.Parameter)]
+[PublicAPI]
+public class GreedyAttribute : Attribute
 {
-    /// <summary>
-    /// Marks a parameter as being a greedy consumer, that is, it consumes a series of value tokens and treats them as
-    /// one.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter)]
-    [PublicAPI]
-    public class GreedyAttribute : Attribute
-    {
-    }
 }

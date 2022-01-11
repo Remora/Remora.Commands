@@ -26,70 +26,69 @@ using JetBrains.Annotations;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 
-namespace Remora.Commands.Signatures
+namespace Remora.Commands.Signatures;
+
+/// <summary>
+/// Represents the "shape" of a single parameter. This type is used to determine whether a sequence of tokens could
+/// fit the associated parameter.
+/// </summary>
+[PublicAPI]
+public interface IParameterShape
 {
     /// <summary>
-    /// Represents the "shape" of a single parameter. This type is used to determine whether a sequence of tokens could
-    /// fit the associated parameter.
+    /// Gets the matching parameter.
     /// </summary>
-    [PublicAPI]
-    public interface IParameterShape
-    {
-        /// <summary>
-        /// Gets the matching parameter.
-        /// </summary>
-        ParameterInfo Parameter { get; }
+    ParameterInfo Parameter { get; }
 
-        /// <summary>
-        /// Gets the default value, if any.
-        /// </summary>
-        object? DefaultValue { get; }
+    /// <summary>
+    /// Gets the default value, if any.
+    /// </summary>
+    object? DefaultValue { get; }
 
-        /// <summary>
-        /// Gets a string that can be used to refer to the parameter in human-readable content. Typically, this is the
-        /// configured name of the parameter, or a unique fallback value.
-        /// </summary>
-        string HintName { get; }
+    /// <summary>
+    /// Gets a string that can be used to refer to the parameter in human-readable content. Typically, this is the
+    /// configured name of the parameter, or a unique fallback value.
+    /// </summary>
+    string HintName { get; }
 
-        /// <summary>
-        /// Gets a user-configured description of the parameter.
-        /// </summary>
-        string Description { get; }
+    /// <summary>
+    /// Gets a user-configured description of the parameter.
+    /// </summary>
+    string Description { get; }
 
-        /// <summary>
-        /// Determines whether the given token sequence matches the parameter shape.
-        /// </summary>
-        /// <param name="tokenizer">The token sequence.</param>
-        /// <param name="consumedTokens">The number of tokens that would be consumed by this parameter.</param>
-        /// <param name="searchOptions">A set of search options.</param>
-        /// <returns>true if the shape matches; otherwise, false.</returns>
-        public bool Matches
-        (
-            TokenizingEnumerator tokenizer,
-            out ulong consumedTokens,
-            TreeSearchOptions? searchOptions = null
-        );
+    /// <summary>
+    /// Determines whether the given token sequence matches the parameter shape.
+    /// </summary>
+    /// <param name="tokenizer">The token sequence.</param>
+    /// <param name="consumedTokens">The number of tokens that would be consumed by this parameter.</param>
+    /// <param name="searchOptions">A set of search options.</param>
+    /// <returns>true if the shape matches; otherwise, false.</returns>
+    public bool Matches
+    (
+        TokenizingEnumerator tokenizer,
+        out ulong consumedTokens,
+        TreeSearchOptions? searchOptions = null
+    );
 
-        /// <summary>
-        /// Determines whether the given named value matches the parameter shape.
-        /// </summary>
-        /// <param name="namedValue">The named value.</param>
-        /// <param name="isFatal">Whether the mismatch was fatal, and the entire command should be rejected.</param>
-        /// <param name="searchOptions">A set of search options.</param>
-        /// <returns>true if the shape matches; otherwise, false.</returns>
-        public bool Matches
-        (
-            KeyValuePair<string, IReadOnlyList<string>> namedValue,
-            out bool isFatal,
-            TreeSearchOptions? searchOptions = null
-        );
+    /// <summary>
+    /// Determines whether the given named value matches the parameter shape.
+    /// </summary>
+    /// <param name="namedValue">The named value.</param>
+    /// <param name="isFatal">Whether the mismatch was fatal, and the entire command should be rejected.</param>
+    /// <param name="searchOptions">A set of search options.</param>
+    /// <returns>true if the shape matches; otherwise, false.</returns>
+    public bool Matches
+    (
+        KeyValuePair<string, IReadOnlyList<string>> namedValue,
+        out bool isFatal,
+        TreeSearchOptions? searchOptions = null
+    );
 
-        /// <summary>
-        /// Determines whether the parameter is omissible; that is, it is either optional or has a well-established
-        /// default value.
-        /// </summary>
-        /// <param name="searchOptions">A set of search options.</param>
-        /// <returns>true if the parameter is omissible; otherwise, false.</returns>
-        public bool IsOmissible(TreeSearchOptions? searchOptions = null);
-    }
+    /// <summary>
+    /// Determines whether the parameter is omissible; that is, it is either optional or has a well-established
+    /// default value.
+    /// </summary>
+    /// <param name="searchOptions">A set of search options.</param>
+    /// <returns>true if the parameter is omissible; otherwise, false.</returns>
+    public bool IsOmissible(TreeSearchOptions? searchOptions = null);
 }

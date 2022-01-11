@@ -24,11 +24,10 @@ using JetBrains.Annotations;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
-namespace Remora.Commands.Results
-{
-    /// <summary>
-    /// Represents a failure to satisfy a condition applied to a node in the command tree.
-    /// </summary>
-    [PublicAPI]
-    public record ConditionNotSatisfiedError(string Message, IChildNode? Node = default) : ResultError(Message);
-}
+namespace Remora.Commands.Results;
+
+/// <summary>
+/// Represents a failure to satisfy a condition applied to a node in the command tree.
+/// </summary>
+[PublicAPI]
+public record ConditionNotSatisfiedError(string Message, IChildNode? Node = default) : ResultError(Message);
