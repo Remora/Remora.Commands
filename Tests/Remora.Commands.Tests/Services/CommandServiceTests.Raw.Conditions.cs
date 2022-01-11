@@ -50,7 +50,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulCondition>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -75,7 +77,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulCondition>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -101,7 +105,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulCondition>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -126,7 +132,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulCondition>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -152,7 +160,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulCommandCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulCommandCondition>()
+                            .Done()
                         .AddCondition<CommandCondition>()
                         .BuildServiceProvider();
 
@@ -177,7 +187,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulCommandCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulCommandCondition>()
+                            .Done()
                         .AddCondition<CommandCondition>()
                         .BuildServiceProvider();
 
@@ -203,7 +215,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulCommandCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulCommandCondition>()
+                            .Done()
                         .AddCondition<CommandCondition>()
                         .BuildServiceProvider();
 
@@ -228,7 +242,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulCommandCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulCommandCondition>()
+                            .Done()
                         .AddCondition<CommandCondition>()
                         .BuildServiceProvider();
 
@@ -254,7 +270,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulParameterCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulParameterCondition>()
+                            .Done()
                         .AddCondition<ParameterCondition>()
                         .BuildServiceProvider();
 
@@ -279,7 +297,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulParameterCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulParameterCondition>()
+                            .Done()
                         .AddCondition<ParameterCondition>()
                         .BuildServiceProvider();
 
@@ -305,7 +325,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulParameterCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulParameterCondition>()
+                            .Done()
                         .AddCondition<ParameterCondition>()
                         .BuildServiceProvider();
 
@@ -330,7 +352,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulParameterCondition>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulParameterCondition>()
+                            .Done()
                         .AddCondition<ParameterCondition>()
                         .BuildServiceProvider();
 
@@ -356,7 +380,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulConditionAndInnerUnnamedGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulConditionAndInnerUnnamedGroup>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -380,7 +406,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulConditionAndInnerNamedGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulConditionAndInnerNamedGroup>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -404,7 +432,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulConditionAndInnerUnnamedGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulConditionAndInnerUnnamedGroup>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -428,7 +458,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulConditionAndInnerNamedGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulConditionAndInnerNamedGroup>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -454,7 +486,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -482,7 +516,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulConditionAndInnerNamedGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulConditionAndInnerNamedGroup>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -510,7 +546,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 
@@ -538,7 +576,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulConditionAndInnerNamedGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulConditionAndInnerNamedGroup>()
+                            .Done()
                         .AddCondition<GroupCondition>()
                         .BuildServiceProvider();
 

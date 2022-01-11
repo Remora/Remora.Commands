@@ -49,7 +49,9 @@ namespace Remora.Commands.Tests.Services
                 {
                     var services = new ServiceCollection()
                         .AddCommands()
-                        .AddCommandGroup<AmbiguousCommandGroup>()
+                        .AddCommandTree()
+                            .WithCommandGroup<AmbiguousCommandGroup>()
+                            .Done()
                         .BuildServiceProvider();
 
                     var commandService = services.GetRequiredService<CommandService>();
