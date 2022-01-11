@@ -21,12 +21,14 @@
 //
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Remora.Commands.Services;
 
 /// <summary>
 /// Represents configurable options for the <see cref="CommandTreeAccessor"/>.
 /// </summary>
+[PublicAPI]
 public class CommandTreeAccessorOptions
 {
     private readonly List<string> _treeNames = new();

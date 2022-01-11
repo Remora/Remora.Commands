@@ -21,6 +21,7 @@
 //
 
 using System;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Remora.Commands.Groups;
@@ -32,6 +33,7 @@ namespace Remora.Commands.DependencyInjection;
 /// <summary>
 /// Handles fluent building of command tree registrations.
 /// </summary>
+[PublicAPI]
 public class TreeRegistrationBuilder
 {
     private readonly string? _treeName;
