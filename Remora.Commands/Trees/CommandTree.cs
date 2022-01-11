@@ -159,42 +159,42 @@ public class CommandTree
     )
     {
         if (commandPath.Count < 1)
+        {
+            return Array.Empty<CommandNode>();
+        }
+
+        var commandNodes = new List<CommandNode>();
+
+        foreach (var child in parentNode.Children)
+        {
+            if (!IsNodeMatch(child, commandPath[0], searchOptions))
             {
-                return Array.Empty<CommandNode>();
-            }var commandNodes = new List<CommandNode>();
-
-
-            foreach (var child in parentNode.Children)
-            {
-                if (!IsNodeMatch(child, commandPath[0], searchOptions))
-                {
-                    continue;
-                }
-
-                switch (child)
-                {
-                    case CommandNode commandNode:
-                    {
-                        commandNodes.Add(commandNode);
-                        break;
-                    }
-                    case IParentNode groupNode:
-                    {
-                        var nestedResults = Search(groupNode, commandPath.Skip(1).ToList(), searchOptions);
-                        commandNodes.AddRange(nestedResults);
-
-                        continue;
-                    }
-                    default:
-                    {
-                        throw new InvalidOperationException
-                        (
-                            "Unknown node type encountered; tree is invalid and the search cannot continue."
-                        );
-                    }
-                }
+                continue;
             }
 
+            switch (child)
+            {
+                case CommandNode commandNode:
+                {
+                    commandNodes.Add(commandNode);
+                    break;
+                }
+                case IParentNode groupNode:
+                {
+                    var nestedResults = Search(groupNode, commandPath.Skip(1).ToList(), searchOptions);
+                    commandNodes.AddRange(nestedResults);
+
+                    continue;
+                }
+                default:
+                {
+                    throw new InvalidOperationException
+                    (
+                        "Unknown node type encountered; tree is invalid and the search cannot continue."
+                    );
+                }
+            }
+        }
 
         return commandNodes;
     }
