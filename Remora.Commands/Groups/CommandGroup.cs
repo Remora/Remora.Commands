@@ -34,6 +34,7 @@ public abstract class CommandGroup
     /// <summary>
     /// Gets the cancellation token for the command execution operation.
     /// </summary>
+    [ProvidesContext]
     protected CancellationToken CancellationToken { get; private set; }
 
     /// <summary>
