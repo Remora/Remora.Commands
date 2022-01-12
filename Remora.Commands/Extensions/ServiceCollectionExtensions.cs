@@ -87,7 +87,7 @@ public static class ServiceCollectionExtensions
         return serviceCollection
             .AddCommandTree()
             .WithCommandGroup(commandModule)
-            .Done();
+            .Finish();
     }
 
     /// <summary>
@@ -100,6 +100,10 @@ public static class ServiceCollectionExtensions
         this IServiceCollection serviceCollection
     )
     {
+        // This empty configuration is done to ensure the options are available even
+        // when no trees have been added
+        serviceCollection.Configure<CommandTreeAccessorOptions>(_ => { });
+
         serviceCollection.TryAddSingleton<CommandTreeAccessor>();
         serviceCollection.TryAddScoped<CommandService>();
 
