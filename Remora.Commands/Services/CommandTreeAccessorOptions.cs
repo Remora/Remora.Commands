@@ -31,7 +31,7 @@ namespace Remora.Commands.Services;
 [PublicAPI]
 public class CommandTreeAccessorOptions
 {
-    private readonly List<string> _treeNames = new();
+    private readonly List<string> _treeNames = new() { Constants.DefaultTreeName, Constants.AllTreeName };
 
     /// <summary>
     /// Gets the names of the registered trees.
