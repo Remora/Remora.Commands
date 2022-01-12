@@ -27,277 +27,296 @@ using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class Raw
     {
-        public static partial class Raw
+        /// <summary>
+        /// Tests collection arguments.
+        /// </summary>
+        public class Collections
         {
             /// <summary>
-            /// Tests collection arguments.
+            /// Tests whether the command service can execute a command with a positional collection.
             /// </summary>
-            public class Collections
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecutePositionalCollectionCommand()
             {
-                /// <summary>
-                /// Tests whether the command service can execute a command with a positional collection.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecutePositionalCollectionCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test positional-collection ra ra rasputin",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test positional-collection ra ra rasputin",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a named collection.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNamedCollectionCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a named collection.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNamedCollectionCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test named-collection --values ra ra rasputin",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test named-collection --values ra ra rasputin",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a positional collection and named value.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteNamedValueAndPositionalCollectionCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a positional collection and named value.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteNamedValueAndPositionalCollectionCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test positional-collection-and-named-value ra rasputin --named ra",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test positional-collection-and-named-value ra rasputin --named ra",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a positional collection and named value.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteOutOfOrderNamedValueAndPositionalCollectionCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a positional collection and named value.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteOutOfOrderNamedValueAndPositionalCollectionCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test positional-collection-and-named-value --named ra ra rasputin ",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test positional-collection-and-named-value --named ra ra rasputin ",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a min-constrained collection.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteCollectionWithMinCountCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a min-constrained collection.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteCollectionWithMinCountCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test collection-with-min-count ra",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test collection-with-min-count ra",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test collection-with-min-count",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test collection-with-min-count",
+                    services
+                );
 
-                    Assert.False(executionResult.IsSuccess);
-                }
+                Assert.False(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a max-constrained collection.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteCollectionWithMaxCountCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a max-constrained collection.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteCollectionWithMaxCountCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test collection-with-max-count",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test collection-with-max-count",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test collection-with-max-count ra ra rasputin",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test collection-with-max-count ra ra rasputin",
+                    services
+                );
 
-                    Assert.False(executionResult.IsSuccess);
-                }
+                Assert.False(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a min and max-constrained collection.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteCollectionWithMinAndMaxCountCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a min and max-constrained collection.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteCollectionWithMinAndMaxCountCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test collection-with-min-and-max-count ra",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test collection-with-min-and-max-count ra",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test collection-with-min-and-max-count",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test collection-with-min-and-max-count",
+                    services
+                );
 
-                    Assert.False(executionResult.IsSuccess);
+                Assert.False(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test collection-with-min-and-max-count ra ra rasputin",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test collection-with-min-and-max-count ra ra rasputin",
+                    services
+                );
 
-                    Assert.False(executionResult.IsSuccess);
-                }
+                Assert.False(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a max-constrained collection and a
-                /// following positional argument.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteConstrainedCollectionWithPositionalValue()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a max-constrained collection and a
+            /// following positional argument.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteConstrainedCollectionWithPositionalValue()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test constrained-collection-with-positional-value ra ra rasputin",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test constrained-collection-with-positional-value ra ra rasputin",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.IsSuccess);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test constrained-collection-with-positional-value ra ra",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test constrained-collection-with-positional-value ra ra",
+                    services
+                );
 
-                    Assert.False(executionResult.IsSuccess);
-                }
+                Assert.False(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a positional array.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteArrayCollectionCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a positional array.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteArrayCollectionCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test array-collection ra ra rasputin",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test array-collection ra ra rasputin",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a positional params array.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteParamsCollectionCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<CollectionCommandGroup>()
-                        .BuildServiceProvider();
+            /// <summary>
+            /// Tests whether the command service can execute a command with a positional params array.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteParamsCollectionCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<CollectionCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider();
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test params-collection ra ra rasputin",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test params-collection ra ra rasputin",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
             }
         }
     }

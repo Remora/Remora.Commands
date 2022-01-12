@@ -26,23 +26,22 @@ using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="uint"/>s.
+/// </summary>
+[PublicAPI]
+public class UInt32Parser : AbstractTypeParser<uint>
 {
-    /// <summary>
-    /// Parses <see cref="uint"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class UInt32Parser : AbstractTypeParser<uint>
+    /// <inheritdoc />
+    public override ValueTask<Result<uint>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<uint>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<uint>>
-            (
-                !uint.TryParse(value, out var result)
+        return new ValueTask<Result<uint>>
+        (
+            !uint.TryParse(value, out var result)
                 ? new ParsingError<uint>(value)
                 : Result<uint>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

@@ -26,53 +26,52 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Extensions
+namespace Remora.Commands.Extensions;
+
+/// <summary>
+/// Defines extension methods for the <see cref="ICustomAttributeProvider"/> interface.
+/// </summary>
+[PublicAPI]
+public static class CustomAttributeProviderExtensions
 {
     /// <summary>
-    /// Defines extension methods for the <see cref="ICustomAttributeProvider"/> interface.
+    /// Gets the first instance of a custom attribute of the given type from the given attribute provider.
     /// </summary>
-    [PublicAPI]
-    public static class CustomAttributeProviderExtensions
+    /// <param name="attributeProvider">The attribute provider.</param>
+    /// <param name="inherit">Whether inherited attributes should be considered.</param>
+    /// <typeparam name="TAttribute">The attribute type.</typeparam>
+    /// <returns>The found attribute, or null.</returns>
+    public static TAttribute? GetCustomAttribute<TAttribute>
+    (
+        this ICustomAttributeProvider attributeProvider,
+        bool inherit = false
+    )
+        where TAttribute : Attribute
     {
-        /// <summary>
-        /// Gets the first instance of a custom attribute of the given type from the given attribute provider.
-        /// </summary>
-        /// <param name="attributeProvider">The attribute provider.</param>
-        /// <param name="inherit">Whether inherited attributes should be considered.</param>
-        /// <typeparam name="TAttribute">The attribute type.</typeparam>
-        /// <returns>The found attribute, or null.</returns>
-        public static TAttribute? GetCustomAttribute<TAttribute>
-        (
-            this ICustomAttributeProvider attributeProvider,
-            bool inherit = false
-        )
-            where TAttribute : Attribute
+        return attributeProvider.GetCustomAttributes(typeof(TAttribute), inherit).FirstOrDefault() as TAttribute;
+    }
+
+    /// <summary>
+    /// Gets a user-configured description of the given attribute provider. The description is taken from an
+    /// instance of the <see cref="DescriptionAttribute"/>.
+    /// </summary>
+    /// <param name="attributeProvider">The attribute provider.</param>
+    /// <param name="defaultDescription">The default description to use if no attribute can be found.</param>
+    /// <returns>The description.</returns>
+    public static string GetDescriptionOrDefault
+    (
+        this ICustomAttributeProvider attributeProvider,
+        string? defaultDescription = null
+    )
+    {
+        var descriptionAttribute = attributeProvider.GetCustomAttribute<DescriptionAttribute>();
+        if (descriptionAttribute is null)
         {
-            return attributeProvider.GetCustomAttributes(typeof(TAttribute), inherit).FirstOrDefault() as TAttribute;
+            return defaultDescription ?? Constants.DefaultDescription;
         }
 
-        /// <summary>
-        /// Gets a user-configured description of the given attribute provider. The description is taken from an
-        /// instance of the <see cref="DescriptionAttribute"/>.
-        /// </summary>
-        /// <param name="attributeProvider">The attribute provider.</param>
-        /// <param name="defaultDescription">The default description to use if no attribute can be found.</param>
-        /// <returns>The description.</returns>
-        public static string GetDescriptionOrDefault
-        (
-            this ICustomAttributeProvider attributeProvider,
-            string? defaultDescription = null
-        )
-        {
-            var descriptionAttribute = attributeProvider.GetCustomAttribute<DescriptionAttribute>();
-            if (descriptionAttribute is null)
-            {
-                return defaultDescription ?? Constants.DefaultDescription;
-            }
-
-            return string.IsNullOrWhiteSpace(descriptionAttribute.Description)
-                ? Constants.DefaultDescription
-                : descriptionAttribute.Description;
-        }
+        return string.IsNullOrWhiteSpace(descriptionAttribute.Description)
+            ? Constants.DefaultDescription
+            : descriptionAttribute.Description;
     }
 }

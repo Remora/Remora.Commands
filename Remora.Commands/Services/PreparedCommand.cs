@@ -23,17 +23,16 @@
 using JetBrains.Annotations;
 using Remora.Commands.Signatures;
 
-namespace Remora.Commands.Services
-{
-    /// <summary>
-    /// Represents a command that has been prepared for execution.
-    /// </summary>
-    /// <remarks>
-    ///  A prepared command is defined as having passed all its conditions, and having a set of fully materialized
-    /// parameters.
-    /// </remarks>
-    /// <param name="Command">The command.</param>
-    /// <param name="Parameters">The materialized parameters.</param>
-    [PublicAPI]
-    public record PreparedCommand(BoundCommandNode Command, object?[] Parameters);
-}
+namespace Remora.Commands.Services;
+
+/// <summary>
+/// Represents a command that has been prepared for execution.
+/// </summary>
+/// <remarks>
+///  A prepared command is defined as having passed all its conditions, and having a set of fully materialized
+/// parameters.
+/// </remarks>
+/// <param name="Command">The command.</param>
+/// <param name="Parameters">The materialized parameters.</param>
+[PublicAPI]
+public record PreparedCommand(BoundCommandNode Command, object?[] Parameters);

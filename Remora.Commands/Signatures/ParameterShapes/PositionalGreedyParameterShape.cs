@@ -28,98 +28,97 @@ using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 using static Remora.Commands.Tokenization.TokenType;
 
-namespace Remora.Commands.Signatures
+namespace Remora.Commands.Signatures;
+
+/// <summary>
+/// Represents a single value without a name.
+/// </summary>
+[PublicAPI]
+public class PositionalGreedyParameterShape : IParameterShape
 {
+    /// <inheritdoc />
+    public ParameterInfo Parameter { get; }
+
+    /// <inheritdoc/>
+    public virtual object? DefaultValue => this.Parameter.DefaultValue;
+
+    /// <inheritdoc/>
+    public string HintName => this.Parameter.Name ?? throw new InvalidOperationException();
+
+    /// <inheritdoc/>
+    public string Description { get; }
+
     /// <summary>
-    /// Represents a single value without a name.
+    /// Initializes a new instance of the <see cref="PositionalGreedyParameterShape"/> class.
     /// </summary>
-    [PublicAPI]
-    public class PositionalGreedyParameterShape : IParameterShape
+    /// <param name="parameter">The underlying parameter.</param>
+    /// <param name="description">The description of the parameter.</param>
+    public PositionalGreedyParameterShape(ParameterInfo parameter, string? description = null)
     {
-        /// <inheritdoc />
-        public ParameterInfo Parameter { get; }
+        this.Parameter = parameter;
+        this.Description = description ?? Constants.DefaultDescription;
+    }
 
-        /// <inheritdoc/>
-        public virtual object? DefaultValue => this.Parameter.DefaultValue;
+    /// <inheritdoc />
+    public virtual bool Matches
+    (
+        TokenizingEnumerator tokenizer,
+        out ulong consumedTokens,
+        TreeSearchOptions? searchOptions = null
+    )
+    {
+        consumedTokens = 0;
 
-        /// <inheritdoc/>
-        public string HintName => this.Parameter.Name ?? throw new InvalidOperationException();
-
-        /// <inheritdoc/>
-        public string Description { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PositionalGreedyParameterShape"/> class.
-        /// </summary>
-        /// <param name="parameter">The underlying parameter.</param>
-        /// <param name="description">The description of the parameter.</param>
-        public PositionalGreedyParameterShape(ParameterInfo parameter, string? description = null)
+        // Eat at least one value token
+        if (!tokenizer.MoveNext())
         {
-            this.Parameter = parameter;
-            this.Description = description ?? Constants.DefaultDescription;
-        }
-
-        /// <inheritdoc />
-        public virtual bool Matches
-        (
-            TokenizingEnumerator tokenizer,
-            out ulong consumedTokens,
-            TreeSearchOptions? searchOptions = null
-        )
-        {
-            consumedTokens = 0;
-
-            // Eat at least one value token
-            if (!tokenizer.MoveNext())
-            {
-                return false;
-            }
-
-            if (tokenizer.Current.Type is not Value)
-            {
-                return false;
-            }
-
-            ulong consumedValueTokens = 1;
-            while (tokenizer.MoveNext() && tokenizer.Current.Type is Value)
-            {
-                consumedValueTokens++;
-            }
-
-            consumedTokens = consumedValueTokens;
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public virtual bool Matches
-        (
-            KeyValuePair<string, IReadOnlyList<string>> namedValue,
-            out bool isFatal,
-            TreeSearchOptions? searchOptions = null
-        )
-        {
-            searchOptions ??= new TreeSearchOptions();
-            isFatal = false;
-
-            // This one is a bit of a special case. Since all parameters are named in the case of pre-bound parameters,
-            // we'll use the actual parameter name as a hint to match against.
-            var (name, value) = namedValue;
-
-            if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
-            {
-                return false;
-            }
-
-            if (value.Count >= 1)
-            {
-                return true;
-            }
-
-            isFatal = true;
             return false;
         }
 
-        /// <inheritdoc/>
-        public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.Parameter.IsOptional;
+        if (tokenizer.Current.Type is not Value)
+        {
+            return false;
+        }
+
+        ulong consumedValueTokens = 1;
+        while (tokenizer.MoveNext() && tokenizer.Current.Type is Value)
+        {
+            consumedValueTokens++;
+        }
+
+        consumedTokens = consumedValueTokens;
+        return true;
     }
+
+    /// <inheritdoc/>
+    public virtual bool Matches
+    (
+        KeyValuePair<string, IReadOnlyList<string>> namedValue,
+        out bool isFatal,
+        TreeSearchOptions? searchOptions = null
+    )
+    {
+        searchOptions ??= new TreeSearchOptions();
+        isFatal = false;
+
+        // This one is a bit of a special case. Since all parameters are named in the case of pre-bound parameters,
+        // we'll use the actual parameter name as a hint to match against.
+        var (name, value) = namedValue;
+
+        if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
+        {
+            return false;
+        }
+
+        if (value.Count >= 1)
+        {
+            return true;
+        }
+
+        isFatal = true;
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.Parameter.IsOptional;
 }

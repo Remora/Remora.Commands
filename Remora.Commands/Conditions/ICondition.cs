@@ -27,54 +27,53 @@ using Remora.Results;
 
 #pragma warning disable SA1402
 
-namespace Remora.Commands.Conditions
+namespace Remora.Commands.Conditions;
+
+/// <summary>
+/// Represents the public API of a condition service.
+/// </summary>
+/// <typeparam name="TAttribute">The data attribute type.</typeparam>
+/// <typeparam name="TData">The data type.</typeparam>
+[PublicAPI]
+public interface ICondition<in TAttribute, in TData> : ICondition
+    where TAttribute : ConditionAttribute
 {
     /// <summary>
-    /// Represents the public API of a condition service.
+    /// Checks the condition against the given data, using contextual data available in the given attribute.
     /// </summary>
-    /// <typeparam name="TAttribute">The data attribute type.</typeparam>
-    /// <typeparam name="TData">The data type.</typeparam>
-    [PublicAPI]
-    public interface ICondition<in TAttribute, in TData> : ICondition
-        where TAttribute : ConditionAttribute
-    {
-        /// <summary>
-        /// Checks the condition against the given data, using contextual data available in the given attribute.
-        /// </summary>
-        /// <param name="attribute">The attribute.</param>
-        /// <param name="data">The data.</param>
-        /// <param name="ct">The cancellation token for this operation.</param>
-        /// <returns>A condition result which may or may not have succeeded.</returns>
-        ValueTask<Result> CheckAsync
-        (
-            TAttribute attribute,
-            TData data,
-            CancellationToken ct = default
-        );
-    }
+    /// <param name="attribute">The attribute.</param>
+    /// <param name="data">The data.</param>
+    /// <param name="ct">The cancellation token for this operation.</param>
+    /// <returns>A condition result which may or may not have succeeded.</returns>
+    ValueTask<Result> CheckAsync
+    (
+        TAttribute attribute,
+        TData data,
+        CancellationToken ct = default
+    );
+}
 
+/// <summary>
+/// Represents the public API of a condition service.
+/// </summary>
+/// <typeparam name="TAttribute">The data attribute type.</typeparam>
+[PublicAPI]
+public interface ICondition<in TAttribute> : ICondition
+    where TAttribute : ConditionAttribute
+{
     /// <summary>
-    /// Represents the public API of a condition service.
+    /// Checks the condition against the given data, using contextual data available in the given attribute.
     /// </summary>
-    /// <typeparam name="TAttribute">The data attribute type.</typeparam>
-    [PublicAPI]
-    public interface ICondition<in TAttribute> : ICondition
-        where TAttribute : ConditionAttribute
-    {
-        /// <summary>
-        /// Checks the condition against the given data, using contextual data available in the given attribute.
-        /// </summary>
-        /// <param name="attribute">The attribute.</param>
-        /// <param name="ct">The cancellation token for this operation.</param>
-        /// <returns>A condition result which may or may not have succeeded.</returns>
-        ValueTask<Result> CheckAsync(TAttribute attribute, CancellationToken ct = default);
-    }
+    /// <param name="attribute">The attribute.</param>
+    /// <param name="ct">The cancellation token for this operation.</param>
+    /// <returns>A condition result which may or may not have succeeded.</returns>
+    ValueTask<Result> CheckAsync(TAttribute attribute, CancellationToken ct = default);
+}
 
-    /// <summary>
-    /// Marker interface for conditions.
-    /// </summary>
-    [PublicAPI]
-    public interface ICondition
-    {
-    }
+/// <summary>
+/// Marker interface for conditions.
+/// </summary>
+[PublicAPI]
+public interface ICondition
+{
 }

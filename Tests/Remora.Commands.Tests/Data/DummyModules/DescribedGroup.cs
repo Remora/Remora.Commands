@@ -29,17 +29,16 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.DummyModules
+namespace Remora.Commands.Tests.Data.DummyModules;
+
+[Group("a")]
+[Description("Group description")]
+public class DescribedGroup : CommandGroup
 {
-    [Group("a")]
-    [Description("Group description")]
-    public class DescribedGroup : CommandGroup
+    [Command("b")]
+    [Description("Command description")]
+    public Task<IResult> B([Description("Parameter description")] int value)
     {
-        [Command("b")]
-        [Description("Command description")]
-        public Task<IResult> B([Description("Parameter description")] int value)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }

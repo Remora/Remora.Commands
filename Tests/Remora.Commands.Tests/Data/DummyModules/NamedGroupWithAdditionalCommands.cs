@@ -28,27 +28,26 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.DummyModules
+namespace Remora.Commands.Tests.Data.DummyModules;
+
+[Group("a")]
+public class NamedGroupWithAdditionalCommands : CommandGroup
 {
-    [Group("a")]
-    public class NamedGroupWithAdditionalCommands : CommandGroup
+    [Command("e")]
+    public Task<IResult> E()
     {
-        [Command("e")]
-        public Task<IResult> E()
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
+    }
 
-        [Command("f")]
-        public Task<IResult> F()
-        {
-            throw new NotImplementedException();
-        }
+    [Command("f")]
+    public Task<IResult> F()
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("g")]
-        public Task<IResult> G()
-        {
-            throw new NotImplementedException();
-        }
+    [Command("g")]
+    public Task<IResult> G()
+    {
+        throw new NotImplementedException();
     }
 }

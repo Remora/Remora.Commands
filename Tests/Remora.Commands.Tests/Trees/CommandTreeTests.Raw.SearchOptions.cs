@@ -25,43 +25,42 @@ using Remora.Commands.Tests.Data.DummyModules;
 using Remora.Commands.Trees;
 using Xunit;
 
-namespace Remora.Commands.Tests.Trees
+namespace Remora.Commands.Tests.Trees;
+
+public static partial class CommandTreeTests
 {
-    public static partial class CommandTreeTests
+    public static partial class Raw
     {
-        public static partial class Raw
+        /// <summary>
+        /// Tests various search options.
+        /// </summary>
+        public class SearchOptions
         {
             /// <summary>
-            /// Tests various search options.
+            /// Tests the key comparison option.
             /// </summary>
-            public class SearchOptions
+            public class KeyComparison
             {
                 /// <summary>
-                /// Tests the key comparison option.
+                /// Tests whether a command can be found by performing a search with a different key comparison.
                 /// </summary>
-                public class KeyComparison
+                [Fact]
+                public void CanFindCommandWithDifferentCasing()
                 {
-                    /// <summary>
-                    /// Tests whether a command can be found by performing a search with a different key comparison.
-                    /// </summary>
-                    [Fact]
-                    public void CanFindCommandWithDifferentCasing()
-                    {
-                        var builder = new CommandTreeBuilder();
-                        builder.RegisterModule<GroupWithCasingDifferences>();
+                    var builder = new CommandTreeBuilder();
+                    builder.RegisterModule<GroupWithCasingDifferences>();
 
-                        var tree = builder.Build();
+                    var tree = builder.Build();
 
-                        var options = new TreeSearchOptions(StringComparison.OrdinalIgnoreCase);
+                    var options = new TreeSearchOptions(StringComparison.OrdinalIgnoreCase);
 
-                        var result = tree.Search
-                        (
-                            "test somecommand",
-                            searchOptions: options
-                        );
+                    var result = tree.Search
+                    (
+                        "test somecommand",
+                        searchOptions: options
+                    );
 
-                        Assert.NotEmpty(result);
-                    }
+                    Assert.NotEmpty(result);
                 }
             }
         }

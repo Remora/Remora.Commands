@@ -25,14 +25,13 @@ using JetBrains.Annotations;
 
 #pragma warning disable CS1591
 
-namespace Remora.Commands.Trees
-{
-    /// <summary>
-    /// Represents a set of options to use while searching the tree.
-    /// </summary>
-    [PublicAPI]
-    public record TreeSearchOptions
-    (
-        StringComparison KeyComparison = StringComparison.Ordinal
-    );
-}
+namespace Remora.Commands.Trees;
+
+/// <summary>
+/// Represents a set of options to use while searching the tree.
+/// </summary>
+[PublicAPI]
+public record TreeSearchOptions
+(
+    StringComparison KeyComparison = StringComparison.Ordinal
+);

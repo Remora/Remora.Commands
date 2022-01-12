@@ -29,123 +29,122 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600, SA1602
 
-namespace Remora.Commands.Tests.Data.Modules
+namespace Remora.Commands.Tests.Data.Modules;
+
+[Group("test")]
+public class BuiltinTypeCommandGroup : CommandGroup
 {
-    [Group("test")]
-    public class BuiltinTypeCommandGroup : CommandGroup
+    public enum TestEnum
     {
-        public enum TestEnum
-        {
-            Wooga,
-            Booga
-        }
+        Wooga,
+        Booga
+    }
 
-        [Command("bool")]
-        public Task<IResult> SinglePositionalBool(bool value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("bool")]
+    public Task<IResult> SinglePositionalBool(bool value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("char")]
-        public Task<IResult> Char(char value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("char")]
+    public Task<IResult> Char(char value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("byte")]
-        public Task<IResult> Byte(byte value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("byte")]
+    public Task<IResult> Byte(byte value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("sbyte")]
-        public Task<IResult> SByte(sbyte value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("sbyte")]
+    public Task<IResult> SByte(sbyte value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("short")]
-        public Task<IResult> Int16(short value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("short")]
+    public Task<IResult> Int16(short value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("ushort")]
-        public Task<IResult> UInt16(ushort value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("ushort")]
+    public Task<IResult> UInt16(ushort value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("int")]
-        public Task<IResult> Int32(int value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("int")]
+    public Task<IResult> Int32(int value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("uint")]
-        public Task<IResult> UInt32(uint value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("uint")]
+    public Task<IResult> UInt32(uint value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("long")]
-        public Task<IResult> Int64(long value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("long")]
+    public Task<IResult> Int64(long value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("ulong")]
-        public Task<IResult> Uint64(ulong value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("ulong")]
+    public Task<IResult> Uint64(ulong value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("float")]
-        public Task<IResult> Single(float value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("float")]
+    public Task<IResult> Single(float value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("double")]
-        public Task<IResult> Double(double value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("double")]
+    public Task<IResult> Double(double value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("decimal")]
-        public Task<IResult> Decimal(decimal value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("decimal")]
+    public Task<IResult> Decimal(decimal value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("big-integer")]
-        public Task<IResult> BigInteger(BigInteger value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("big-integer")]
+    public Task<IResult> BigInteger(BigInteger value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("date-time-offset")]
-        public Task<IResult> DateTimeOffset(DateTimeOffset value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("date-time-offset")]
+    public Task<IResult> DateTimeOffset(DateTimeOffset value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("date-time")]
-        public Task<IResult> DateTime(DateTimeOffset value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("date-time")]
+    public Task<IResult> DateTime(DateTimeOffset value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("time-span")]
-        public Task<IResult> TimeSpan(TimeSpan value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("time-span")]
+    public Task<IResult> TimeSpan(TimeSpan value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("enum")]
-        public Task<IResult> Enum(TestEnum value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+    [Command("enum")]
+    public Task<IResult> Enum(TestEnum value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
     }
 }

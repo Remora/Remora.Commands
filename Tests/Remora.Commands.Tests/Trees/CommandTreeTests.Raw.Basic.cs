@@ -24,46 +24,45 @@ using Remora.Commands.Tests.Data.DummyModules;
 using Remora.Commands.Trees;
 using Xunit;
 
-namespace Remora.Commands.Tests.Trees
+namespace Remora.Commands.Tests.Trees;
+
+public static partial class CommandTreeTests
 {
-    public static partial class CommandTreeTests
+    public static partial class Raw
     {
-        public static partial class Raw
+        /// <summary>
+        /// Tests basic requirements.
+        /// </summary>
+        public class Basic
         {
             /// <summary>
-            /// Tests basic requirements.
+            /// Tests whether the tree can be successfully searched.
             /// </summary>
-            public class Basic
+            [Fact]
+            public void SearchIsSuccessfulIfAMatchingCommandExists()
             {
-                /// <summary>
-                /// Tests whether the tree can be successfully searched.
-                /// </summary>
-                [Fact]
-                public void SearchIsSuccessfulIfAMatchingCommandExists()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
 
-                    var tree = builder.Build();
+                var tree = builder.Build();
 
-                    var result = tree.Search("a c d");
-                    Assert.NotEmpty(result);
-                }
+                var result = tree.Search("a c d");
+                Assert.NotEmpty(result);
+            }
 
-                /// <summary>
-                /// Tests whether the tree can be successfully searched.
-                /// </summary>
-                [Fact]
-                public void SearchIsUnsuccessfulIfNoMatchingCommandExists()
-                {
-                    var builder = new CommandTreeBuilder();
-                    builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
+            /// <summary>
+            /// Tests whether the tree can be successfully searched.
+            /// </summary>
+            [Fact]
+            public void SearchIsUnsuccessfulIfNoMatchingCommandExists()
+            {
+                var builder = new CommandTreeBuilder();
+                builder.RegisterModule<NamedGroupWithCommandsWithNestedNamedGroupWithCommands>();
 
-                    var tree = builder.Build();
+                var tree = builder.Build();
 
-                    var result = tree.Search("a d c");
-                    Assert.Empty(result);
-                }
+                var result = tree.Search("a d c");
+                Assert.Empty(result);
             }
         }
     }

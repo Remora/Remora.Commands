@@ -1,5 +1,5 @@
 //
-//  Constants.cs
+//  CommandTreeAccessorOptions.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,31 +20,42 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Remora.Commands;
+namespace Remora.Commands.Services;
 
 /// <summary>
-/// Holds various constants.
+/// Represents configurable options for the <see cref="CommandTreeAccessor"/>.
 /// </summary>
 [PublicAPI]
-public static class Constants
+public class CommandTreeAccessorOptions
 {
-    /// <summary>
-    /// Gets the default description used when no description is set.
-    /// </summary>
-    public static string DefaultDescription => "No description set.";
+    private readonly List<string> _treeNames = new() { Constants.DefaultTreeName, Constants.AllTreeName };
 
     /// <summary>
-    /// Gets the name of the default tree.
+    /// Gets the names of the registered trees.
     /// </summary>
-    public static string DefaultTreeName => "__default";
+    public IReadOnlyList<string> TreeNames => _treeNames;
 
     /// <summary>
-    /// Gets the name of the tree that contains all configured modules.
+    /// Gets or sets a value indicating whether all command trees should be preloaded at startup. If false, each tree
+    /// will be loaded as it is requested and then cached.
     /// </summary>
-    /// <remarks>
-    /// This is mainly useful for help services.
-    /// </remarks>
-    public static string AllTreeName => "__all";
+    public bool PreloadTrees { get; set; }
+
+    /// <summary>
+    /// Adds a registered tree name.
+    /// </summary>
+    /// <param name="treeName">The tree name.</param>
+    internal void AddTreeName(string? treeName)
+    {
+        treeName ??= Constants.DefaultTreeName;
+        if (_treeNames.Contains(treeName))
+        {
+            return;
+        }
+
+        _treeNames.Add(treeName);
+    }
 }

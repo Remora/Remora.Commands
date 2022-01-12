@@ -23,52 +23,51 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Attributes
+namespace Remora.Commands.Attributes;
+
+/// <summary>
+/// Marks a parameter as being a named option.
+/// </summary>
+[AttributeUsage(AttributeTargets.Parameter)]
+[PublicAPI]
+public class OptionAttribute : Attribute
 {
     /// <summary>
-    /// Marks a parameter as being a named option.
+    /// Gets the short name of the option.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter)]
-    [PublicAPI]
-    public class OptionAttribute : Attribute
+    public char? ShortName { get; }
+
+    /// <summary>
+    /// Gets the long name of the option.
+    /// </summary>
+    public string? LongName { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OptionAttribute"/> class.
+    /// </summary>
+    /// <param name="shortName">The short name of the option.</param>
+    /// <param name="longName">The long name of the option.</param>
+    public OptionAttribute(char shortName, string longName)
     {
-        /// <summary>
-        /// Gets the short name of the option.
-        /// </summary>
-        public char? ShortName { get; }
+        this.ShortName = shortName;
+        this.LongName = longName;
+    }
 
-        /// <summary>
-        /// Gets the long name of the option.
-        /// </summary>
-        public string? LongName { get; }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OptionAttribute"/> class.
+    /// </summary>
+    /// <param name="shortName">The short name of the option.</param>
+    public OptionAttribute(char shortName)
+    {
+        this.ShortName = shortName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OptionAttribute"/> class.
-        /// </summary>
-        /// <param name="shortName">The short name of the option.</param>
-        /// <param name="longName">The long name of the option.</param>
-        public OptionAttribute(char shortName, string longName)
-        {
-            this.ShortName = shortName;
-            this.LongName = longName;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OptionAttribute"/> class.
-        /// </summary>
-        /// <param name="shortName">The short name of the option.</param>
-        public OptionAttribute(char shortName)
-        {
-            this.ShortName = shortName;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OptionAttribute"/> class.
-        /// </summary>
-        /// <param name="longName">The long name of the option.</param>
-        public OptionAttribute(string longName)
-        {
-            this.LongName = longName;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OptionAttribute"/> class.
+    /// </summary>
+    /// <param name="longName">The long name of the option.</param>
+    public OptionAttribute(string longName)
+    {
+        this.LongName = longName;
     }
 }

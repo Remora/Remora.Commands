@@ -22,12 +22,11 @@
 
 using Remora.Commands.Trees;
 
-namespace Remora.Commands.Tests.Trees
+namespace Remora.Commands.Tests.Trees;
+
+/// <summary>
+/// Tests the <see cref="CommandTreeBuilder"/> class.
+/// </summary>
+public static partial class CommandTreeBuilderTests
 {
-    /// <summary>
-    /// Tests the <see cref="CommandTreeBuilder"/> class.
-    /// </summary>
-    public static partial class CommandTreeBuilderTests
-    {
-    }
 }

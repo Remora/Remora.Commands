@@ -23,179 +23,178 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Tokenization
+namespace Remora.Commands.Tokenization;
+
+/// <summary>
+/// Enumerates a <see cref="ReadOnlySpan{T}"/> containing <see cref="char"/>s, splitting it into parts based on
+/// a delimiter.
+/// </summary>
+/// <remarks>
+/// This type serves a slightly more specific purpose than the ostensibly equivalent
+/// <see cref="string.Split(char, StringSplitOptions)"/> method, in that it mimics a command-line string splitting
+/// function by default - that is, it respects quotations and discards empty results.
+/// </remarks>
+[PublicAPI]
+public ref struct SpanSplitEnumerator
 {
+    private readonly ReadOnlySpan<char> _delimiter;
+    private readonly bool _ignoreEmpty;
+
+    private ReadOnlySpan<char> _value;
+    private ReadOnlySpan<char> _current;
+
     /// <summary>
-    /// Enumerates a <see cref="ReadOnlySpan{T}"/> containing <see cref="char"/>s, splitting it into parts based on
-    /// a delimiter.
+    /// Gets the current value of the enumerator.
     /// </summary>
-    /// <remarks>
-    /// This type serves a slightly more specific purpose than the ostensibly equivalent
-    /// <see cref="string.Split(char, StringSplitOptions)"/> method, in that it mimics a command-line string splitting
-    /// function by default - that is, it respects quotations and discards empty results.
-    /// </remarks>
-    [PublicAPI]
-    public ref struct SpanSplitEnumerator
+    public readonly ReadOnlySpan<char> Current => _current;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SpanSplitEnumerator"/> struct.
+    /// </summary>
+    /// <param name="value">The value to split.</param>
+    /// <param name="tokenizerOptions">The tokenizer options.</param>
+    public SpanSplitEnumerator(ReadOnlySpan<char> value, TokenizerOptions? tokenizerOptions = null)
     {
-        private readonly ReadOnlySpan<char> _delimiter;
-        private readonly bool _ignoreEmpty;
+        tokenizerOptions ??= new TokenizerOptions();
+        var (delimiter, ignoreEmptyValues, _) = tokenizerOptions;
 
-        private ReadOnlySpan<char> _value;
-        private ReadOnlySpan<char> _current;
+        _value = value;
+        _delimiter = delimiter.AsSpan();
+        _ignoreEmpty = ignoreEmptyValues;
 
-        /// <summary>
-        /// Gets the current value of the enumerator.
-        /// </summary>
-        public readonly ReadOnlySpan<char> Current => _current;
+        _current = default;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SpanSplitEnumerator"/> struct.
-        /// </summary>
-        /// <param name="value">The value to split.</param>
-        /// <param name="tokenizerOptions">The tokenizer options.</param>
-        public SpanSplitEnumerator(ReadOnlySpan<char> value, TokenizerOptions? tokenizerOptions = null)
+    /// <summary>
+    /// Gets the enumerator for this type.
+    /// </summary>
+    /// <returns>The instance itself.</returns>
+    public readonly SpanSplitEnumerator GetEnumerator() => this;
+
+    /// <summary>
+    /// Attempts to advance the enumerator.
+    /// </summary>
+    /// <returns>true if the enumerator advanced and a new value is available; otherwise, false.</returns>
+    public bool MoveNext()
+    {
+        while (true)
         {
-            tokenizerOptions ??= new TokenizerOptions();
-            var (delimiter, ignoreEmptyValues, _) = tokenizerOptions;
+            var span = _value;
 
-            _value = value;
-            _delimiter = delimiter.AsSpan();
-            _ignoreEmpty = ignoreEmptyValues;
-
-            _current = default;
-        }
-
-        /// <summary>
-        /// Gets the enumerator for this type.
-        /// </summary>
-        /// <returns>The instance itself.</returns>
-        public readonly SpanSplitEnumerator GetEnumerator() => this;
-
-        /// <summary>
-        /// Attempts to advance the enumerator.
-        /// </summary>
-        /// <returns>true if the enumerator advanced and a new value is available; otherwise, false.</returns>
-        public bool MoveNext()
-        {
-            while (true)
+            if (span.Length == 0)
             {
-                var span = _value;
+                // No more content
+                return false;
+            }
 
-                if (span.Length == 0)
-                {
-                    // No more content
-                    return false;
-                }
-
-                var index = span.IndexOf(_delimiter);
-                if (index == -1)
-                {
-                    var completeSegment = span;
-                    var completeRemainder = ReadOnlySpan<char>.Empty;
-                    if
+            var index = span.IndexOf(_delimiter);
+            if (index == -1)
+            {
+                var completeSegment = span;
+                var completeRemainder = ReadOnlySpan<char>.Empty;
+                if
+                (
+                    AdjustForQuotedValues
                     (
-                        AdjustForQuotedValues
-                        (
-                            completeSegment,
-                            completeSegment.Length,
-                            ref completeSegment,
-                            ref completeRemainder
-                        )
+                        completeSegment,
+                        completeSegment.Length,
+                        ref completeSegment,
+                        ref completeRemainder
                     )
-                    {
-                        return true;
-                    }
-
-                    _value = completeRemainder;
-                    _current = completeSegment;
-
-                    // Everything that remains is one value
-                    return true;
-                }
-
-                var segment = span[..index];
-
-                var continuationIndex = Math.Clamp(index + _delimiter.Length, 0, span.Length);
-                var remainder = span[continuationIndex..];
-
-                if (AdjustForQuotedValues(span, continuationIndex, ref segment, ref remainder))
+                )
                 {
                     return true;
                 }
 
-                _current = segment;
-                _value = remainder;
+                _value = completeRemainder;
+                _current = completeSegment;
 
-                if (this.Current.Length == 0 && _ignoreEmpty)
-                {
-                    continue;
-                }
-
+                // Everything that remains is one value
                 return true;
             }
-        }
 
-        private bool AdjustForQuotedValues
-        (
-            ReadOnlySpan<char> span,
-            int continuationIndex,
-            ref ReadOnlySpan<char> segment,
-            ref ReadOnlySpan<char> remainder
-        )
-        {
-            // Check if we're trying to read a quoted value
-            var foundStartQuote = false;
-            var foundEndQuote = false;
-            foreach (var (start, end) in Quotations.Pairs)
+            var segment = span[..index];
+
+            var continuationIndex = Math.Clamp(index + _delimiter.Length, 0, span.Length);
+            var remainder = span[continuationIndex..];
+
+            if (AdjustForQuotedValues(span, continuationIndex, ref segment, ref remainder))
             {
-                var startIndex = segment.IndexOf(start);
-                if (startIndex < 0)
-                {
-                    continue;
-                }
+                return true;
+            }
 
-                foundStartQuote = true;
+            _current = segment;
+            _value = remainder;
 
-                // First, look for a closing quote in the segment
-                var closingIndex = segment[(startIndex + 1)..].IndexOf(end);
-                if (closingIndex >= 0)
-                {
-                    closingIndex += startIndex;
-                }
+            if (this.Current.Length == 0 && _ignoreEmpty)
+            {
+                continue;
+            }
 
-                if (closingIndex >= 0)
-                {
-                    segment = span[..(closingIndex + 2)];
-                    remainder = span[(closingIndex + 2)..];
+            return true;
+        }
+    }
 
-                    foundEndQuote = true;
-                    break;
-                }
+    private bool AdjustForQuotedValues
+    (
+        ReadOnlySpan<char> span,
+        int continuationIndex,
+        ref ReadOnlySpan<char> segment,
+        ref ReadOnlySpan<char> remainder
+    )
+    {
+        // Check if we're trying to read a quoted value
+        var foundStartQuote = false;
+        var foundEndQuote = false;
+        foreach (var (start, end) in Quotations.Pairs)
+        {
+            var startIndex = segment.IndexOf(start);
+            if (startIndex < 0)
+            {
+                continue;
+            }
 
-                // If there's none, keep searching in the remainder
-                closingIndex = remainder.IndexOf(end);
-                if (closingIndex < 0)
-                {
-                    continue;
-                }
+            foundStartQuote = true;
 
-                segment = span[..(continuationIndex + closingIndex + 1)];
-                remainder = span[(continuationIndex + closingIndex + 1)..];
+            // First, look for a closing quote in the segment
+            var closingIndex = segment[(startIndex + 1)..].IndexOf(end);
+            if (closingIndex >= 0)
+            {
+                closingIndex += startIndex;
+            }
+
+            if (closingIndex >= 0)
+            {
+                segment = span[..(closingIndex + 2)];
+                remainder = span[(closingIndex + 2)..];
 
                 foundEndQuote = true;
                 break;
             }
 
-            if (!foundStartQuote || foundEndQuote)
+            // If there's none, keep searching in the remainder
+            closingIndex = remainder.IndexOf(end);
+            if (closingIndex < 0)
             {
-                return false;
+                continue;
             }
 
-            // Read to end if we can't find a matching quote
-            _current = _value;
-            _value = ReadOnlySpan<char>.Empty;
+            segment = span[..(continuationIndex + closingIndex + 1)];
+            remainder = span[(continuationIndex + closingIndex + 1)..];
 
-            return true;
+            foundEndQuote = true;
+            break;
         }
+
+        if (!foundStartQuote || foundEndQuote)
+        {
+            return false;
+        }
+
+        // Read to end if we can't find a matching quote
+        _current = _value;
+        _value = ReadOnlySpan<char>.Empty;
+
+        return true;
     }
 }

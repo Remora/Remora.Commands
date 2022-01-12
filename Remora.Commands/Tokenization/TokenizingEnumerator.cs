@@ -23,132 +23,131 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Tokenization
+namespace Remora.Commands.Tokenization;
+
+/// <summary>
+/// Tokenizes a char-containing <see cref="ReadOnlySpan{T}"/> into a set of names and values.
+/// </summary>
+[PublicAPI]
+public ref struct TokenizingEnumerator
 {
+    private readonly TokenizerOptions _tokenizerOptions;
+    private bool _isInCombinedShortNameSegment;
+    private ReadOnlySpan<char> _segment;
+    private SpanSplitEnumerator _splitEnumerator;
+    private Token _current;
+
     /// <summary>
-    /// Tokenizes a char-containing <see cref="ReadOnlySpan{T}"/> into a set of names and values.
+    /// Gets the current value of the enumerator.
     /// </summary>
-    [PublicAPI]
-    public ref struct TokenizingEnumerator
+    public readonly Token Current => _current;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TokenizingEnumerator"/> struct.
+    /// </summary>
+    /// <param name="value">The value to tokenize.</param>
+    /// <param name="tokenizerOptions">The tokenizer options.</param>
+    public TokenizingEnumerator(ReadOnlySpan<char> value, TokenizerOptions? tokenizerOptions = null)
     {
-        private readonly TokenizerOptions _tokenizerOptions;
-        private bool _isInCombinedShortNameSegment;
-        private ReadOnlySpan<char> _segment;
-        private SpanSplitEnumerator _splitEnumerator;
-        private Token _current;
+        _tokenizerOptions = tokenizerOptions ?? new TokenizerOptions();
 
-        /// <summary>
-        /// Gets the current value of the enumerator.
-        /// </summary>
-        public readonly Token Current => _current;
+        _isInCombinedShortNameSegment = default;
+        _segment = default;
+        _splitEnumerator = new SpanSplitEnumerator(value, _tokenizerOptions);
+        _current = default;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenizingEnumerator"/> struct.
-        /// </summary>
-        /// <param name="value">The value to tokenize.</param>
-        /// <param name="tokenizerOptions">The tokenizer options.</param>
-        public TokenizingEnumerator(ReadOnlySpan<char> value, TokenizerOptions? tokenizerOptions = null)
+    /// <summary>
+    /// Gets the enumerator for this type.
+    /// </summary>
+    /// <returns>The instance itself.</returns>
+    public readonly TokenizingEnumerator GetEnumerator() => this;
+
+    /// <summary>
+    /// Attempts to advance the enumerator.
+    /// </summary>
+    /// <returns>true if the enumerator advanced and a new value is available; otherwise, false.</returns>
+    public bool MoveNext()
+    {
+        if (_segment.Length == 0)
         {
-            _tokenizerOptions = tokenizerOptions ?? new TokenizerOptions();
+            if (!_splitEnumerator.MoveNext())
+            {
+                return false;
+            }
 
-            _isInCombinedShortNameSegment = default;
-            _segment = default;
-            _splitEnumerator = new SpanSplitEnumerator(value, _tokenizerOptions);
-            _current = default;
+            _isInCombinedShortNameSegment = false;
+            _segment = _splitEnumerator.Current;
         }
 
-        /// <summary>
-        /// Gets the enumerator for this type.
-        /// </summary>
-        /// <returns>The instance itself.</returns>
-        public readonly TokenizingEnumerator GetEnumerator() => this;
+        var span = _segment;
+        var remainder = ReadOnlySpan<char>.Empty;
 
-        /// <summary>
-        /// Attempts to advance the enumerator.
-        /// </summary>
-        /// <returns>true if the enumerator advanced and a new value is available; otherwise, false.</returns>
-        public bool MoveNext()
+        var type = TokenType.Value;
+        if (span.StartsWith("--"))
         {
-            if (_segment.Length == 0)
-            {
-                if (!_splitEnumerator.MoveNext())
-                {
-                    return false;
-                }
-
-                _isInCombinedShortNameSegment = false;
-                _segment = _splitEnumerator.Current;
-            }
-
-            var span = _segment;
-            var remainder = ReadOnlySpan<char>.Empty;
-
-            var type = TokenType.Value;
-            if (span.StartsWith("--"))
-            {
-                type = TokenType.LongName;
-                span = span[2..];
-            }
-            else if (span.StartsWith("-"))
-            {
-                // Workaround; names must be identifiers (i.e, not start with a digit)
-                if (span.Length <= 1 || !char.IsDigit(span[1]))
-                {
-                    type = TokenType.ShortName;
-                    span = span[1..];
-                }
-            }
-            else if (span.StartsWith("="))
-            {
-                span = span[1..];
-            }
-            else if (_isInCombinedShortNameSegment)
+            type = TokenType.LongName;
+            span = span[2..];
+        }
+        else if (span.StartsWith("-"))
+        {
+            // Workaround; names must be identifiers (i.e, not start with a digit)
+            if (span.Length <= 1 || !char.IsDigit(span[1]))
             {
                 type = TokenType.ShortName;
+                span = span[1..];
             }
-
-            if (type != TokenType.Value)
-            {
-                if (type == TokenType.ShortName && span.Length > 1 && char.IsLetterOrDigit(span[1]))
-                {
-                    // A combined short-name option, it looks like. We'll return here.
-                    _isInCombinedShortNameSegment = true;
-
-                    _current = new Token(type, span[..1]);
-                    _segment = span[1..];
-
-                    return true;
-                }
-
-                var assignmentIndex = span.IndexOf('=');
-                if (assignmentIndex > 0)
-                {
-                    remainder = span[assignmentIndex..];
-                    span = span[..assignmentIndex];
-                }
-            }
-
-            // Remove quotes, if any
-            if (!span.IsEmpty && !_tokenizerOptions.RetainQuotationMarks)
-            {
-                foreach ((string start, string end) in Quotations.Pairs)
-                {
-                    if (span[0] != start[0])
-                    {
-                        continue;
-                    }
-
-                    if (span[^1] == end[0])
-                    {
-                        span = span.Slice(1, span.Length - 2);
-                    }
-                }
-            }
-
-            _current = new Token(type, span);
-            _segment = remainder;
-
-            return true;
         }
+        else if (span.StartsWith("="))
+        {
+            span = span[1..];
+        }
+        else if (_isInCombinedShortNameSegment)
+        {
+            type = TokenType.ShortName;
+        }
+
+        if (type != TokenType.Value)
+        {
+            if (type == TokenType.ShortName && span.Length > 1 && char.IsLetterOrDigit(span[1]))
+            {
+                // A combined short-name option, it looks like. We'll return here.
+                _isInCombinedShortNameSegment = true;
+
+                _current = new Token(type, span[..1]);
+                _segment = span[1..];
+
+                return true;
+            }
+
+            var assignmentIndex = span.IndexOf('=');
+            if (assignmentIndex > 0)
+            {
+                remainder = span[assignmentIndex..];
+                span = span[..assignmentIndex];
+            }
+        }
+
+        // Remove quotes, if any
+        if (!span.IsEmpty && !_tokenizerOptions.RetainQuotationMarks)
+        {
+            foreach ((string start, string end) in Quotations.Pairs)
+            {
+                if (span[0] != start[0])
+                {
+                    continue;
+                }
+
+                if (span[^1] == end[0])
+                {
+                    span = span.Slice(1, span.Length - 2);
+                }
+            }
+        }
+
+        _current = new Token(type, span);
+        _segment = remainder;
+
+        return true;
     }
 }

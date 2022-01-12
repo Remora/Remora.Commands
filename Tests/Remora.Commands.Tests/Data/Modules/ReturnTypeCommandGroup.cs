@@ -27,44 +27,43 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.Modules
+namespace Remora.Commands.Tests.Data.Modules;
+
+public class ReturnTypeCommandGroup : CommandGroup
 {
-    public class ReturnTypeCommandGroup : CommandGroup
+    [Command("a")]
+    public Task<IResult> A()
     {
-        [Command("a")]
-        public Task<IResult> A()
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
 
-        [Command("b")]
-        public ValueTask<IResult> B()
-        {
-            return new ValueTask<IResult>(Result.FromSuccess());
-        }
+    [Command("b")]
+    public ValueTask<IResult> B()
+    {
+        return new ValueTask<IResult>(Result.FromSuccess());
+    }
 
-        [Command("c")]
-        public Task<Result> C()
-        {
-            return Task.FromResult(Result.FromSuccess());
-        }
+    [Command("c")]
+    public Task<Result> C()
+    {
+        return Task.FromResult(Result.FromSuccess());
+    }
 
-        [Command("d")]
-        public ValueTask<Result> D()
-        {
-            return new ValueTask<Result>(Result.FromSuccess());
-        }
+    [Command("d")]
+    public ValueTask<Result> D()
+    {
+        return new ValueTask<Result>(Result.FromSuccess());
+    }
 
-        [Command("e")]
-        public Task<Result<string>> E()
-        {
-            return Task.FromResult(Result<string>.FromSuccess("success"));
-        }
+    [Command("e")]
+    public Task<Result<string>> E()
+    {
+        return Task.FromResult(Result<string>.FromSuccess("success"));
+    }
 
-        [Command("f")]
-        public ValueTask<Result<string>> F()
-        {
-            return new ValueTask<Result<string>>("success");
-        }
+    [Command("f")]
+    public ValueTask<Result<string>> F()
+    {
+        return new ValueTask<Result<string>>("success");
     }
 }

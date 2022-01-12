@@ -1,5 +1,5 @@
 //
-//  TokenizerOptions.cs
+//  TreeNotFoundError.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -21,19 +21,15 @@
 //
 
 using JetBrains.Annotations;
+using Remora.Commands.Services;
+using Remora.Results;
 
-namespace Remora.Commands.Tokenization;
+namespace Remora.Commands.Results;
 
 /// <summary>
-/// Holds various options for the tokenizer.
+/// Represents a failure to find a tree.
 /// </summary>
-/// <param name="Delimiter">The string that delimits names and values.</param>
-/// <param name="IgnoreEmptyValues">Whether empty values should be discarded.</param>
-/// <param name="RetainQuotationMarks">Whether quotation marks should be retained in tokenized values.</param>
+/// <param name="TreeName">The name of the tree. Defaults to the default tree name if null.</param>
 [PublicAPI]
-public record TokenizerOptions
-(
-    string Delimiter = " ",
-    bool IgnoreEmptyValues = true,
-    bool RetainQuotationMarks = false
-);
+public record TreeNotFoundError(string? TreeName)
+    : NotFoundError($"No tree named \"{TreeName ?? Constants.DefaultTreeName}\" found.");

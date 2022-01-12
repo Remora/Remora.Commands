@@ -23,13 +23,12 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Conditions
+namespace Remora.Commands.Conditions;
+
+/// <summary>
+/// Acts as a base class for conditional data attributes.
+/// </summary>
+[PublicAPI]
+public abstract class ConditionAttribute : Attribute
 {
-    /// <summary>
-    /// Acts as a base class for conditional data attributes.
-    /// </summary>
-    [PublicAPI]
-    public abstract class ConditionAttribute : Attribute
-    {
-    }
 }

@@ -26,23 +26,22 @@ using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="decimal"/>s.
+/// </summary>
+[PublicAPI]
+public class DecimalParser : AbstractTypeParser<decimal>
 {
-    /// <summary>
-    /// Parses <see cref="decimal"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class DecimalParser : AbstractTypeParser<decimal>
+    /// <inheritdoc />
+    public override ValueTask<Result<decimal>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<decimal>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<decimal>>
-            (
-                !decimal.TryParse(value, out var result)
+        return new ValueTask<Result<decimal>>
+        (
+            !decimal.TryParse(value, out var result)
                 ? new ParsingError<decimal>(value)
                 : Result<decimal>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

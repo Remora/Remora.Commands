@@ -25,236 +25,227 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Remora.Commands.Conditions;
+using Remora.Commands.DependencyInjection;
 using Remora.Commands.Groups;
 using Remora.Commands.Parsers;
 using Remora.Commands.Services;
-using Remora.Commands.Trees;
 
-namespace Remora.Commands.Extensions
+namespace Remora.Commands.Extensions;
+
+/// <summary>
+/// Defines extension methods for the <see cref="IServiceCollection"/> interface.
+/// </summary>
+[PublicAPI]
+public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Defines extension methods for the <see cref="IServiceCollection"/> interface.
+    /// Adds a named command tree to the service collection.
     /// </summary>
-    [PublicAPI]
-    public static class ServiceCollectionExtensions
+    /// <remarks>
+    /// This method may be called multiple times using the same name; the effects will be cumulative.
+    /// </remarks>
+    /// <param name="serviceCollection">The service collection.</param>
+    /// <param name="treeName">The name of the tree to configure.</param>
+    /// <returns>A builder type that can be used to configure the tree.</returns>
+    public static TreeRegistrationBuilder AddCommandTree
+    (
+        this IServiceCollection serviceCollection,
+        string? treeName = null
+    )
     {
-        /// <summary>
-        /// Adds a command module to the available services.
-        /// </summary>
-        /// <typeparam name="TCommandModule">The command module to register.</typeparam>
-        /// <param name="serviceCollection">The service collection.</param>
-        /// <returns>The service collection, with the configured modules.</returns>
-        public static IServiceCollection AddCommandGroup<TCommandModule>
-        (
-            this IServiceCollection serviceCollection
-        )
-            where TCommandModule : CommandGroup
-        {
-            return serviceCollection.AddCommandGroup(typeof(TCommandModule));
-        }
+        serviceCollection.Configure<CommandTreeAccessorOptions>(o => o.AddTreeName(treeName));
+        return new TreeRegistrationBuilder(treeName, serviceCollection);
+    }
 
-        /// <summary>
-        /// Adds a command module to the available services.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
-        /// <param name="commandModule">The command module to register.</param>
-        /// <returns>The service collection with the configured modules.</returns>
-        public static IServiceCollection AddCommandGroup
+    /// <summary>
+    /// Adds a command module to the available services.
+    /// </summary>
+    /// <typeparam name="TCommandModule">The command module to register.</typeparam>
+    /// <param name="serviceCollection">The service collection.</param>
+    /// <returns>The service collection, with the configured modules.</returns>
+    [Obsolete("Call AddCommandTree with no arguments instead, and add the group there.")]
+    public static IServiceCollection AddCommandGroup<TCommandModule>
+    (
+        this IServiceCollection serviceCollection
+    ) where TCommandModule : CommandGroup
+        => serviceCollection.AddCommandGroup(typeof(TCommandModule));
+
+    /// <summary>
+    /// Adds a command module to the available services.
+    /// </summary>
+    /// <param name="serviceCollection">The service collection.</param>
+    /// <param name="commandModule">The command module to register.</param>
+    /// <returns>The service collection with the configured modules.</returns>
+    [Obsolete("Call AddCommandTree with no arguments instead, and add the group there.")]
+    public static IServiceCollection AddCommandGroup
+    (
+        this IServiceCollection serviceCollection,
+        Type commandModule
+    )
+    {
+        return serviceCollection
+            .AddCommandTree()
+            .WithCommandGroup(commandModule)
+            .Finish();
+    }
+
+    /// <summary>
+    /// Adds the services needed by the command subsystem.
+    /// </summary>
+    /// <param name="serviceCollection">The service collection.</param>
+    /// <returns>The service collection, with the required command services.</returns>
+    public static IServiceCollection AddCommands
+    (
+        this IServiceCollection serviceCollection
+    )
+    {
+        // This empty configuration is done to ensure the options are available even
+        // when no trees have been added
+        serviceCollection.Configure<CommandTreeAccessorOptions>(_ => { });
+
+        serviceCollection.TryAddSingleton<CommandTreeAccessor>();
+        serviceCollection.TryAddScoped<CommandService>();
+
+        // Default tree access (injecting CommandTree directly)
+        serviceCollection.TryAddSingleton
         (
-            this IServiceCollection serviceCollection,
-            Type commandModule
-        )
-        {
-            void AddGroupsScoped(Type groupType)
+            services =>
             {
-                foreach (var nestedType in groupType.GetNestedTypes())
+                var treeAccessor = services.GetRequiredService<CommandTreeAccessor>();
+                if (!treeAccessor.TryGetNamedTree(null, out var tree))
                 {
-                    if (!nestedType.IsSubclassOf(typeof(CommandGroup)))
-                    {
-                        continue;
-                    }
-
-                    serviceCollection.TryAddScoped(nestedType);
-                    AddGroupsScoped(nestedType);
+                    throw new InvalidOperationException("No default tree available. Bug?");
                 }
+
+                return tree;
             }
+        );
 
-            if (!commandModule.IsSubclassOf(typeof(CommandGroup)))
-            {
-                throw new ArgumentException(
-                    $"{nameof(commandModule)} should inherit from {nameof(CommandGroup)}.",
-                    nameof(commandModule));
-            }
+        serviceCollection.TryAddSingleton<TypeParserService>();
+        serviceCollection
+            .AddParser<CharParser>()
+            .AddParser<BooleanParser>()
+            .AddParser<ByteParser>()
+            .AddParser<SByteParser>()
+            .AddParser<UInt16Parser>()
+            .AddParser<Int16Parser>()
+            .AddParser<UInt32Parser>()
+            .AddParser<Int32Parser>()
+            .AddParser<UInt64Parser>()
+            .AddParser<Int64Parser>()
+            .AddParser<SingleParser>()
+            .AddParser<DoubleParser>()
+            .AddParser<DecimalParser>()
+            .AddParser<BigIntegerParser>()
+            .AddParser<StringParser>()
+            .AddParser<DateTimeOffsetParser>()
+            .AddParser<DateTimeParser>()
+            .AddParser<TimeSpanParser>()
+            .AddParser<CollectionParser>()
+            .AddParser<NullableStructParser>()
+            .AddParser(typeof(EnumParser<>))
+            .TryAddSingleton(typeof(ITypeParser<>), typeof(EnumParser<>));
 
-            serviceCollection.Configure<CommandTreeBuilder>
-            (
-                builder => builder.RegisterModule(commandModule)
-            );
+        return serviceCollection;
+    }
 
-            serviceCollection.TryAddScoped(commandModule);
-            AddGroupsScoped(commandModule);
+    /// <summary>
+    /// Adds a type parser.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <typeparam name="TParser">The type parser.</typeparam>
+    /// <returns>The service collection, with the parser.</returns>
+    public static IServiceCollection AddParser<TParser>
+    (
+        this IServiceCollection services
+    )
+        where TParser : ITypeParser
+    {
+        services.AddParser(typeof(TParser));
+        return services;
+    }
 
-            return serviceCollection;
+    /// <summary>
+    /// Adds a type parser.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="parserType">The type parser.</param>
+    /// <returns>The service collection, with the parser.</returns>
+    public static IServiceCollection AddParser(this IServiceCollection services, Type parserType)
+    {
+        if (!parserType.IsTypeParser())
+        {
+            throw new InvalidOperationException($"The parser type must implement {nameof(ITypeParser)}.");
         }
 
-        /// <summary>
-        /// Adds the services needed by the command subsystem.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
-        /// <returns>The service collection, with the required command services.</returns>
-        public static IServiceCollection AddCommands
-        (
-            this IServiceCollection serviceCollection
-        )
+        if (parserType.IsGenericTypeDefinition && parserType.GetGenericArguments().Length != 1)
         {
-            serviceCollection.TryAddSingleton
-            (
-                services =>
-                {
-                    var treeBuilder = services.GetRequiredService<IOptions<CommandTreeBuilder>>();
-                    return treeBuilder.Value.Build();
-                }
-            );
-
-            serviceCollection.TryAddScoped
-            (
-                services =>
-                {
-                    var tree = services.GetRequiredService<CommandTree>();
-                    var parserService = services.GetRequiredService<TypeParserService>();
-
-                    return new CommandService(tree, parserService);
-                }
-            );
-
-            serviceCollection.TryAddSingleton<TypeParserService>();
-
-            serviceCollection
-                .AddParser<CharParser>()
-                .AddParser<BooleanParser>()
-                .AddParser<ByteParser>()
-                .AddParser<SByteParser>()
-                .AddParser<UInt16Parser>()
-                .AddParser<Int16Parser>()
-                .AddParser<UInt32Parser>()
-                .AddParser<Int32Parser>()
-                .AddParser<UInt64Parser>()
-                .AddParser<Int64Parser>()
-                .AddParser<SingleParser>()
-                .AddParser<DoubleParser>()
-                .AddParser<DecimalParser>()
-                .AddParser<BigIntegerParser>()
-                .AddParser<StringParser>()
-                .AddParser<DateTimeOffsetParser>()
-                .AddParser<DateTimeParser>()
-                .AddParser<TimeSpanParser>()
-                .AddParser<CollectionParser>()
-                .AddParser<NullableStructParser>()
-                .AddParser(typeof(EnumParser<>))
-                .TryAddSingleton(typeof(ITypeParser<>), typeof(EnumParser<>));
-
-            return serviceCollection;
+            throw new InvalidOperationException("An open parser type may accept one and only one generic type.");
         }
 
-        /// <summary>
-        /// Adds a type parser.
-        /// </summary>
-        /// <param name="services">The service collection.</param>
-        /// <typeparam name="TParser">The type parser.</typeparam>
-        /// <returns>The service collection, with the parser.</returns>
-        public static IServiceCollection AddParser<TParser>
-        (
-            this IServiceCollection services
-        )
-            where TParser : ITypeParser
+        if (parserType.IsGenericTypeDefinition)
         {
-            services.AddParser(typeof(TParser));
-            return services;
+            // This is an open parser type
+            services.AddTransient(typeof(ITypeParser<>), parserType);
         }
-
-        /// <summary>
-        /// Adds a type parser.
-        /// </summary>
-        /// <param name="services">The service collection.</param>
-        /// <param name="parserType">The type parser.</param>
-        /// <returns>The service collection, with the parser.</returns>
-        public static IServiceCollection AddParser(this IServiceCollection services, Type parserType)
+        else
         {
-            if (!parserType.IsTypeParser())
-            {
-                throw new InvalidOperationException($"The parser type must implement {nameof(ITypeParser)}.");
-            }
-
-            if (parserType.IsGenericTypeDefinition && parserType.GetGenericArguments().Length != 1)
-            {
-                throw new InvalidOperationException("An open parser type may accept one and only one generic type.");
-            }
-
-            if (parserType.IsGenericTypeDefinition)
-            {
-                // This is an open parser type
-                services.AddTransient(typeof(ITypeParser<>), parserType);
-            }
-            else
-            {
-                var interfaces = parserType.GetInterfaces();
-                var concreteTypeParserInterfaces = interfaces.Where
+            var interfaces = parserType.GetInterfaces();
+            var concreteTypeParserInterfaces = interfaces.Where
                 (
                     i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ITypeParser<>)
                 )
                 .ToList();
 
-                if (concreteTypeParserInterfaces.Count > 0)
-                {
-                    // This type implements one or more direct parsing interfaces
-                    foreach (var concreteTypeParserInterface in concreteTypeParserInterfaces)
-                    {
-                        services.AddTransient(concreteTypeParserInterface, parserType);
-                    }
-                }
-                else
-                {
-                    // This type is an indirect parser
-                    services.AddTransient(typeof(ITypeParser), parserType);
-                }
-            }
-
-            return services;
-        }
-
-        /// <summary>
-        /// Adds a condition to the service container.
-        /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
-        /// <typeparam name="TCondition">The condition type.</typeparam>
-        /// <returns>The collection, with the condition.</returns>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown if the type <typeparamref name="TCondition"/> does not implement any versions of either
-        /// <see cref="ICondition{TAttribute}"/> or <see cref="ICondition{TAttribute,TData}"/>.
-        /// </exception>
-        public static IServiceCollection AddCondition<TCondition>
-        (
-            this IServiceCollection serviceCollection
-        ) where TCondition : class, ICondition
-        {
-            serviceCollection.TryAddScoped<TCondition>();
-            foreach (var implementedInterface in typeof(TCondition).GetInterfaces())
+            if (concreteTypeParserInterfaces.Count > 0)
             {
-                if (!implementedInterface.IsGenericType)
+                // This type implements one or more direct parsing interfaces
+                foreach (var concreteTypeParserInterface in concreteTypeParserInterfaces)
                 {
-                    continue;
-                }
-
-                var genericType = implementedInterface.GetGenericTypeDefinition();
-                if (genericType == typeof(ICondition<>) || genericType == typeof(ICondition<,>))
-                {
-                    serviceCollection.TryAddScoped(implementedInterface, typeof(TCondition));
+                    services.AddTransient(concreteTypeParserInterface, parserType);
                 }
             }
-
-            return serviceCollection;
+            else
+            {
+                // This type is an indirect parser
+                services.AddTransient(typeof(ITypeParser), parserType);
+            }
         }
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds a condition to the service container.
+    /// </summary>
+    /// <param name="serviceCollection">The service collection.</param>
+    /// <typeparam name="TCondition">The condition type.</typeparam>
+    /// <returns>The collection, with the condition.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the type <typeparamref name="TCondition"/> does not implement any versions of either
+    /// <see cref="ICondition{TAttribute}"/> or <see cref="ICondition{TAttribute,TData}"/>.
+    /// </exception>
+    public static IServiceCollection AddCondition<TCondition>
+    (
+        this IServiceCollection serviceCollection
+    ) where TCondition : class, ICondition
+    {
+        serviceCollection.TryAddScoped<TCondition>();
+        foreach (var implementedInterface in typeof(TCondition).GetInterfaces())
+        {
+            if (!implementedInterface.IsGenericType)
+            {
+                continue;
+            }
+
+            var genericType = implementedInterface.GetGenericTypeDefinition();
+            if (genericType == typeof(ICondition<>) || genericType == typeof(ICondition<,>))
+            {
+                serviceCollection.TryAddScoped(implementedInterface, typeof(TCondition));
+            }
+        }
+
+        return serviceCollection;
     }
 }

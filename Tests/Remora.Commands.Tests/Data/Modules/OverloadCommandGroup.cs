@@ -27,27 +27,26 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.Modules
+namespace Remora.Commands.Tests.Data.Modules;
+
+[Group("test")]
+public class OverloadCommandGroup : CommandGroup
 {
-    [Group("test")]
-    public class OverloadCommandGroup : CommandGroup
+    [Command("overload")]
+    public Task<IResult> Overload()
     {
-        [Command("overload")]
-        public Task<IResult> Overload()
-        {
-            return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-1"));
-        }
+        return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-1"));
+    }
 
-        [Command("overload")]
-        public Task<IResult> Overload(string value)
-        {
-            return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-2"));
-        }
+    [Command("overload")]
+    public Task<IResult> Overload(string value)
+    {
+        return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-2"));
+    }
 
-        [Command("overload")]
-        public Task<IResult> Overload(string value1, [Option("value-2")] string value2)
-        {
-            return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-3"));
-        }
+    [Command("overload")]
+    public Task<IResult> Overload(string value1, [Option("value-2")] string value2)
+    {
+        return Task.FromResult<IResult>(Result<string>.FromSuccess("overload-3"));
     }
 }

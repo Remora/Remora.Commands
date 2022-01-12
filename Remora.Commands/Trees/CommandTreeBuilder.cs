@@ -32,173 +32,172 @@ using Remora.Commands.Groups;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
-namespace Remora.Commands.Trees
+namespace Remora.Commands.Trees;
+
+/// <summary>
+/// Builds command trees from input command group types.
+/// </summary>
+[PublicAPI]
+public class CommandTreeBuilder
 {
+    private readonly List<Type> _registeredModuleTypes = new();
+
     /// <summary>
-    /// Builds command trees from input command group types.
+    /// Registers a module type with the builder.
     /// </summary>
-    [PublicAPI]
-    public class CommandTreeBuilder
+    /// <typeparam name="TModule">The module type.</typeparam>
+    public void RegisterModule<TModule>() where TModule : CommandGroup
     {
-        private readonly List<Type> _registeredModuleTypes = new();
+        RegisterModule(typeof(TModule));
+    }
 
-        /// <summary>
-        /// Registers a module type with the builder.
-        /// </summary>
-        /// <typeparam name="TModule">The module type.</typeparam>
-        public void RegisterModule<TModule>() where TModule : CommandGroup
+    /// <summary>
+    /// Registers a module type with the builder.
+    /// </summary>
+    /// <param name="commandModule">The module type.</param>
+    public void RegisterModule(Type commandModule)
+    {
+        if (!_registeredModuleTypes.Contains(commandModule))
         {
-            RegisterModule(typeof(TModule));
+            _registeredModuleTypes.Add(commandModule);
         }
+    }
 
-        /// <summary>
-        /// Registers a module type with the builder.
-        /// </summary>
-        /// <param name="commandModule">The module type.</param>
-        public void RegisterModule(Type commandModule)
+    /// <summary>
+    /// Builds a command tree from the registered types.
+    /// </summary>
+    /// <returns>The command tree.</returns>
+    public CommandTree Build()
+    {
+        var rootChildren = new List<IChildNode>();
+        var rootNode = new RootNode(rootChildren);
+        rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
+
+        return new CommandTree(rootNode);
+    }
+
+    /// <summary>
+    /// Parses the given list of module types into a set of child nodes.
+    /// </summary>
+    /// <remarks>
+    /// Child nodes can be either <see cref="GroupNode"/> or <see cref="CommandNode"/> instances, where methods in
+    /// the types that have been marked as commands produce command nodes, and nested classes produce group nodes.
+    ///
+    /// If a nested class does not have a <see cref="GroupAttribute"/>, its subtypes and methods are instead
+    /// parented to the containing type.
+    /// </remarks>
+    /// <param name="moduleTypes">The module types.</param>
+    /// <param name="parent">The parent node. For the first invocation, this will be the root node.</param>
+    /// <returns>The new children of the parent.</returns>
+    private IEnumerable<IChildNode> ToChildNodes(IEnumerable<Type> moduleTypes, IParentNode parent)
+    {
+        IEnumerable<IGrouping<string, Type>> groups = moduleTypes.GroupBy
+        (
+            mt => mt.TryGetGroupName(out var name) ? name : string.Empty
+        );
+
+        foreach (var group in groups)
         {
-            if (!_registeredModuleTypes.Contains(commandModule))
+            if (group.Key == string.Empty)
             {
-                _registeredModuleTypes.Add(commandModule);
-            }
-        }
-
-        /// <summary>
-        /// Builds a command tree from the registered types.
-        /// </summary>
-        /// <returns>The command tree.</returns>
-        public CommandTree Build()
-        {
-            var rootChildren = new List<IChildNode>();
-            var rootNode = new RootNode(rootChildren);
-            rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
-
-            return new CommandTree(rootNode);
-        }
-
-        /// <summary>
-        /// Parses the given list of module types into a set of child nodes.
-        /// </summary>
-        /// <remarks>
-        /// Child nodes can be either <see cref="GroupNode"/> or <see cref="CommandNode"/> instances, where methods in
-        /// the types that have been marked as commands produce command nodes, and nested classes produce group nodes.
-        ///
-        /// If a nested class does not have a <see cref="GroupAttribute"/>, its subtypes and methods are instead
-        /// parented to the containing type.
-        /// </remarks>
-        /// <param name="moduleTypes">The module types.</param>
-        /// <param name="parent">The parent node. For the first invocation, this will be the root node.</param>
-        /// <returns>The new children of the parent.</returns>
-        private IEnumerable<IChildNode> ToChildNodes(IEnumerable<Type> moduleTypes, IParentNode parent)
-        {
-            IEnumerable<IGrouping<string, Type>> groups = moduleTypes.GroupBy
-            (
-                mt => mt.TryGetGroupName(out var name) ? name : string.Empty
-            );
-
-            foreach (var group in groups)
-            {
-                if (group.Key == string.Empty)
+                // Nest these commands and groups directly under the parent
+                foreach (var groupType in group)
                 {
-                    // Nest these commands and groups directly under the parent
-                    foreach (var groupType in group)
+                    var subgroups = groupType.GetNestedTypes().Where(t => typeof(CommandGroup).IsAssignableFrom(t));
+
+                    // Extract submodules and commands
+                    foreach (var child in GetModuleCommands(groupType, parent))
                     {
-                        var subgroups = groupType.GetNestedTypes().Where(t => typeof(CommandGroup).IsAssignableFrom(t));
-
-                        // Extract submodules and commands
-                        foreach (var child in GetModuleCommands(groupType, parent))
-                        {
-                            yield return child;
-                        }
-
-                        foreach (var child in ToChildNodes(subgroups, parent))
-                        {
-                            yield return child;
-                        }
-                    }
-                }
-                else
-                {
-                    // Nest these commands and groups under a subgroup
-                    var groupChildren = new List<IChildNode>();
-                    var groupAliases = new List<string>();
-
-                    // Pick out the first custom description
-                    var description = group
-                        .Select(t => t.GetDescriptionOrDefault("MARKER"))
-                        .Distinct()
-                        .FirstOrDefault(d => d != "MARKER");
-
-                    description ??= Constants.DefaultDescription;
-
-                    var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, description);
-
-                    foreach (var groupType in group)
-                    {
-                        // Union the aliases of the groups under this key
-                        var groupAttribute = groupType.GetCustomAttribute<GroupAttribute>();
-                        if (groupAttribute is null)
-                        {
-                            throw new InvalidOperationException();
-                        }
-
-                        foreach (var alias in groupAttribute.Aliases)
-                        {
-                            if (groupAliases.Contains(alias))
-                            {
-                                continue;
-                            }
-
-                            groupAliases.Add(alias);
-                        }
-
-                        var subgroups = groupType.GetNestedTypes().Where(t => typeof(CommandGroup).IsAssignableFrom(t));
-
-                        // Extract submodules and commands
-                        groupChildren.AddRange(GetModuleCommands(groupType, groupNode));
-                        groupChildren.AddRange(ToChildNodes(subgroups, groupNode));
+                        yield return child;
                     }
 
-                    yield return groupNode;
+                    foreach (var child in ToChildNodes(subgroups, parent))
+                    {
+                        yield return child;
+                    }
                 }
             }
-        }
-
-        /// <summary>
-        /// Parses a set of command nodes from the given type.
-        /// </summary>
-        /// <param name="moduleType">The module type.</param>
-        /// <param name="parent">The parent node.</param>
-        /// <returns>A set of command nodes.</returns>
-        private IEnumerable<CommandNode> GetModuleCommands(Type moduleType, IParentNode parent)
-        {
-            var methods = moduleType.GetMethods();
-            foreach (var method in methods)
+            else
             {
-                var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
-                if (commandAttribute is null)
+                // Nest these commands and groups under a subgroup
+                var groupChildren = new List<IChildNode>();
+                var groupAliases = new List<string>();
+
+                // Pick out the first custom description
+                var description = group
+                    .Select(t => t.GetDescriptionOrDefault("MARKER"))
+                    .Distinct()
+                    .FirstOrDefault(d => d != "MARKER");
+
+                description ??= Constants.DefaultDescription;
+
+                var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, description);
+
+                foreach (var groupType in group)
                 {
-                    continue;
+                    // Union the aliases of the groups under this key
+                    var groupAttribute = groupType.GetCustomAttribute<GroupAttribute>();
+                    if (groupAttribute is null)
+                    {
+                        throw new InvalidOperationException();
+                    }
+
+                    foreach (var alias in groupAttribute.Aliases)
+                    {
+                        if (groupAliases.Contains(alias))
+                        {
+                            continue;
+                        }
+
+                        groupAliases.Add(alias);
+                    }
+
+                    var subgroups = groupType.GetNestedTypes().Where(t => typeof(CommandGroup).IsAssignableFrom(t));
+
+                    // Extract submodules and commands
+                    groupChildren.AddRange(GetModuleCommands(groupType, groupNode));
+                    groupChildren.AddRange(ToChildNodes(subgroups, groupNode));
                 }
 
-                if (!method.ReturnType.IsSupportedCommandReturnType())
-                {
-                    throw new InvalidOperationException
-                    (
-                        $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
-                        $"containing a type that implements {typeof(IResult)}."
-                    );
-                }
+                yield return groupNode;
+            }
+        }
+    }
 
-                yield return new CommandNode
+    /// <summary>
+    /// Parses a set of command nodes from the given type.
+    /// </summary>
+    /// <param name="moduleType">The module type.</param>
+    /// <param name="parent">The parent node.</param>
+    /// <returns>A set of command nodes.</returns>
+    private IEnumerable<CommandNode> GetModuleCommands(Type moduleType, IParentNode parent)
+    {
+        var methods = moduleType.GetMethods();
+        foreach (var method in methods)
+        {
+            var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
+            if (commandAttribute is null)
+            {
+                continue;
+            }
+
+            if (!method.ReturnType.IsSupportedCommandReturnType())
+            {
+                throw new InvalidOperationException
                 (
-                    parent,
-                    commandAttribute.Name,
-                    moduleType,
-                    method,
-                    commandAttribute.Aliases
+                    $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
+                    $"containing a type that implements {typeof(IResult)}."
                 );
             }
+
+            yield return new CommandNode
+            (
+                parent,
+                commandAttribute.Name,
+                moduleType,
+                method,
+                commandAttribute.Aliases
+            );
         }
     }
 }
