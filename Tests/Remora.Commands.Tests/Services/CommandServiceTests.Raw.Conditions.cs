@@ -52,7 +52,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -79,7 +79,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -107,7 +107,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -134,7 +134,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -162,7 +162,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulCommandCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<CommandCondition>()
                     .BuildServiceProvider();
 
@@ -189,7 +189,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulCommandCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<CommandCondition>()
                     .BuildServiceProvider();
 
@@ -217,7 +217,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulCommandCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<CommandCondition>()
                     .BuildServiceProvider();
 
@@ -244,7 +244,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulCommandCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<CommandCondition>()
                     .BuildServiceProvider();
 
@@ -272,7 +272,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulParameterCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<ParameterCondition>()
                     .BuildServiceProvider();
 
@@ -299,7 +299,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulParameterCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<ParameterCondition>()
                     .BuildServiceProvider();
 
@@ -327,7 +327,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulParameterCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<ParameterCondition>()
                     .BuildServiceProvider();
 
@@ -354,7 +354,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulParameterCondition>()
-                    .Done()
+                    .Finish()
                     .AddCondition<ParameterCondition>()
                     .BuildServiceProvider();
 
@@ -382,7 +382,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulConditionAndInnerUnnamedGroup>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -408,7 +408,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulConditionAndInnerNamedGroup>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -434,7 +434,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulConditionAndInnerUnnamedGroup>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -460,7 +460,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulConditionAndInnerNamedGroup>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -488,7 +488,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -518,7 +518,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulConditionAndInnerNamedGroup>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -548,7 +548,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 
@@ -578,7 +578,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulConditionAndInnerNamedGroup>()
-                    .Done()
+                    .Finish()
                     .AddCondition<GroupCondition>()
                     .BuildServiceProvider();
 

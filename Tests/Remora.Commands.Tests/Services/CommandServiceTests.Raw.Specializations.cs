@@ -50,7 +50,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -75,7 +75,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -96,7 +96,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -128,7 +128,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -152,7 +152,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -177,7 +177,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -209,7 +209,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -233,7 +233,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -266,7 +266,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -291,7 +291,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -315,7 +315,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
@@ -348,7 +348,7 @@ public static partial class CommandServiceTests
                     .AddCommands()
                     .AddCommandTree()
                     .WithCommandGroup<SpecializedCommandGroup>()
-                    .Done()
+                    .Finish()
                     .BuildServiceProvider();
 
                 var commandService = services.GetRequiredService<CommandService>();
