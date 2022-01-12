@@ -108,5 +108,5 @@ public class TreeRegistrationBuilder
     /// Finishes configuring the tree, returning the service collection.
     /// </summary>
     /// <returns>The service collection.</returns>
-    public IServiceCollection Done() => _serviceCollection;
+    public IServiceCollection Finish() => _serviceCollection;
 }
