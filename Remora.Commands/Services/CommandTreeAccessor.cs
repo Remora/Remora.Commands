@@ -36,7 +36,7 @@ namespace Remora.Commands.Services;
 public class CommandTreeAccessor
 {
     private readonly CommandTreeAccessorOptions _accessorOptions;
-    private readonly IOptionsSnapshot<CommandTreeBuilder> _treeBuilderSnapshot;
+    private readonly IOptionsMonitor<CommandTreeBuilder> _treeBuilderSnapshot;
     private readonly Dictionary<string, CommandTree> _trees = new();
 
     /// <summary>
@@ -47,7 +47,7 @@ public class CommandTreeAccessor
     public CommandTreeAccessor
     (
         IOptions<CommandTreeAccessorOptions> accessorOptions,
-        IOptionsSnapshot<CommandTreeBuilder> treeBuilderSnapshot
+        IOptionsMonitor<CommandTreeBuilder> treeBuilderSnapshot
     )
     {
         _accessorOptions = accessorOptions.Value;
