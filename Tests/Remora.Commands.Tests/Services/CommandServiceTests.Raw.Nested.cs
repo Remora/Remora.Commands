@@ -50,7 +50,8 @@ namespace Remora.Commands.Tests.Services
                         .AddCommandTree()
                         .WithCommandGroup<NestedCommandGroup>()
                         .Finish()
-                        .BuildServiceProvider();
+                        .BuildServiceProvider(true)
+                        .CreateScope().ServiceProvider;
 
                     var commandService = services.GetRequiredService<CommandService>();
 
@@ -75,7 +76,8 @@ namespace Remora.Commands.Tests.Services
                         .AddCommandTree()
                         .WithCommandGroup<NestedCommandGroup>()
                         .Finish()
-                        .BuildServiceProvider();
+                        .BuildServiceProvider(true)
+                        .CreateScope().ServiceProvider;
 
                     var commandService = services.GetRequiredService<CommandService>();
 

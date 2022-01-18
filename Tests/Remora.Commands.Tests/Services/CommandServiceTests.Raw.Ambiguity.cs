@@ -52,7 +52,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<AmbiguousCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult = await commandService.TryExecuteAsync("test command 0", services);
@@ -73,7 +74,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<AmbiguousCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult = await commandService.TryExecuteAsync("test command 0", services);

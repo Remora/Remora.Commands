@@ -51,7 +51,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<OverloadCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult = await commandService.TryExecuteAsync

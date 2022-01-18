@@ -45,7 +45,7 @@ public class MultiTreeTests
     {
         var services = new ServiceCollection()
             .AddCommands()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
         Assert.True(accessor.TryGetNamedTree(null, out var tree));
@@ -60,7 +60,7 @@ public class MultiTreeTests
     {
         var services = new ServiceCollection()
             .AddCommands()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
         accessor.TryGetNamedTree(null, out var tree);
@@ -77,7 +77,7 @@ public class MultiTreeTests
     {
         var services = new ServiceCollection()
             .AddCommands()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
         Assert.True(accessor.TryGetNamedTree(Constants.AllTreeName, out var tree));
@@ -92,7 +92,7 @@ public class MultiTreeTests
     {
         var services = new ServiceCollection()
             .AddCommands()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
         accessor.TryGetNamedTree(Constants.AllTreeName, out var tree);
@@ -112,7 +112,7 @@ public class MultiTreeTests
             .AddCommandTree()
             .WithCommandGroup<NamedGroupWithCommands>()
             .Finish()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
         Assert.True(accessor.TryGetNamedTree(null, out var tree));
@@ -130,7 +130,7 @@ public class MultiTreeTests
             .AddCommandTree()
                 .WithCommandGroup<NamedGroupWithCommands>()
                 .Finish()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
         accessor.TryGetNamedTree(null, out var tree);
@@ -171,7 +171,7 @@ public class MultiTreeTests
             #pragma warning disable CS0618
             .AddCommandGroup<NamedGroupWithCommands>()
             #pragma warning restore CS0618
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
         accessor.TryGetNamedTree(null, out var tree);
@@ -215,7 +215,7 @@ public class MultiTreeTests
             .AddCommandTree("unnamed")
                 .WithCommandGroup<UnnamedGroupWithCommands>()
                 .Finish()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
 
@@ -240,7 +240,7 @@ public class MultiTreeTests
             .AddCommandTree("unnamed")
                 .WithCommandGroup<UnnamedGroupWithCommands>()
                 .Finish()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
 
@@ -306,7 +306,7 @@ public class MultiTreeTests
             .AddCommandTree("unnamed")
                 .WithCommandGroup<UnnamedGroupWithCommands>()
                 .Finish()
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
 

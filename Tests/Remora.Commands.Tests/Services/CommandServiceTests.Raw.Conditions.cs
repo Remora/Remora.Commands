@@ -54,7 +54,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulCondition>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -81,7 +82,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulCondition>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -109,7 +111,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulCondition>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -136,7 +139,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulCondition>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -164,7 +168,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulCommandCondition>()
                     .Finish()
                     .AddCondition<CommandCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -191,7 +196,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulCommandCondition>()
                     .Finish()
                     .AddCondition<CommandCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -219,7 +225,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulCommandCondition>()
                     .Finish()
                     .AddCondition<CommandCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -246,7 +253,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulCommandCondition>()
                     .Finish()
                     .AddCondition<CommandCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -274,7 +282,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulParameterCondition>()
                     .Finish()
                     .AddCondition<ParameterCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -301,7 +310,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulParameterCondition>()
                     .Finish()
                     .AddCondition<ParameterCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -329,7 +339,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulParameterCondition>()
                     .Finish()
                     .AddCondition<ParameterCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -356,7 +367,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulParameterCondition>()
                     .Finish()
                     .AddCondition<ParameterCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -384,7 +396,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulConditionAndInnerUnnamedGroup>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -410,7 +423,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithSuccessfulConditionAndInnerNamedGroup>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -436,7 +450,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulConditionAndInnerUnnamedGroup>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -462,7 +477,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithSuccessfulConditionAndInnerNamedGroup>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -490,7 +506,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -520,7 +537,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.NamedGroupWithUnsuccessfulConditionAndInnerNamedGroup>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -550,7 +568,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulConditionAndInnerUnnamedGroup>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 
@@ -580,7 +599,8 @@ public static partial class CommandServiceTests
                     .WithCommandGroup<ConditionalGroups.UnnamedGroupWithUnsuccessfulConditionAndInnerNamedGroup>()
                     .Finish()
                     .AddCondition<GroupCondition>()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
 

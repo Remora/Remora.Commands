@@ -50,7 +50,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<BasicCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult = await commandService.TryExecuteAsync("test parameterless", services);
@@ -70,7 +71,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<BasicCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult =
@@ -91,7 +93,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<BasicCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult =
@@ -112,7 +115,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<BasicCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult =
@@ -133,7 +137,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<BasicCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult = await commandService.TryExecuteAsync("test single-optional-named", services);
@@ -153,7 +158,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<BasicCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult = await commandService.TryExecuteAsync
@@ -177,7 +183,8 @@ public static partial class CommandServiceTests
                     .AddCommandTree()
                     .WithCommandGroup<BasicCommandGroup>()
                     .Finish()
-                    .BuildServiceProvider();
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
                 var commandService = services.GetRequiredService<CommandService>();
                 var executionResult = await commandService.TryExecuteAsync
