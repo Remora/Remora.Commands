@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -39,7 +40,7 @@ public class Int64Parser : AbstractTypeParser<long>
     {
         return new ValueTask<Result<long>>
         (
-            !long.TryParse(value, out var result)
+            !long.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<long>(value)
                 : Result<long>.FromSuccess(result)
         );

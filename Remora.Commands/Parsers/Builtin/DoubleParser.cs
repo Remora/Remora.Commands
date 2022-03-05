@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -37,9 +38,10 @@ public class DoubleParser : AbstractTypeParser<double>
     /// <inheritdoc />
     public override ValueTask<Result<double>> TryParseAsync(string? value, CancellationToken ct = default)
     {
+        const NumberStyles styles = NumberStyles.Float | NumberStyles.AllowThousands;
         return new ValueTask<Result<double>>
         (
-            !double.TryParse(value, out var result)
+            !double.TryParse(value, styles, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<double>(value)
                 : Result<double>.FromSuccess(result)
         );

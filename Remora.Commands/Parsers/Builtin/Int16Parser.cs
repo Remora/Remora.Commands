@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -39,7 +40,7 @@ public class Int16Parser : AbstractTypeParser<short>
     {
         return new ValueTask<Result<short>>
         (
-            !short.TryParse(value, out var result)
+            !short.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<short>(value)
                 : Result<short>.FromSuccess(result)
         );

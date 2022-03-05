@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -39,7 +40,7 @@ public class SByteParser : AbstractTypeParser<sbyte>
     {
         return new ValueTask<Result<sbyte>>
         (
-            !sbyte.TryParse(value, out var result)
+            !sbyte.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<sbyte>(value)
                 : Result<sbyte>.FromSuccess(result)
         );

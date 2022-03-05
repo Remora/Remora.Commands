@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,7 +46,7 @@ public class BigIntegerParser : AbstractTypeParser<BigInteger>
 
         return new
         (
-            !BigInteger.TryParse(value, out var result)
+            !BigInteger.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<BigInteger>(value)
                 : result
         );
