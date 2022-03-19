@@ -46,7 +46,11 @@ namespace Remora.Commands.Extensions
         /// <typeparam name="TCommandModule">The command module to register.</typeparam>
         /// <param name="serviceCollection">The service collection.</param>
         /// <returns>The service collection, with the configured modules.</returns>
-        public static IServiceCollection AddCommandGroup<TCommandModule>
+        public static IServiceCollection AddCommandGroup
+            <
+                [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+                TCommandModule
+            >
         (
             this IServiceCollection serviceCollection
         )
@@ -164,7 +168,11 @@ namespace Remora.Commands.Extensions
         /// <param name="services">The service collection.</param>
         /// <typeparam name="TParser">The type parser.</typeparam>
         /// <returns>The service collection, with the parser.</returns>
-        public static IServiceCollection AddParser<TParser>
+        public static IServiceCollection AddParser
+            <
+                [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+                TParser
+            >
         (
             this IServiceCollection services
         )
@@ -234,7 +242,11 @@ namespace Remora.Commands.Extensions
         /// Thrown if the type <typeparamref name="TCondition"/> does not implement any versions of either
         /// <see cref="ICondition{TAttribute}"/> or <see cref="ICondition{TAttribute,TData}"/>.
         /// </exception>
-        public static IServiceCollection AddCondition<TCondition>
+        public static IServiceCollection AddCondition
+            <
+                [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+                TCondition
+            >
         (
             this IServiceCollection serviceCollection
         ) where TCondition : class, ICondition
