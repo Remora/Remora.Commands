@@ -20,29 +20,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="ulong"/>s.
+/// </summary>
+[PublicAPI]
+public class UInt64Parser : AbstractTypeParser<ulong>
 {
-    /// <summary>
-    /// Parses <see cref="ulong"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class UInt64Parser : AbstractTypeParser<ulong>
+    /// <inheritdoc />
+    public override ValueTask<Result<ulong>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<ulong>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<ulong>>
-            (
-                !ulong.TryParse(value, out var result)
+        return new ValueTask<Result<ulong>>
+        (
+            !ulong.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<ulong>(value)
                 : Result<ulong>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

@@ -20,29 +20,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="byte"/>s.
+/// </summary>
+[PublicAPI]
+public class ByteParser : AbstractTypeParser<byte>
 {
-    /// <summary>
-    /// Parses <see cref="byte"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class ByteParser : AbstractTypeParser<byte>
+    /// <inheritdoc />
+    public override ValueTask<Result<byte>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<byte>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<byte>>
-            (
-                !byte.TryParse(value, out var result)
+        return new ValueTask<Result<byte>>
+        (
+            !byte.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<byte>(value)
                 : Result<byte>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

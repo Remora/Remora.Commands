@@ -23,17 +23,16 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Trees.Nodes
+namespace Remora.Commands.Trees.Nodes;
+
+/// <summary>
+/// Defines the public interface of a parent node.
+/// </summary>
+[PublicAPI]
+public interface IParentNode
 {
     /// <summary>
-    /// Defines the public interface of a parent node.
+    /// Gets the children of this node.
     /// </summary>
-    [PublicAPI]
-    public interface IParentNode
-    {
-        /// <summary>
-        /// Gets the children of this node.
-        /// </summary>
-        IReadOnlyList<IChildNode> Children { get; }
-    }
+    IReadOnlyList<IChildNode> Children { get; }
 }

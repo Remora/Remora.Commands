@@ -25,18 +25,17 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses strings.
+/// </summary>
+[PublicAPI]
+public class StringParser : AbstractTypeParser<string>
 {
-    /// <summary>
-    /// Parses strings.
-    /// </summary>
-    [PublicAPI]
-    public class StringParser : AbstractTypeParser<string>
+    /// <inheritdoc />
+    public override ValueTask<Result<string>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<string>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new(value);
-        }
+        return new(value);
     }
 }

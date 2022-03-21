@@ -26,23 +26,22 @@ using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="char"/>s.
+/// </summary>
+[PublicAPI]
+public class CharParser : AbstractTypeParser<char>
 {
-    /// <summary>
-    /// Parses <see cref="char"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class CharParser : AbstractTypeParser<char>
+    /// <inheritdoc />
+    public override ValueTask<Result<char>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<char>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<char>>
-            (
-                !char.TryParse(value, out var result)
+        return new ValueTask<Result<char>>
+        (
+            !char.TryParse(value, out var result)
                 ? new ParsingError<char>(value)
                 : Result<char>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

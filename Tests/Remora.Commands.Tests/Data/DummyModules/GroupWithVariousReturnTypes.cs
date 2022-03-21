@@ -28,44 +28,43 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.DummyModules
+namespace Remora.Commands.Tests.Data.DummyModules;
+
+public class GroupWithVariousReturnTypes : CommandGroup
 {
-    public class GroupWithVariousReturnTypes : CommandGroup
+    [Command("a")]
+    public Task<IResult> A()
     {
-        [Command("a")]
-        public Task<IResult> A()
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
+    }
 
-        [Command("b")]
-        public ValueTask<IResult> B()
-        {
-            throw new NotImplementedException();
-        }
+    [Command("b")]
+    public ValueTask<IResult> B()
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("c")]
-        public Task<Result> C()
-        {
-            throw new NotImplementedException();
-        }
+    [Command("c")]
+    public Task<Result> C()
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("d")]
-        public ValueTask<Result> D()
-        {
-            throw new NotImplementedException();
-        }
+    [Command("d")]
+    public ValueTask<Result> D()
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("e")]
-        public Task<Result<string>> E()
-        {
-            throw new NotImplementedException();
-        }
+    [Command("e")]
+    public Task<Result<string>> E()
+    {
+        throw new NotImplementedException();
+    }
 
-        [Command("f")]
-        public ValueTask<Result<string>> F()
-        {
-            throw new NotImplementedException();
-        }
+    [Command("f")]
+    public ValueTask<Result<string>> F()
+    {
+        throw new NotImplementedException();
     }
 }

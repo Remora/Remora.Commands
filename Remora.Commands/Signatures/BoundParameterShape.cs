@@ -23,33 +23,32 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Signatures
+namespace Remora.Commands.Signatures;
+
+/// <summary>
+/// Represents a parameter shape that has been bound to a sequence of matching tokens.
+/// </summary>
+[PublicAPI]
+public class BoundParameterShape
 {
     /// <summary>
-    /// Represents a parameter shape that has been bound to a sequence of matching tokens.
+    /// Gets the parameter shape.
     /// </summary>
-    [PublicAPI]
-    public class BoundParameterShape
+    public IParameterShape ParameterShape { get; }
+
+    /// <summary>
+    /// Gets the tokens bound to the parameter.
+    /// </summary>
+    public IReadOnlyList<string> Tokens { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BoundParameterShape"/> class.
+    /// </summary>
+    /// <param name="parameterShape">The parameter shape.</param>
+    /// <param name="tokens">The bound tokens.</param>
+    public BoundParameterShape(IParameterShape parameterShape, IReadOnlyList<string> tokens)
     {
-        /// <summary>
-        /// Gets the parameter shape.
-        /// </summary>
-        public IParameterShape ParameterShape { get; }
-
-        /// <summary>
-        /// Gets the tokens bound to the parameter.
-        /// </summary>
-        public IReadOnlyList<string> Tokens { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BoundParameterShape"/> class.
-        /// </summary>
-        /// <param name="parameterShape">The parameter shape.</param>
-        /// <param name="tokens">The bound tokens.</param>
-        public BoundParameterShape(IParameterShape parameterShape, IReadOnlyList<string> tokens)
-        {
-            this.ParameterShape = parameterShape;
-            this.Tokens = tokens;
-        }
+        this.ParameterShape = parameterShape;
+        this.Tokens = tokens;
     }
 }

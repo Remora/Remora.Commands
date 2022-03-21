@@ -28,36 +28,61 @@ using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class Raw
     {
-        public static partial class Raw
+        /// <summary>
+        /// Tests specialized behaviour.
+        /// </summary>
+        public class Ambiguity
         {
             /// <summary>
-            /// Tests specialized behaviour.
+            /// Tests whether the command service can execute a command with a single named boolean parameter - that is,
+            /// a switch.
             /// </summary>
-            public class Ambiguity
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task PreventsExecutionOfAmbiguousCommand()
             {
-                /// <summary>
-                /// Tests whether the command service can execute a command with a single named boolean parameter - that is,
-                /// a switch.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task PreventsExecutionOfAmbiguousCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<AmbiguousCommandGroup>()
-                        .BuildServiceProvider();
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<AmbiguousCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync("test command 0", services);
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync("test command 0", services);
 
-                    Assert.False(executionResult.IsSuccess);
-                    Assert.IsType<AmbiguousCommandInvocationError>(executionResult.Error);
-                }
+                Assert.False(executionResult.IsSuccess);
+                Assert.IsType<AmbiguousCommandInvocationError>(executionResult.Error);
+            }
+
+            /// <summary>
+            /// Tests whether the command service returns all ambiguous commands when a command route cannot be determined.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task ReturnsAmbiguousCanidates()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<AmbiguousCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
+
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync("test command 0", services);
+
+                Assert.False(executionResult.IsSuccess);
+                Assert.IsType<AmbiguousCommandInvocationError>(executionResult.Error);
+                Assert.Equal(2, ((AmbiguousCommandInvocationError?)executionResult.Error!)?.CommandCandidates?.Count ?? 0);
             }
         }
     }

@@ -20,15 +20,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace Remora.Commands.Tests.Trees
+namespace Remora.Commands.Tests.Trees;
+
+public static partial class CommandTreeTests
 {
-    public static partial class CommandTreeTests
+    /// <summary>
+    /// Tests functionality of raw parsing-based operations.
+    /// </summary>
+    public static partial class Raw
     {
-        /// <summary>
-        /// Tests functionality of raw parsing-based operations.
-        /// </summary>
-        public static partial class Raw
-        {
-        }
     }
 }

@@ -29,174 +29,173 @@ using Xunit;
 // ReSharper disable SA1600
 #pragma warning disable 1591, SA1600
 
-namespace Remora.Commands.Tests.Extensions
+namespace Remora.Commands.Tests.Extensions;
+
+/// <summary>
+/// Tests the <see cref="ParameterInfoExtensions"/> class.
+/// </summary>
+public static class ParameterInfoExtensionTests
 {
-    /// <summary>
-    /// Tests the <see cref="ParameterInfoExtensions"/> class.
-    /// </summary>
-    public static class ParameterInfoExtensionTests
+    public class AllowsNull
     {
-        public class AllowsNull
+        /// <summary>
+        /// Does nothing. This method is used to get various nullability-annotated parameters.
+        /// </summary>
+        [PublicAPI]
+        private void Method
+        (
+            int valueType,
+            int? nullableValueType,
+            string referenceType,
+            string? nullableReferenceType,
+            List<int> valueTypeList,
+            List<int>? nullableValueTypeList,
+            List<int?> nonNullableNullableValueTypeList,
+            List<string> referenceTypeList,
+            List<string>? nullableReferenceTypeList,
+            List<string?> nonNullableNullableReferenceTypeList
+        )
         {
-            /// <summary>
-            /// Does nothing. This method is used to get various nullability-annotated parameters.
-            /// </summary>
-            [PublicAPI]
-            private void Method
-            (
-                int valueType,
-                int? nullableValueType,
-                string referenceType,
-                string? nullableReferenceType,
-                List<int> valueTypeList,
-                List<int>? nullableValueTypeList,
-                List<int?> nonNullableNullableValueTypeList,
-                List<string> referenceTypeList,
-                List<string>? nullableReferenceTypeList,
-                List<string?> nonNullableNullableReferenceTypeList
-            )
-            {
-            }
+        }
 
-            [Fact]
-            public void ReturnsFalseForValueType()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[0];
+        [Fact]
+        public void ReturnsFalseForValueType()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[0];
 
-                Assert.NotNull(parameter);
-                Assert.False(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.False(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsTrueForNullableValueType()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[1];
+        [Fact]
+        public void ReturnsTrueForNullableValueType()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[1];
 
-                Assert.NotNull(parameter);
-                Assert.True(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.True(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsFalseForReferenceType()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[2];
+        [Fact]
+        public void ReturnsFalseForReferenceType()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[2];
 
-                Assert.NotNull(parameter);
-                Assert.False(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.False(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsTrueForNullableReferenceType()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[3];
+        [Fact]
+        public void ReturnsTrueForNullableReferenceType()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[3];
 
-                Assert.NotNull(parameter);
-                Assert.True(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.True(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsFalseForGenericTypeWithValueTypeArgument()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[4];
+        [Fact]
+        public void ReturnsFalseForGenericTypeWithValueTypeArgument()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[4];
 
-                Assert.NotNull(parameter);
-                Assert.False(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.False(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsTrueForNullableGenericTypeWithValueTypeArgument()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[5];
+        [Fact]
+        public void ReturnsTrueForNullableGenericTypeWithValueTypeArgument()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[5];
 
-                Assert.NotNull(parameter);
-                Assert.True(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.True(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsFalseForNonNullableGenericTypeWithNullableValueTypeArgument()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[6];
+        [Fact]
+        public void ReturnsFalseForNonNullableGenericTypeWithNullableValueTypeArgument()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[6];
 
-                Assert.NotNull(parameter);
-                Assert.False(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.False(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsFalseForGenericTypeWithReferenceTypeArgument()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[7];
+        [Fact]
+        public void ReturnsFalseForGenericTypeWithReferenceTypeArgument()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[7];
 
-                Assert.NotNull(parameter);
-                Assert.False(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.False(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsTrueForNullableGenericTypeWithReferenceTypeArgument()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[8];
+        [Fact]
+        public void ReturnsTrueForNullableGenericTypeWithReferenceTypeArgument()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[8];
 
-                Assert.NotNull(parameter);
-                Assert.True(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.True(parameter.AllowsNull());
+        }
 
-            [Fact]
-            public void ReturnsFalseForNonNullableGenericTypeWithNullableReferenceTypeArgument()
-            {
-                var parameter = GetType().GetMethod
-                    (
-                        nameof(Method),
-                        BindingFlags.Instance | BindingFlags.NonPublic
-                    )!
-                    .GetParameters()[9];
+        [Fact]
+        public void ReturnsFalseForNonNullableGenericTypeWithNullableReferenceTypeArgument()
+        {
+            var parameter = GetType().GetMethod
+                (
+                    nameof(Method),
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                )!
+                .GetParameters()[9];
 
-                Assert.NotNull(parameter);
-                Assert.False(parameter.AllowsNull());
-            }
+            Assert.NotNull(parameter);
+            Assert.False(parameter.AllowsNull());
         }
     }
 }

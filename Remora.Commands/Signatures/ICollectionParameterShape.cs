@@ -22,24 +22,23 @@
 
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Signatures
+namespace Remora.Commands.Signatures;
+
+/// <summary>
+/// Represents the shape of a collection of parameters.
+/// </summary>
+[PublicAPI]
+public interface ICollectionParameterShape
 {
     /// <summary>
-    /// Represents the shape of a collection of parameters.
+    /// Gets the minimum number of elements in the collection. If no minimum is set, the collection is allowed to
+    /// be empty.
     /// </summary>
-    [PublicAPI]
-    public interface ICollectionParameterShape
-    {
-        /// <summary>
-        /// Gets the minimum number of elements in the collection. If no minimum is set, the collection is allowed to
-        /// be empty.
-        /// </summary>
-        ulong? Min { get; }
+    ulong? Min { get; }
 
-        /// <summary>
-        /// Gets the maximum number of elements in the collection. If no maximum is set, the collection has no upper
-        /// bound on its size.
-        /// </summary>
-        ulong? Max { get; }
-    }
+    /// <summary>
+    /// Gets the maximum number of elements in the collection. If no maximum is set, the collection has no upper
+    /// bound on its size.
+    /// </summary>
+    ulong? Max { get; }
 }

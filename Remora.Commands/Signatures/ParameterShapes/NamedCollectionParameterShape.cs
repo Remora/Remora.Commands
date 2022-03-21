@@ -29,270 +29,269 @@ using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 
-namespace Remora.Commands.Signatures
+namespace Remora.Commands.Signatures;
+
+/// <summary>
+/// Represents a named parameter with a single value.
+/// </summary>
+[PublicAPI]
+public class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
 {
-    /// <summary>
-    /// Represents a named parameter with a single value.
-    /// </summary>
-    [PublicAPI]
-    public class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
+    private static readonly MethodInfo EmptyArrayMethod;
+    private readonly object _emptyCollection;
+
+    /// <inheritdoc />
+    public ulong? Min { get; }
+
+    /// <inheritdoc />
+    public ulong? Max { get; }
+
+    /// <inheritdoc/>
+    public override object? DefaultValue
     {
-        private static readonly MethodInfo EmptyArrayMethod;
-        private readonly object _emptyCollection;
-
-        /// <inheritdoc />
-        public ulong? Min { get; }
-
-        /// <inheritdoc />
-        public ulong? Max { get; }
-
-        /// <inheritdoc/>
-        public override object? DefaultValue
+        get
         {
-            get
+            if (this.Parameter.IsOptional)
             {
-                if (this.Parameter.IsOptional)
+                return this.Parameter.DefaultValue;
+            }
+
+            if (this.Min is null or 0)
+            {
+                return _emptyCollection;
+            }
+
+            throw new InvalidOperationException();
+        }
+    }
+
+    static NamedCollectionParameterShape()
+    {
+        var emptyArrayMethod = typeof(Array).GetMethod(nameof(Array.Empty));
+        EmptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
+    /// </summary>
+    /// <param name="parameter">The underlying parameter.</param>
+    /// <param name="shortName">The short name.</param>
+    /// <param name="longName">The long name.</param>
+    /// <param name="min">The minimum number of items in the collection.</param>
+    /// <param name="max">The maximum number of items in the collection.</param>
+    /// <param name="description">The description of the parameter.</param>
+    public NamedCollectionParameterShape
+    (
+        ParameterInfo parameter,
+        char shortName,
+        string longName,
+        ulong? min,
+        ulong? max,
+        string? description = null
+    )
+        : base(parameter, shortName, longName, description)
+    {
+        this.Min = min;
+        this.Max = max;
+
+        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+
+        var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+        _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
+    /// </summary>
+    /// <param name="parameter">The underlying parameter.</param>
+    /// <param name="shortName">The short name.</param>
+    /// <param name="min">The minimum number of items in the collection.</param>
+    /// <param name="max">The maximum number of items in the collection.</param>
+    /// <param name="description">The description of the parameter.</param>
+    public NamedCollectionParameterShape
+    (
+        ParameterInfo parameter,
+        char shortName,
+        ulong? min,
+        ulong? max,
+        string? description = null
+    )
+        : base(parameter, shortName, description)
+    {
+        this.Min = min;
+        this.Max = max;
+
+        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+
+        var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+        _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
+    /// </summary>
+    /// <param name="parameter">The underlying parameter.</param>
+    /// <param name="longName">The long name.</param>
+    /// <param name="min">The minimum number of items in the collection.</param>
+    /// <param name="max">The maximum number of items in the collection.</param>
+    /// <param name="description">The description of the parameter.</param>
+    public NamedCollectionParameterShape
+    (
+        ParameterInfo parameter,
+        string longName,
+        ulong? min,
+        ulong? max,
+        string? description = null
+    )
+        : base(parameter, longName, description)
+    {
+        this.Min = min;
+        this.Max = max;
+
+        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+
+        var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+        _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+    }
+
+    /// <inheritdoc/>
+    public override bool Matches
+    (
+        TokenizingEnumerator tokenizer,
+        out ulong consumedTokens,
+        TreeSearchOptions? searchOptions = null
+    )
+    {
+        searchOptions ??= new TreeSearchOptions();
+        consumedTokens = 0;
+
+        if (!tokenizer.MoveNext())
+        {
+            return false;
+        }
+
+        switch (tokenizer.Current.Type)
+        {
+            case TokenType.LongName:
+            {
+                if (this.LongName is null)
                 {
-                    return this.Parameter.DefaultValue;
+                    return false;
                 }
 
-                if (this.Min is null or 0)
+                if (!tokenizer.Current.Value.Equals(this.LongName, searchOptions.KeyComparison))
                 {
-                    return _emptyCollection;
+                    return false;
                 }
 
-                throw new InvalidOperationException();
+                break;
+            }
+            case TokenType.ShortName:
+            {
+                if (this.ShortName is null)
+                {
+                    return false;
+                }
+
+                if (tokenizer.Current.Value.Length != 1)
+                {
+                    return false;
+                }
+
+                if (tokenizer.Current.Value[0] != this.ShortName.Value)
+                {
+                    return false;
+                }
+
+                break;
+            }
+            case TokenType.Value:
+            {
+                return false;
+            }
+            default:
+            {
+                throw new ArgumentOutOfRangeException();
             }
         }
 
-        static NamedCollectionParameterShape()
+        ulong itemCount = 0;
+        while (this.Max is null || itemCount < this.Max.Value)
         {
-            var emptyArrayMethod = typeof(Array).GetMethod(nameof(Array.Empty));
-            EmptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
-        /// </summary>
-        /// <param name="parameter">The underlying parameter.</param>
-        /// <param name="shortName">The short name.</param>
-        /// <param name="longName">The long name.</param>
-        /// <param name="min">The minimum number of items in the collection.</param>
-        /// <param name="max">The maximum number of items in the collection.</param>
-        /// <param name="description">The description of the parameter.</param>
-        public NamedCollectionParameterShape
-        (
-            ParameterInfo parameter,
-            char shortName,
-            string longName,
-            ulong? min,
-            ulong? max,
-            string? description = null
-        )
-            : base(parameter, shortName, longName, description)
-        {
-            this.Min = min;
-            this.Max = max;
-
-            var elementType = this.Parameter.ParameterType.GetCollectionElementType();
-
-            var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
-            _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
-        /// </summary>
-        /// <param name="parameter">The underlying parameter.</param>
-        /// <param name="shortName">The short name.</param>
-        /// <param name="min">The minimum number of items in the collection.</param>
-        /// <param name="max">The maximum number of items in the collection.</param>
-        /// <param name="description">The description of the parameter.</param>
-        public NamedCollectionParameterShape
-        (
-            ParameterInfo parameter,
-            char shortName,
-            ulong? min,
-            ulong? max,
-            string? description = null
-        )
-            : base(parameter, shortName, description)
-        {
-            this.Min = min;
-            this.Max = max;
-
-            var elementType = this.Parameter.ParameterType.GetCollectionElementType();
-
-            var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
-            _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
-        /// </summary>
-        /// <param name="parameter">The underlying parameter.</param>
-        /// <param name="longName">The long name.</param>
-        /// <param name="min">The minimum number of items in the collection.</param>
-        /// <param name="max">The maximum number of items in the collection.</param>
-        /// <param name="description">The description of the parameter.</param>
-        public NamedCollectionParameterShape
-        (
-            ParameterInfo parameter,
-            string longName,
-            ulong? min,
-            ulong? max,
-            string? description = null
-        )
-            : base(parameter, longName, description)
-        {
-            this.Min = min;
-            this.Max = max;
-
-            var elementType = this.Parameter.ParameterType.GetCollectionElementType();
-
-            var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
-            _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-        }
-
-        /// <inheritdoc/>
-        public override bool Matches
-        (
-            TokenizingEnumerator tokenizer,
-            out ulong consumedTokens,
-            TreeSearchOptions? searchOptions = null
-        )
-        {
-            searchOptions ??= new TreeSearchOptions();
-            consumedTokens = 0;
-
             if (!tokenizer.MoveNext())
             {
-                return false;
+                break;
             }
 
-            switch (tokenizer.Current.Type)
+            if (tokenizer.Current.Type != TokenType.Value)
             {
-                case TokenType.LongName:
-                {
-                    if (this.LongName is null)
-                    {
-                        return false;
-                    }
-
-                    if (!tokenizer.Current.Value.Equals(this.LongName, searchOptions.KeyComparison))
-                    {
-                        return false;
-                    }
-
-                    break;
-                }
-                case TokenType.ShortName:
-                {
-                    if (this.ShortName is null)
-                    {
-                        return false;
-                    }
-
-                    if (tokenizer.Current.Value.Length != 1)
-                    {
-                        return false;
-                    }
-
-                    if (tokenizer.Current.Value[0] != this.ShortName.Value)
-                    {
-                        return false;
-                    }
-
-                    break;
-                }
-                case TokenType.Value:
-                {
-                    return false;
-                }
-                default:
-                {
-                    throw new ArgumentOutOfRangeException();
-                }
+                break;
             }
 
-            ulong itemCount = 0;
-            while (this.Max is null || itemCount < this.Max.Value)
-            {
-                if (!tokenizer.MoveNext())
-                {
-                    break;
-                }
-
-                if (tokenizer.Current.Type != TokenType.Value)
-                {
-                    break;
-                }
-
-                ++itemCount;
-            }
-
-            if (this.Min is not null)
-            {
-                if (itemCount < this.Min.Value)
-                {
-                    return false;
-                }
-            }
-
-            consumedTokens = itemCount + 1;
-            return true;
+            ++itemCount;
         }
 
-        /// <inheritdoc/>
-        public override bool Matches
-        (
-            KeyValuePair<string, IReadOnlyList<string>> namedValue,
-            out bool isFatal,
-            TreeSearchOptions? searchOptions = null
-        )
+        if (this.Min is not null)
         {
-            searchOptions ??= new TreeSearchOptions();
-            isFatal = false;
-
-            var (name, value) = namedValue;
-            var nameMatches = name.Equals(this.LongName, searchOptions.KeyComparison) ||
-                              (this.ShortName is not null && name.Length == 1 && name[0] == this.ShortName);
-
-            if (!nameMatches)
+            if (itemCount < this.Min.Value)
             {
                 return false;
             }
+        }
 
-            var count = (ulong)value.LongCount();
-            if (count < this.Min)
-            {
-                isFatal = true;
-                return false;
-            }
+        consumedTokens = itemCount + 1;
+        return true;
+    }
 
-            if (this.Max is null)
-            {
-                return true;
-            }
+    /// <inheritdoc/>
+    public override bool Matches
+    (
+        KeyValuePair<string, IReadOnlyList<string>> namedValue,
+        out bool isFatal,
+        TreeSearchOptions? searchOptions = null
+    )
+    {
+        searchOptions ??= new TreeSearchOptions();
+        isFatal = false;
 
-            if (count <= this.Max)
-            {
-                return true;
-            }
+        var (name, value) = namedValue;
+        var nameMatches = name.Equals(this.LongName, searchOptions.KeyComparison) ||
+                          (this.ShortName is not null && name.Length == 1 && name[0] == this.ShortName);
 
+        if (!nameMatches)
+        {
+            return false;
+        }
+
+        var count = (ulong)value.LongCount();
+        if (count < this.Min)
+        {
             isFatal = true;
             return false;
         }
 
-        /// <inheritdoc/>
-        public override bool IsOmissible(TreeSearchOptions? searchOptions = null)
+        if (this.Max is null)
         {
-            if (this.Parameter.IsOptional)
-            {
-                return true;
-            }
-
-            return this.Min is null or 0;
+            return true;
         }
+
+        if (count <= this.Max)
+        {
+            return true;
+        }
+
+        isFatal = true;
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public override bool IsOmissible(TreeSearchOptions? searchOptions = null)
+    {
+        if (this.Parameter.IsOptional)
+        {
+            return true;
+        }
+
+        return this.Min is null or 0;
     }
 }

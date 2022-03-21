@@ -20,29 +20,30 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="double"/>s.
+/// </summary>
+[PublicAPI]
+public class DoubleParser : AbstractTypeParser<double>
 {
-    /// <summary>
-    /// Parses <see cref="double"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class DoubleParser : AbstractTypeParser<double>
+    /// <inheritdoc />
+    public override ValueTask<Result<double>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<double>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<double>>
-            (
-                !double.TryParse(value, out var result)
+        const NumberStyles styles = NumberStyles.Float | NumberStyles.AllowThousands;
+        return new ValueTask<Result<double>>
+        (
+            !double.TryParse(value, styles, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<double>(value)
                 : Result<double>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

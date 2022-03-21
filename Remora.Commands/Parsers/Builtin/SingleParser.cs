@@ -20,29 +20,30 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="float"/>s.
+/// </summary>
+[PublicAPI]
+public class SingleParser : AbstractTypeParser<float>
 {
-    /// <summary>
-    /// Parses <see cref="float"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class SingleParser : AbstractTypeParser<float>
+    /// <inheritdoc />
+    public override ValueTask<Result<float>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<float>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<float>>
-            (
-                !float.TryParse(value, out var result)
+        const NumberStyles styles = NumberStyles.Float | NumberStyles.AllowThousands;
+        return new ValueTask<Result<float>>
+        (
+            !float.TryParse(value, styles, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<float>(value)
                 : Result<float>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

@@ -20,29 +20,29 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses <see cref="ushort"/>s.
+/// </summary>
+[PublicAPI]
+public class UInt16Parser : AbstractTypeParser<ushort>
 {
-    /// <summary>
-    /// Parses <see cref="ushort"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class UInt16Parser : AbstractTypeParser<ushort>
+    /// <inheritdoc />
+    public override ValueTask<Result<ushort>> TryParseAsync(string? value, CancellationToken ct = default)
     {
-        /// <inheritdoc />
-        public override ValueTask<Result<ushort>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            return new ValueTask<Result<ushort>>
-            (
-                !ushort.TryParse(value, out var result)
+        return new ValueTask<Result<ushort>>
+        (
+            !ushort.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<ushort>(value)
                 : Result<ushort>.FromSuccess(result)
-            );
-        }
+        );
     }
 }

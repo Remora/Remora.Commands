@@ -102,7 +102,9 @@ It's dead easy to get started with Remora.Commands.
         ```cs
         var services = new ServiceCollection()
             .AddCommands()
-            .AddCommandGroup<MyCommands>()
+            .AddCommandTree()
+                .WithCommandGroup<MyCommands>()
+                .Finish()
             .BuildServiceProvider();
         ```
   4. From any input source, parse and execute!
@@ -118,7 +120,7 @@ It's dead easy to get started with Remora.Commands.
             var executionResult = await _commandService.TryExecuteAsync
             (
                 userInput,
-                ct
+                ct: ct
             );
 
             if (executionResult.IsSuccess)
@@ -202,7 +204,9 @@ public class MyParser : AbstractTypeParser<MyType>
 ```cs
 var services = new ServiceCollection()
     .AddCommands()
-    .AddCommandGroup<MyCommands>()
+    .AddCommandTree()
+        .WithCommandGroup<MyCommands>()
+        .Finish()
     .AddSingletonParser<MyParser>()
     .BuildServiceProvider();
 ```
@@ -229,6 +233,92 @@ By default, Remora.Commands provides builtin parsers for the following types:
   * `decimal`
   * `BigInteger`
   * `DateTimeOffset`
+
+## Multiple trees
+If your application requires different sets of commands for different contexts, 
+you can register multiple separate trees and selectively execute commands from
+them. This is excellent for things where you might have a single application
+serving multiple users or groups thereof.
+
+```cs
+var services = new ServiceCollection()
+    .AddCommands()
+    .AddCommandTree()
+        .WithCommandGroup<MyCommands>()
+        .Finish()
+    .AddCommandTree("myothertree")
+        .WithCommandGroup<MyOtherCommands>()
+        .Finish()
+    .BuildServiceProvider();
+```
+
+These trees can then be accessed using the `CommandTreeAccessor` service. 
+If you don't need multiple trees, or you want to expose a set of default 
+commands, there's an unnamed tree available by default (accessed by either 
+`null` or `Constants.DefaultTreeName` as the tree name). This is also the tree
+accessed by not providing a name to `AddCommandTree`.
+
+```cs
+var accessor = services.GetRequiredService<CommandTreeAccessor>();
+if (accessor.TryGetNamedTree("myothertree", out var tree))
+{
+    ...
+}
+
+if (accessor.TryGetNamedTree(null, out var defaultTree))
+{
+    ...
+}
+```
+
+The effects of each `AddCommandTree` call are cumulative, so if you want to 
+configure the groups that are part of a tree from multiple locations (such as 
+plugins), simply call `AddCommandTree` again with the same name.
+
+```cs
+services
+    .AddCommands()
+    .AddCommandTree("myothertree")
+        .WithCommandGroup<MyOtherCommands>();
+
+// elsewhere...
+
+services
+    .AddCommandTree("myothertree")
+        .WithCommandGroup<MoreCommands>();
+```
+
+This would result in a tree with both `MyOtherCommands` and `MoreCommands` 
+available.
+
+To then access the different trees, pass the desired name when attempting to 
+execute a command.
+
+```cs
+private readonly CommandService _commandService;
+
+public async Task<IResult> MyInputHandler
+(
+    string userInput, 
+    CancellationToken ct
+)
+{
+    var executionResult = await _commandService.TryExecuteAsync
+    (
+        userInput,
+        treeName: "myothertree",
+        ct: ct
+    );
+
+    if (executionResult.IsSuccess)
+    {
+        return executionResult;
+    }
+
+    _logger.Error("Oh no!");
+    _logger.Error("Anyway");
+}
+```
 
 ## Installation
 Get it on [NuGet][1]!

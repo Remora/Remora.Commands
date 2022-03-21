@@ -26,115 +26,114 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Extensions
+namespace Remora.Commands.Extensions;
+
+/// <summary>
+/// Defines extension methods for the <see cref="ParameterInfo"/> class.
+/// </summary>
+[PublicAPI]
+public static class ParameterInfoExtensions
 {
     /// <summary>
-    /// Defines extension methods for the <see cref="ParameterInfo"/> class.
+    /// Enumerates the various nullability possibilities.
     /// </summary>
-    [PublicAPI]
-    public static class ParameterInfoExtensions
+    private enum Nullability
     {
-        /// <summary>
-        /// Enumerates the various nullability possibilities.
-        /// </summary>
-        private enum Nullability
+        Oblivious = 0,
+        NotNull = 1,
+        Nullable = 2
+    }
+
+    /// <summary>
+    /// Determines whether the given parameter allows null as a value.
+    /// </summary>
+    /// <param name="parameter">The parameter.</param>
+    /// <returns>true if the parameter allows null; otherwise, false.</returns>
+    public static bool AllowsNull(this ParameterInfo parameter)
+    {
+        var parameterType = parameter.ParameterType;
+        if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
-            Oblivious = 0,
-            NotNull = 1,
-            Nullable = 2
+            return true;
         }
 
-        /// <summary>
-        /// Determines whether the given parameter allows null as a value.
-        /// </summary>
-        /// <param name="parameter">The parameter.</param>
-        /// <returns>true if the parameter allows null; otherwise, false.</returns>
-        public static bool AllowsNull(this ParameterInfo parameter)
+        var nullableAttributeType = Type.GetType("System.Runtime.CompilerServices.NullableAttribute");
+        if (nullableAttributeType is null)
         {
-            var parameterType = parameter.ParameterType;
-            if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            // If we don't have access to nullability attributes, assume that we're not in a nullable context.
+            return !parameterType.IsValueType;
+        }
+
+        // We're in a nullable context, and we can assume that the lack of an attribute means the parameter is not
+        // nullable.
+        var nullableAttribute = parameter.CustomAttributes.FirstOrDefault
+        (
+            s => s.AttributeType.FullName == "System.Runtime.CompilerServices.NullableAttribute"
+        );
+
+        var topLevelNullability = Nullability.Oblivious;
+
+        if (nullableAttribute is not null)
+        {
+            var nullableArgument = nullableAttribute.ConstructorArguments.Single();
+            switch (nullableArgument.Value)
             {
-                return true;
-            }
-
-            var nullableAttributeType = Type.GetType("System.Runtime.CompilerServices.NullableAttribute");
-            if (nullableAttributeType is null)
-            {
-                // If we don't have access to nullability attributes, assume that we're not in a nullable context.
-                return !parameterType.IsValueType;
-            }
-
-            // We're in a nullable context, and we can assume that the lack of an attribute means the parameter is not
-            // nullable.
-            var nullableAttribute = parameter.CustomAttributes.FirstOrDefault
-            (
-                s => s.AttributeType.FullName == "System.Runtime.CompilerServices.NullableAttribute"
-            );
-
-            var topLevelNullability = Nullability.Oblivious;
-
-            if (nullableAttribute is not null)
-            {
-                var nullableArgument = nullableAttribute.ConstructorArguments.Single();
-                switch (nullableArgument.Value)
+                case byte singleArg:
                 {
-                    case byte singleArg:
-                    {
-                        topLevelNullability = (Nullability)singleArg;
-                        break;
-                    }
-                    case IReadOnlyCollection<CustomAttributeTypedArgument> multiArg:
-                    {
-                        if (multiArg.First().Value is not byte firstArg)
-                        {
-                            throw new InvalidOperationException();
-                        }
-
-                        topLevelNullability = (Nullability)firstArg;
-                        break;
-                    }
-                    default:
+                    topLevelNullability = (Nullability)singleArg;
+                    break;
+                }
+                case IReadOnlyCollection<CustomAttributeTypedArgument> multiArg:
+                {
+                    if (multiArg.First().Value is not byte firstArg)
                     {
                         throw new InvalidOperationException();
                     }
-                }
-            }
 
-            switch (topLevelNullability)
-            {
-                case Nullability.Oblivious:
-                {
-                    // Check the context instead
-                    var nullableContextAttribute = parameter.Member.CustomAttributes.FirstOrDefault
-                    (
-                        s => s.AttributeType.FullName == "System.Runtime.CompilerServices.NullableContextAttribute"
-                    );
-
-                    if (nullableContextAttribute is null)
-                    {
-                        return !parameterType.IsValueType;
-                    }
-
-                    var nullableArgument = nullableContextAttribute.ConstructorArguments.Single();
-                    if (nullableArgument.Value is byte singleArg)
-                    {
-                        return singleArg == 2;
-                    }
-
-                    throw new InvalidOperationException();
-                }
-                case Nullability.NotNull:
-                {
-                    return false;
-                }
-                case Nullability.Nullable:
-                {
-                    return true;
+                    topLevelNullability = (Nullability)firstArg;
+                    break;
                 }
                 default:
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new InvalidOperationException();
                 }
+            }
+        }
+
+        switch (topLevelNullability)
+        {
+            case Nullability.Oblivious:
+            {
+                // Check the context instead
+                var nullableContextAttribute = parameter.Member.CustomAttributes.FirstOrDefault
+                (
+                    s => s.AttributeType.FullName == "System.Runtime.CompilerServices.NullableContextAttribute"
+                );
+
+                if (nullableContextAttribute is null)
+                {
+                    return !parameterType.IsValueType;
+                }
+
+                var nullableArgument = nullableContextAttribute.ConstructorArguments.Single();
+                if (nullableArgument.Value is byte singleArg)
+                {
+                    return singleArg == 2;
+                }
+
+                throw new InvalidOperationException();
+            }
+            case Nullability.NotNull:
+            {
+                return false;
+            }
+            case Nullability.Nullable:
+            {
+                return true;
+            }
+            default:
+            {
+                throw new ArgumentOutOfRangeException();
             }
         }
     }

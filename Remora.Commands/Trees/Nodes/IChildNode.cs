@@ -23,27 +23,26 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Trees.Nodes
+namespace Remora.Commands.Trees.Nodes;
+
+/// <summary>
+/// Defines the public interface of a child node.
+/// </summary>
+[PublicAPI]
+public interface IChildNode
 {
     /// <summary>
-    /// Defines the public interface of a child node.
+    /// Gets the parent of this node.
     /// </summary>
-    [PublicAPI]
-    public interface IChildNode
-    {
-        /// <summary>
-        /// Gets the parent of this node.
-        /// </summary>
-        IParentNode Parent { get; }
+    IParentNode Parent { get; }
 
-        /// <summary>
-        /// Gets the key value of this node. This value is not guaranteed to be unique among its siblings.
-        /// </summary>
-        string Key { get; }
+    /// <summary>
+    /// Gets the key value of this node. This value is not guaranteed to be unique among its siblings.
+    /// </summary>
+    string Key { get; }
 
-        /// <summary>
-        /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
-        /// </summary>
-        IReadOnlyList<string> Aliases { get; }
-    }
+    /// <summary>
+    /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
+    /// </summary>
+    IReadOnlyList<string> Aliases { get; }
 }

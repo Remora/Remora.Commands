@@ -23,21 +23,20 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Tokenization
+namespace Remora.Commands.Tokenization;
+
+/// <summary>
+/// Holds a set of valid start and end quotation pairs.
+/// </summary>
+[PublicAPI]
+public static class Quotations
 {
     /// <summary>
-    /// Holds a set of valid start and end quotation pairs.
+    /// Gets the quotation pairs.
     /// </summary>
-    [PublicAPI]
-    public static class Quotations
+    public static IReadOnlyList<(string Start, string End)> Pairs { get; } = new List<(string Start, string End)>
     {
-        /// <summary>
-        /// Gets the quotation pairs.
-        /// </summary>
-        public static IReadOnlyList<(string Start, string End)> Pairs { get; } = new List<(string Start, string End)>
-        {
-            ("\"", "\""),
-            ("'", "'")
-        };
-    }
+        ("\"", "\""),
+        ("'", "'")
+    };
 }

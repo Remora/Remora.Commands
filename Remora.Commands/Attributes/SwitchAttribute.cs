@@ -23,41 +23,40 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Attributes
+namespace Remora.Commands.Attributes;
+
+/// <summary>
+/// Marks a parameter as being a boolean switch.
+/// </summary>
+[AttributeUsage(AttributeTargets.Parameter)]
+[PublicAPI]
+public class SwitchAttribute : OptionAttribute
 {
     /// <summary>
-    /// Marks a parameter as being a boolean switch.
+    /// Initializes a new instance of the <see cref="SwitchAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter)]
-    [PublicAPI]
-    public class SwitchAttribute : OptionAttribute
+    /// <param name="shortName">The short name of the option.</param>
+    /// <param name="longName">The long name of the option.</param>
+    public SwitchAttribute(char shortName, string longName)
+        : base(shortName, longName)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwitchAttribute"/> class.
-        /// </summary>
-        /// <param name="shortName">The short name of the option.</param>
-        /// <param name="longName">The long name of the option.</param>
-        public SwitchAttribute(char shortName, string longName)
-            : base(shortName, longName)
-        {
-        }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwitchAttribute"/> class.
-        /// </summary>
-        /// <param name="shortName">The short name of the option.</param>
-        public SwitchAttribute(char shortName)
-            : base(shortName)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SwitchAttribute"/> class.
+    /// </summary>
+    /// <param name="shortName">The short name of the option.</param>
+    public SwitchAttribute(char shortName)
+        : base(shortName)
+    {
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwitchAttribute"/> class.
-        /// </summary>
-        /// <param name="longName">The long name of the option.</param>
-        public SwitchAttribute(string longName)
-            : base(longName)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SwitchAttribute"/> class.
+    /// </summary>
+    /// <param name="longName">The long name of the option.</param>
+    public SwitchAttribute(string longName)
+        : base(longName)
+    {
     }
 }

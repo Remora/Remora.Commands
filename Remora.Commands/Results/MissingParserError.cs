@@ -24,27 +24,11 @@ using System;
 using JetBrains.Annotations;
 using Remora.Results;
 
-namespace Remora.Commands.Results
-{
-    /// <summary>
-    /// Represents the lack of a parser for a given type.
-    /// </summary>
-    [PublicAPI]
-    public record MissingParserError : ResultError
-    {
-        /// <summary>
-        /// Gets the type for which no parser has been registered.
-        /// </summary>
-        public Type Type { get; }
+namespace Remora.Commands.Results;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MissingParserError"/> class.
-        /// </summary>
-        /// <param name="type">The type for which no parser has been registered.</param>
-        public MissingParserError(Type type)
-            : base($"No parser has been registered for \"{type.Name}\".")
-        {
-            this.Type = type;
-        }
-    }
-}
+/// <summary>
+/// Represents the lack of a parser for a given type.
+/// </summary>
+/// <param name="Type">The type for which no parser has been registered.</param>
+[PublicAPI]
+public record MissingParserError(Type Type) : ResultError($"No parser has been registered for \"{Type.Name}\".");

@@ -27,21 +27,20 @@ using Remora.Results;
 
 #pragma warning disable CS1591, SA1600
 
-namespace Remora.Commands.Tests.Data.Modules
-{
-    [Group("test")]
-    public class AmbiguousCommandGroup : CommandGroup
-    {
-        [Command("command")]
-        public Task<IResult> Command(int value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+namespace Remora.Commands.Tests.Data.Modules;
 
-        [Command("command")]
-        public Task<IResult> Command(long value)
-        {
-            return Task.FromResult<IResult>(Result.FromSuccess());
-        }
+[Group("test")]
+public class AmbiguousCommandGroup : CommandGroup
+{
+    [Command("command")]
+    public Task<IResult> Command(int value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
+    }
+
+    [Command("command")]
+    public Task<IResult> Command(long value)
+    {
+        return Task.FromResult<IResult>(Result.FromSuccess());
     }
 }

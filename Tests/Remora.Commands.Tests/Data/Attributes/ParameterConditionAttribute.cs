@@ -23,26 +23,25 @@
 using System;
 using Remora.Commands.Conditions;
 
-namespace Remora.Commands.Tests.Data.Attributes
+namespace Remora.Commands.Tests.Data.Attributes;
+
+/// <summary>
+/// Represents simple condition data attached to a Parameter.
+/// </summary>
+[AttributeUsage(AttributeTargets.Parameter)]
+public class ParameterConditionAttribute : ConditionAttribute
 {
     /// <summary>
-    /// Represents simple condition data attached to a Parameter.
+    /// Gets the data of the attribute.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class ParameterConditionAttribute : ConditionAttribute
-    {
-        /// <summary>
-        /// Gets the data of the attribute.
-        /// </summary>
-        public string Data { get; }
+    public string Data { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParameterConditionAttribute"/> class.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        public ParameterConditionAttribute(string data)
-        {
-            this.Data = data;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ParameterConditionAttribute"/> class.
+    /// </summary>
+    /// <param name="data">The data.</param>
+    public ParameterConditionAttribute(string data)
+    {
+        this.Data = data;
     }
 }

@@ -30,539 +30,592 @@ using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class PreparsedWithPath
     {
-        public static partial class PreparsedWithPath
+        /// <summary>
+        /// Tests commands that use builtin type conversions.
+        /// </summary>
+        public class BuiltinTypeTests
         {
             /// <summary>
-            /// Tests commands that use builtin type conversions.
+            /// Tests whether the command service can execute a command with a <see cref="bool"/> parameter.
             /// </summary>
-            public class BuiltinTypeTests
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteBoolCommand()
             {
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="bool"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteBoolCommand()
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "true" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "bool" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "true" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "bool" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="char"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteCharCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="char"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteCharCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "char" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "char" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="sbyte"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSByteCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="sbyte"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSByteCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "sbyte" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "sbyte" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="byte"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteByteCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="byte"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteByteCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "byte" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "byte" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="short"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteInt16Command()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="short"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteInt16Command()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "short" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "short" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="ushort"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteUInt16Command()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="ushort"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteUInt16Command()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "ushort" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "ushort" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="int"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteInt32Command()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="int"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteInt32Command()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "int" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "int" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="uint"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteUInt32Command()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="uint"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteUInt32Command()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "uint" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "uint" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="long"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteInt64Command()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="long"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteInt64Command()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "long" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "long" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="ulong"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteUInt64Command()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="ulong"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteUInt64Command()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "ulong" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "ulong" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="float"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteSingleCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="float"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteSingleCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "float" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "float" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="double"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteDoubleCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="double"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteDoubleCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "double" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "double" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="decimal"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteDecimalCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="decimal"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteDecimalCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "decimal" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "decimal" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="BigInteger"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteBigIntegerCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="BigInteger"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteBigIntegerCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "big-integer" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "big-integer" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="DateTimeOffset"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteDateTimeOffsetCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="DateTimeOffset"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteDateTimeOffsetCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "2020/09/1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "date-time-offset" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "2020/09/1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "date-time-offset" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="DateTime"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteDateTimeCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="DateTime"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteDateTimeCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "2020/09/1" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "date-time" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "2020/09/1" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "date-time" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a <see cref="DateTime"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteTimeSpanCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a <see cref="DateTime"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteTimeSpanCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "0" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "time-span" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "0" } }
-                    };
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "time-span" },
-                        values,
-                        services
-                    );
+            /// <summary>
+            /// Tests whether the command service can execute a command with a
+            /// <see cref="BuiltinTypeCommandGroup.TestEnum"/> parameter.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteEnumCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<BuiltinTypeCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                var commandService = services.GetRequiredService<CommandService>();
 
-                /// <summary>
-                /// Tests whether the command service can execute a command with a
-                /// <see cref="BuiltinTypeCommandGroup.TestEnum"/> parameter.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteEnumCommand()
+                var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<BuiltinTypeCommandGroup>()
-                        .BuildServiceProvider();
+                    { "value", new[] { "wooga" } }
+                };
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    new[] { "test", "enum" },
+                    values,
+                    services
+                );
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>
-                    {
-                        { "value", new[] { "wooga" } }
-                    };
-
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        new[] { "test", "enum" },
-                        values,
-                        services
-                    );
-
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
             }
         }
     }

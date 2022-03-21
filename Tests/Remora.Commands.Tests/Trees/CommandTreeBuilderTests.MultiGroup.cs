@@ -25,52 +25,51 @@ using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
 using Xunit;
 
-namespace Remora.Commands.Tests.Trees
+namespace Remora.Commands.Tests.Trees;
+
+public static partial class CommandTreeBuilderTests
 {
-    public static partial class CommandTreeBuilderTests
+    /// <summary>
+    /// Tests parsing of command groups, split across multiple modules.
+    /// </summary>
+    public class MultiModule
     {
         /// <summary>
-        /// Tests parsing of command groups, split across multiple modules.
+        /// Tests whether a <see cref="NamedGroupWithCommands"/> can be correctly parsed into a tree.
         /// </summary>
-        public class MultiModule
+        [Fact]
+        public void ParsesGroupsWithSameNameCorrectly()
         {
-            /// <summary>
-            /// Tests whether a <see cref="NamedGroupWithCommands"/> can be correctly parsed into a tree.
-            /// </summary>
-            [Fact]
-            public void ParsesGroupsWithSameNameCorrectly()
-            {
-                var builder = new CommandTreeBuilder();
-                builder.RegisterModule<NamedGroupWithCommands>();
-                builder.RegisterModule<NamedGroupWithAdditionalCommands>();
+            var builder = new CommandTreeBuilder();
+            builder.RegisterModule<NamedGroupWithCommands>();
+            builder.RegisterModule<NamedGroupWithAdditionalCommands>();
 
-                var tree = builder.Build();
-                var root = tree.Root;
+            var tree = builder.Build();
+            var root = tree.Root;
 
-                Assert.Single(root.Children);
-                var groupNode = Assert.IsType<GroupNode>(root.Children[0]);
+            Assert.Single(root.Children);
+            var groupNode = Assert.IsType<GroupNode>(root.Children[0]);
 
-                Assert.Equal("a", groupNode.Key);
+            Assert.Equal("a", groupNode.Key);
 
-                Assert.Equal(2, groupNode.GroupTypes.Count);
-                Assert.Equal(typeof(NamedGroupWithCommands), groupNode.GroupTypes[0]);
-                Assert.Equal(typeof(NamedGroupWithAdditionalCommands), groupNode.GroupTypes[1]);
+            Assert.Equal(2, groupNode.GroupTypes.Count);
+            Assert.Equal(typeof(NamedGroupWithCommands), groupNode.GroupTypes[0]);
+            Assert.Equal(typeof(NamedGroupWithAdditionalCommands), groupNode.GroupTypes[1]);
 
-                Assert.Equal(6, groupNode.Children.Count);
-                var command1 = Assert.IsType<CommandNode>(groupNode.Children[0]);
-                var command2 = Assert.IsType<CommandNode>(groupNode.Children[1]);
-                var command3 = Assert.IsType<CommandNode>(groupNode.Children[2]);
-                var command4 = Assert.IsType<CommandNode>(groupNode.Children[3]);
-                var command5 = Assert.IsType<CommandNode>(groupNode.Children[4]);
-                var command6 = Assert.IsType<CommandNode>(groupNode.Children[5]);
+            Assert.Equal(6, groupNode.Children.Count);
+            var command1 = Assert.IsType<CommandNode>(groupNode.Children[0]);
+            var command2 = Assert.IsType<CommandNode>(groupNode.Children[1]);
+            var command3 = Assert.IsType<CommandNode>(groupNode.Children[2]);
+            var command4 = Assert.IsType<CommandNode>(groupNode.Children[3]);
+            var command5 = Assert.IsType<CommandNode>(groupNode.Children[4]);
+            var command6 = Assert.IsType<CommandNode>(groupNode.Children[5]);
 
-                Assert.Equal("b", command1.Key);
-                Assert.Equal("c", command2.Key);
-                Assert.Equal("d", command3.Key);
-                Assert.Equal("e", command4.Key);
-                Assert.Equal("f", command5.Key);
-                Assert.Equal("g", command6.Key);
-            }
+            Assert.Equal("b", command1.Key);
+            Assert.Equal("c", command2.Key);
+            Assert.Equal("d", command3.Key);
+            Assert.Equal("e", command4.Key);
+            Assert.Equal("f", command5.Key);
+            Assert.Equal("g", command6.Key);
         }
     }
 }

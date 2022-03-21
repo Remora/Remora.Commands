@@ -30,87 +30,86 @@ using Remora.Commands.Extensions;
 using Remora.Commands.Services;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
+namespace Remora.Commands.Parsers;
+
+/// <summary>
+/// Parses supported collections.
+/// </summary>
+public class CollectionParser : AbstractTypeParser
 {
+    private readonly TypeParserService _typeParserService;
+    private readonly IServiceProvider _services;
+
     /// <summary>
-    /// Parses supported collections.
+    /// Initializes a new instance of the <see cref="CollectionParser"/> class.
     /// </summary>
-    public class CollectionParser : AbstractTypeParser
+    /// <param name="typeParserService">The type parser service.</param>
+    /// <param name="services">The available services.</param>
+    public CollectionParser(TypeParserService typeParserService, IServiceProvider services)
     {
-        private readonly TypeParserService _typeParserService;
-        private readonly IServiceProvider _services;
+        _typeParserService = typeParserService;
+        _services = services;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionParser"/> class.
-        /// </summary>
-        /// <param name="typeParserService">The type parser service.</param>
-        /// <param name="services">The available services.</param>
-        public CollectionParser(TypeParserService typeParserService, IServiceProvider services)
+    /// <inheritdoc/>
+    public override bool CanParse(Type type)
+    {
+        return type.IsSupportedCollection();
+    }
+
+    /// <inheritdoc/>
+    public override async ValueTask<Result<object?>> TryParseAsync
+    (
+        IReadOnlyList<string> tokens,
+        Type type,
+        CancellationToken ct = default
+    )
+    {
+        var elementType = type.GetCollectionElementType();
+        var concreteCollectionType = typeof(List<>).MakeGenericType(elementType);
+
+        IList collection;
+        var errors = new List<Result<object?>>();
+
+        if (type.IsArray)
         {
-            _typeParserService = typeParserService;
-            _services = services;
-        }
-
-        /// <inheritdoc/>
-        public override bool CanParse(Type type)
-        {
-            return type.IsSupportedCollection();
-        }
-
-        /// <inheritdoc/>
-        public override async ValueTask<Result<object?>> TryParseAsync
-        (
-            IReadOnlyList<string> tokens,
-            Type type,
-            CancellationToken ct = default
-        )
-        {
-            var elementType = type.GetCollectionElementType();
-            var concreteCollectionType = typeof(List<>).MakeGenericType(elementType);
-
-            IList collection;
-            var errors = new List<Result<object?>>();
-
-            if (type.IsArray)
+            collection = Array.CreateInstance(elementType, tokens.Count);
+            for (var i = 0; i < tokens.Count; i++)
             {
-                collection = Array.CreateInstance(elementType, tokens.Count);
-                for (var i = 0; i < tokens.Count; i++)
+                var token = tokens[i];
+                var tryParse = await _typeParserService.TryParseAsync(_services, token, elementType, ct);
+                if (tryParse.IsSuccess)
                 {
-                    var token = tokens[i];
-                    var tryParse = await _typeParserService.TryParseAsync(_services, token, elementType, ct);
-                    if (tryParse.IsSuccess)
-                    {
-                        collection[i] = tryParse.Entity;
-                    }
-                    else
-                    {
-                        errors.Add(tryParse);
-                    }
+                    collection[i] = tryParse.Entity;
+                }
+                else
+                {
+                    errors.Add(tryParse);
                 }
             }
-            else
+        }
+        else
+        {
+            collection = (IList)Activator.CreateInstance(concreteCollectionType)!;
+            foreach (var token in tokens)
             {
-                collection = (IList)Activator.CreateInstance(concreteCollectionType)!;
-                foreach (var token in tokens)
+                var tryParse = await _typeParserService.TryParseAsync(_services, token, elementType, ct);
+                if (tryParse.IsSuccess)
                 {
-                    var tryParse = await _typeParserService.TryParseAsync(_services, token, elementType, ct);
-                    if (tryParse.IsSuccess)
-                    {
-                        collection.Add(tryParse.Entity);
-                    }
-                    else
-                    {
-                        errors.Add(tryParse);
-                    }
+                    collection.Add(tryParse.Entity);
+                }
+                else
+                {
+                    errors.Add(tryParse);
                 }
             }
-
-            return errors.Count switch
-            {
-                0 => Result<object?>.FromSuccess(collection),
-                1 => errors[0],
-                _ => new AggregateError(errors.Cast<IResult>().ToArray())
-            };
         }
+
+        return errors.Count switch
+        {
+            0 => Result<object?>.FromSuccess(collection),
+            1 => errors[0],
+            _ => new AggregateError(errors.Cast<IResult>().ToArray())
+        };
     }
 }

@@ -28,57 +28,59 @@ using Remora.Commands.Tests.Data.Modules;
 using Remora.Results;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class Raw
     {
-        public static partial class Raw
+        /// <summary>
+        /// Tests overloads.
+        /// </summary>
+        public class Overloads
         {
             /// <summary>
-            /// Tests overloads.
+            /// Tests whether the command service can execute an overloaded command.
             /// </summary>
-            public class Overloads
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteOverloadedCommand()
             {
-                /// <summary>
-                /// Tests whether the command service can execute an overloaded command.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteOverloadedCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandGroup<OverloadCommandGroup>()
-                        .BuildServiceProvider();
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<OverloadCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    var commandService = services.GetRequiredService<CommandService>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test overload",
-                        services
-                    );
+                var commandService = services.GetRequiredService<CommandService>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "test overload",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-1", (Result<string>)executionResult.Entity);
+                Assert.True(executionResult.IsSuccess);
+                Assert.Equal("overload-1", (Result<string>)executionResult.Entity);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test overload booga",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test overload booga",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-2", (Result<string>)executionResult.Entity);
+                Assert.True(executionResult.IsSuccess);
+                Assert.Equal("overload-2", (Result<string>)executionResult.Entity);
 
-                    executionResult = await commandService.TryExecuteAsync
-                    (
-                        "test overload --value-2 booga wooga",
-                        services
-                    );
+                executionResult = await commandService.TryExecuteAsync
+                (
+                    "test overload --value-2 booga wooga",
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                    Assert.Equal("overload-3", (Result<string>)executionResult.Entity);
-                }
+                Assert.True(executionResult.IsSuccess);
+                Assert.Equal("overload-3", (Result<string>)executionResult.Entity);
             }
         }
     }

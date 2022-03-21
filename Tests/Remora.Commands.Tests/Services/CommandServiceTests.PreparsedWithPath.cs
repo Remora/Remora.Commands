@@ -20,15 +20,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    /// <summary>
+    /// Tests functionality of preparsed operations, where the command path is also preparsed.
+    /// </summary>
+    public static partial class PreparsedWithPath
     {
-        /// <summary>
-        /// Tests functionality of preparsed operations, where the command path is also preparsed.
-        /// </summary>
-        public static partial class PreparsedWithPath
-        {
-        }
     }
 }

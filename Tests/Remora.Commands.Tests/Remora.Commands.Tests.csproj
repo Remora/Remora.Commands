@@ -106,6 +106,42 @@
       <Compile Update="Services\CommandServiceTests.Raw.Ambiguity.cs">
         <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
       </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.Advanced.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.Ambiguity.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.Basics.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.BuiltinTypeTests.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.Collections.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.Conditions.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.Overloads.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.ReturnType.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.Specializations.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.cs">
+        <DependentUpon>CommandServiceTests.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.PreparsedWithPath.Nested.cs">
+        <DependentUpon>CommandServiceTests.PreparsedWithPath.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\CommandServiceTests.Raw.Nested.cs">
+        <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Globalization;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,28 +28,27 @@ using JetBrains.Annotations;
 using Remora.Commands.Results;
 using Remora.Results;
 
-namespace Remora.Commands.Parsers
-{
-    /// <summary>
-    /// Parses <see cref="BigInteger"/>s.
-    /// </summary>
-    [PublicAPI]
-    public class BigIntegerParser : AbstractTypeParser<BigInteger>
-    {
-        /// <inheritdoc />
-        public override ValueTask<Result<BigInteger>> TryParseAsync(string? value, CancellationToken ct = default)
-        {
-            if (value is null)
-            {
-                return new(new ParsingError<BigInteger>(value));
-            }
+namespace Remora.Commands.Parsers;
 
-            return new
-            (
-                !BigInteger.TryParse(value, out var result)
+/// <summary>
+/// Parses <see cref="BigInteger"/>s.
+/// </summary>
+[PublicAPI]
+public class BigIntegerParser : AbstractTypeParser<BigInteger>
+{
+    /// <inheritdoc />
+    public override ValueTask<Result<BigInteger>> TryParseAsync(string? value, CancellationToken ct = default)
+    {
+        if (value is null)
+        {
+            return new(new ParsingError<BigInteger>(value));
+        }
+
+        return new
+        (
+            !BigInteger.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<BigInteger>(value)
                 : result
-            );
-        }
+        );
     }
 }
