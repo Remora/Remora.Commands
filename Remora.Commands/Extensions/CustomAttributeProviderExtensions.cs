@@ -41,7 +41,11 @@ public static class CustomAttributeProviderExtensions
     /// <param name="inherit">Whether inherited attributes should be considered.</param>
     /// <typeparam name="TAttribute">The attribute type.</typeparam>
     /// <returns>The found attribute, or null.</returns>
-    public static TAttribute? GetCustomAttribute<TAttribute>
+    public static TAttribute? GetCustomAttribute
+    <
+        [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+        TAttribute
+    >
     (
         this ICustomAttributeProvider attributeProvider,
         bool inherit = false

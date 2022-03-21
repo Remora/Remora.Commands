@@ -66,10 +66,10 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection, with the configured modules.</returns>
     [Obsolete("Call AddCommandTree with no arguments instead, and add the group there.")]
     public static IServiceCollection AddCommandGroup
-            <
-                [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-                TCommandModule
-            >
+    <
+        [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+        TCommandModule
+    >
     (
         this IServiceCollection serviceCollection
     ) where TCommandModule : CommandGroup
@@ -161,10 +161,10 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TParser">The type parser.</typeparam>
     /// <returns>The service collection, with the parser.</returns>
     public static IServiceCollection AddParser
-            <
-                [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-                TParser
-            >
+    <
+        [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+        TParser
+    >
     (
         this IServiceCollection services
     )
@@ -235,10 +235,10 @@ public static class ServiceCollectionExtensions
     /// <see cref="ICondition{TAttribute}"/> or <see cref="ICondition{TAttribute,TData}"/>.
     /// </exception>
     public static IServiceCollection AddCondition
-            <
-                [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-                TCondition
-            >
+    <
+        [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+        TCondition
+    >
     (
         this IServiceCollection serviceCollection
     ) where TCondition : class, ICondition
