@@ -55,7 +55,11 @@ public class TreeRegistrationBuilder
     /// </summary>
     /// <typeparam name="TCommandGroup">The type of the command group.</typeparam>
     /// <returns>The builder, with the group added.</returns>
-    public TreeRegistrationBuilder WithCommandGroup<TCommandGroup>() where TCommandGroup : CommandGroup
+    public TreeRegistrationBuilder WithCommandGroup
+    <
+        [MeansImplicitUse(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+        TCommandGroup
+    >() where TCommandGroup : CommandGroup
         => WithCommandGroup(typeof(TCommandGroup));
 
     /// <summary>
