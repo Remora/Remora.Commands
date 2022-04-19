@@ -1,0 +1,2 @@
+[**/obj/**/NuGet/**/*.cs]
+generated_code = true
