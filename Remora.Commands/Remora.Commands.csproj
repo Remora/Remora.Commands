@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>9.0.2</Version>
+        <Version>9.0.3</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Ensure all parsers use the invariant culture.
+            Use nuget-provided nullability checking instead of rolling our own. This fixes some odd edge cases.
         </PackageReleaseNotes>
     </PropertyGroup>
 
