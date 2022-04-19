@@ -25,7 +25,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Remora.Commands.Groups;
-using Remora.Commands.Services;
 using Remora.Commands.Trees;
 
 namespace Remora.Commands.DependencyInjection;

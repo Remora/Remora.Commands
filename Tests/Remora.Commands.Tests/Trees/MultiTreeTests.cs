@@ -20,12 +20,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.DummyModules;
-using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
 using Xunit;
 

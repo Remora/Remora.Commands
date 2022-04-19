@@ -21,7 +21,6 @@
 //
 
 using JetBrains.Annotations;
-using Remora.Commands.Services;
 using Remora.Results;
 
 namespace Remora.Commands.Results;

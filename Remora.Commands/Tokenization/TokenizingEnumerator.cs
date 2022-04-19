@@ -131,7 +131,7 @@ public ref struct TokenizingEnumerator
         // Remove quotes, if any
         if (!span.IsEmpty && !_tokenizerOptions.RetainQuotationMarks)
         {
-            foreach ((string start, string end) in Quotations.Pairs)
+            foreach (var (start, end) in Quotations.Pairs)
             {
                 if (span[0] != start[0])
                 {

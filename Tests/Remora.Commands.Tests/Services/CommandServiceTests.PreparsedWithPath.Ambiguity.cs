@@ -105,7 +105,7 @@ public static partial class CommandServiceTests
 
                 Assert.False(executionResult.IsSuccess);
                 Assert.IsType<AmbiguousCommandInvocationError>(executionResult.Error);
-                Assert.Equal(2, ((AmbiguousCommandInvocationError?)executionResult.Error!)?.CommandCandidates?.Count ?? 0);
+                Assert.Equal(2, ((AmbiguousCommandInvocationError?)executionResult.Error!).CommandCandidates?.Count ?? 0);
             }
         }
     }
