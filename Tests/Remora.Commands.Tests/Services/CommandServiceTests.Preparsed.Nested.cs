@@ -28,72 +28,71 @@ using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
 using Xunit;
 
-namespace Remora.Commands.Tests.Services
+namespace Remora.Commands.Tests.Services;
+
+public static partial class CommandServiceTests
 {
-    public static partial class CommandServiceTests
+    public static partial class Preparsed
     {
-        public static partial class Preparsed
+        /// <summary>
+        /// Tests requirements of nested groups.
+        /// </summary>
+        public class Nested
         {
             /// <summary>
-            /// Tests requirements of nested groups.
+            /// Tests whether the command service can execute the outer command in a group with a nested command.
             /// </summary>
-            public class Nested
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteOuterCommand()
             {
-                /// <summary>
-                /// Tests whether the command service can execute the outer command in a group with a nested command.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteOuterCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                        .WithCommandGroup<NestedCommandGroup>()
-                        .Finish()
-                        .BuildServiceProvider(true)
-                        .CreateScope().ServiceProvider;
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<NestedCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var commandService = services.GetRequiredService<CommandService>();
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "b",
-                        values,
-                        services
-                    );
+                var values = new Dictionary<string, IReadOnlyList<string>>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "b",
+                    values,
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
+            }
 
-                /// <summary>
-                /// Tests whether the command service can execute the inner command in a group with a nested command.
-                /// </summary>
-                /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-                [Fact]
-                public async Task CanExecuteInnerCommand()
-                {
-                    var services = new ServiceCollection()
-                        .AddCommands()
-                        .AddCommandTree()
-                        .WithCommandGroup<NestedCommandGroup>()
-                        .Finish()
-                        .BuildServiceProvider(true)
-                        .CreateScope().ServiceProvider;
+            /// <summary>
+            /// Tests whether the command service can execute the inner command in a group with a nested command.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            [Fact]
+            public async Task CanExecuteInnerCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<NestedCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
 
-                    var commandService = services.GetRequiredService<CommandService>();
+                var commandService = services.GetRequiredService<CommandService>();
 
-                    var values = new Dictionary<string, IReadOnlyList<string>>();
-                    var executionResult = await commandService.TryExecuteAsync
-                    (
-                        "a b",
-                        values,
-                        services
-                    );
+                var values = new Dictionary<string, IReadOnlyList<string>>();
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "a b",
+                    values,
+                    services
+                );
 
-                    Assert.True(executionResult.IsSuccess);
-                }
+                Assert.True(executionResult.IsSuccess);
             }
         }
     }

@@ -35,12 +35,11 @@ public ref struct TokenizingEnumerator
     private bool _isInCombinedShortNameSegment;
     private ReadOnlySpan<char> _segment;
     private SpanSplitEnumerator _splitEnumerator;
-    private Token _current;
 
     /// <summary>
     /// Gets the current value of the enumerator.
     /// </summary>
-    public readonly Token Current => _current;
+    public Token Current { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TokenizingEnumerator"/> struct.
@@ -54,7 +53,7 @@ public ref struct TokenizingEnumerator
         _isInCombinedShortNameSegment = default;
         _segment = default;
         _splitEnumerator = new SpanSplitEnumerator(value, _tokenizerOptions);
-        _current = default;
+        this.Current = default;
     }
 
     /// <summary>
@@ -114,7 +113,7 @@ public ref struct TokenizingEnumerator
                 // A combined short-name option, it looks like. We'll return here.
                 _isInCombinedShortNameSegment = true;
 
-                _current = new Token(type, span[..1]);
+                this.Current = new Token(type, span[..1]);
                 _segment = span[1..];
 
                 return true;
@@ -145,7 +144,7 @@ public ref struct TokenizingEnumerator
             }
         }
 
-        _current = new Token(type, span);
+        this.Current = new Token(type, span);
         _segment = remainder;
 
         return true;

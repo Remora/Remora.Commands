@@ -187,37 +187,42 @@ public static class ServiceCollectionExtensions
             throw new InvalidOperationException($"The parser type must implement {nameof(ITypeParser)}.");
         }
 
-        if (parserType.IsGenericTypeDefinition && parserType.GetGenericArguments().Length != 1)
+        switch (parserType.IsGenericTypeDefinition)
         {
-            throw new InvalidOperationException("An open parser type may accept one and only one generic type.");
-        }
-
-        if (parserType.IsGenericTypeDefinition)
-        {
-            // This is an open parser type
-            services.AddTransient(typeof(ITypeParser<>), parserType);
-        }
-        else
-        {
-            var interfaces = parserType.GetInterfaces();
-            var concreteTypeParserInterfaces = interfaces.Where
+            case true when parserType.GetGenericArguments().Length != 1:
+            {
+                throw new InvalidOperationException("An open parser type may accept one and only one generic type.");
+            }
+            case true:
+            {
+                // This is an open parser type
+                services.AddTransient(typeof(ITypeParser<>), parserType);
+                break;
+            }
+            default:
+            {
+                var interfaces = parserType.GetInterfaces();
+                var concreteTypeParserInterfaces = interfaces.Where
                 (
                     i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ITypeParser<>)
                 )
                 .ToList();
 
-            if (concreteTypeParserInterfaces.Count > 0)
-            {
-                // This type implements one or more direct parsing interfaces
-                foreach (var concreteTypeParserInterface in concreteTypeParserInterfaces)
+                if (concreteTypeParserInterfaces.Count > 0)
                 {
-                    services.AddTransient(concreteTypeParserInterface, parserType);
+                    // This type implements one or more direct parsing interfaces
+                    foreach (var concreteTypeParserInterface in concreteTypeParserInterfaces)
+                    {
+                        services.AddTransient(concreteTypeParserInterface, parserType);
+                    }
                 }
-            }
-            else
-            {
-                // This type is an indirect parser
-                services.AddTransient(typeof(ITypeParser), parserType);
+                else
+                {
+                    // This type is an indirect parser
+                    services.AddTransient(typeof(ITypeParser), parserType);
+                }
+
+                break;
             }
         }
 

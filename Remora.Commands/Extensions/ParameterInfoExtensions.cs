@@ -46,7 +46,12 @@ public static class ParameterInfoExtensions
             NullabilityState.Unknown => !parameter.ParameterType.IsValueType,
             NullabilityState.NotNull => false,
             NullabilityState.Nullable => true,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException
+            (
+                nameof(parameter),
+                nullabilityInfo.WriteState,
+                "Unknown nullability state."
+            )
         };
     }
 }

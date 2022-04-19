@@ -41,12 +41,11 @@ public ref struct SpanSplitEnumerator
     private readonly bool _ignoreEmpty;
 
     private ReadOnlySpan<char> _value;
-    private ReadOnlySpan<char> _current;
 
     /// <summary>
     /// Gets the current value of the enumerator.
     /// </summary>
-    public readonly ReadOnlySpan<char> Current => _current;
+    public ReadOnlySpan<char> Current { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpanSplitEnumerator"/> struct.
@@ -62,7 +61,7 @@ public ref struct SpanSplitEnumerator
         _delimiter = delimiter.AsSpan();
         _ignoreEmpty = ignoreEmptyValues;
 
-        _current = default;
+        this.Current = default;
     }
 
     /// <summary>
@@ -107,7 +106,7 @@ public ref struct SpanSplitEnumerator
                 }
 
                 _value = completeRemainder;
-                _current = completeSegment;
+                this.Current = completeSegment;
 
                 // Everything that remains is one value
                 return true;
@@ -123,7 +122,7 @@ public ref struct SpanSplitEnumerator
                 return true;
             }
 
-            _current = segment;
+            this.Current = segment;
             _value = remainder;
 
             if (this.Current.Length == 0 && _ignoreEmpty)
@@ -192,7 +191,7 @@ public ref struct SpanSplitEnumerator
         }
 
         // Read to end if we can't find a matching quote
-        _current = _value;
+        this.Current = _value;
         _value = ReadOnlySpan<char>.Empty;
 
         return true;

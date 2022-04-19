@@ -174,17 +174,11 @@ public class TypeParserService
         var parserType = typeof(ITypeParser<>).MakeGenericType(type);
         var directParsers = services
             .GetServices(parserType)
-            .Where(p => p is not null)
             .Cast<ITypeParser>()
             .ToList();
 
         foreach (var directParser in directParsers)
         {
-            if (directParser is null)
-            {
-                continue;
-            }
-
             yield return directParser;
         }
 

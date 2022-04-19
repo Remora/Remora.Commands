@@ -77,7 +77,7 @@ public class TimeSpanParserTests
                 var now = DateTimeOffset.UtcNow;
                 var then = now.AddMonths(1);
 
-                return (then - now) + TimeSpan.FromDays(3);
+                return then - now + TimeSpan.FromDays(3);
             })
         },
         new object[]
@@ -88,7 +88,7 @@ public class TimeSpanParserTests
                 var now = DateTimeOffset.UtcNow;
                 var then = now.AddMonths(1);
 
-                return (then - now) + TimeSpan.FromMinutes(1);
+                return then - now + TimeSpan.FromMinutes(1);
             })
         }
     };
