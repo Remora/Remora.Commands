@@ -67,7 +67,7 @@ public static partial class CommandServiceTests
             /// </summary>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             [Fact]
-            public async Task ReturnsAmbiguousCanidates()
+            public async Task ReturnsAmbiguousCandidates()
             {
                 var services = new ServiceCollection()
                     .AddCommands()
