@@ -109,6 +109,7 @@
 
     <ItemGroup>
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.406" PrivateAssets="all" />
+        <PackageReference Include="Remora.Results.Analyzers" Version="1.0.0-preview2" PrivateAssets="all" />
         <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="all" />
         <PackageReference Include="IsExternalInit" Version="1.0.2" PrivateAssets="all" />
     </ItemGroup>
