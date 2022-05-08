@@ -250,7 +250,7 @@ public class CommandService
     /// <returns>
     /// A result which may or may not have succeeded, containing the node and its materialized parameters.
     /// </returns>
-    public async Task<Result<PreparedCommand>> TryPrepareCommandAsync
+    public Task<Result<PreparedCommand>> TryPrepareCommandAsync
     (
         string commandNameString,
         IReadOnlyDictionary<string, IReadOnlyList<string>> namedParameters,
@@ -261,25 +261,16 @@ public class CommandService
         CancellationToken ct = default
     )
     {
-        if (!this.TreeAccessor.TryGetNamedTree(treeName, out var tree))
-        {
-            return new TreeNotFoundError(treeName);
-        }
-
-        var searchResults = tree.Search
+        return TryPrepareCommandAsync
         (
-            commandNameString,
+            commandNameString.Split(' ', StringSplitOptions.RemoveEmptyEntries),
             namedParameters,
+            services,
             tokenizerOptions,
-            searchOptions
-        ).ToList();
-
-        if (searchResults.Count == 0)
-        {
-            return new CommandNotFoundError(commandNameString);
-        }
-
-        return await TryPrepareCommandAsync(searchResults, services, ct);
+            searchOptions,
+            treeName,
+            ct
+        );
     }
 
     /// <summary>

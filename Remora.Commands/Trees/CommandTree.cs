@@ -89,25 +89,15 @@ public class CommandTree
         TreeSearchOptions? searchOptions = null
     )
     {
-        tokenizerOptions ??= new TokenizerOptions();
-        searchOptions ??= new TreeSearchOptions();
-
+        var path = new List<string>();
         var splitEnumerator = new SpanSplitEnumerator(commandNameString, tokenizerOptions);
 
-        var matchingNodes = Search(this.Root, splitEnumerator, searchOptions);
-        var boundNodes = matchingNodes
-            .Select
-            (
-                c =>
-                (
-                    IsSuccess: c.TryBind(namedParameters, out var boundCommandNode, searchOptions),
-                    BoundCommandNode: boundCommandNode
-                )
-            )
-            .Where(kvp => kvp.IsSuccess)
-            .Select(kvp => kvp.BoundCommandNode!);
+        foreach (var pathComponent in splitEnumerator)
+        {
+            path.Add(pathComponent.ToString());
+        }
 
-        return boundNodes;
+        return Search(path, namedParameters, searchOptions);
     }
 
     /// <summary>
@@ -176,69 +166,17 @@ public class CommandTree
             {
                 case CommandNode commandNode:
                 {
+                    if (commandPath.Count > 1)
+                    {
+                        continue;
+                    }
+
                     commandNodes.Add(commandNode);
                     break;
                 }
                 case IParentNode groupNode:
                 {
                     var nestedResults = Search(groupNode, commandPath.Skip(1).ToList(), searchOptions);
-                    commandNodes.AddRange(nestedResults);
-
-                    continue;
-                }
-                default:
-                {
-                    throw new InvalidOperationException
-                    (
-                        "Unknown node type encountered; tree is invalid and the search cannot continue."
-                    );
-                }
-            }
-        }
-
-        return commandNodes;
-    }
-
-    /// <summary>
-    /// Performs a depth-first search of the given node.
-    /// </summary>
-    /// <param name="parentNode">The node.</param>
-    /// <param name="enumerator">The splitting enumerator.</param>
-    /// <param name="searchOptions">A set of search options.</param>
-    /// <returns>The matching nodes.</returns>
-    private IEnumerable<CommandNode> Search
-    (
-        IParentNode parentNode,
-        SpanSplitEnumerator enumerator,
-        TreeSearchOptions searchOptions
-    )
-    {
-        var commandNodes = new List<CommandNode>();
-
-        foreach (var child in parentNode.Children)
-        {
-            if (!IsNodeMatch(child, enumerator, searchOptions))
-            {
-                continue;
-            }
-
-            switch (child)
-            {
-                case CommandNode commandNode:
-                {
-                    commandNodes.Add(commandNode);
-                    break;
-                }
-                case IParentNode groupNode:
-                {
-                    // Consume the token
-                    if (!enumerator.MoveNext())
-                    {
-                        // No more tokens, so we can't continue searching
-                        return commandNodes;
-                    }
-
-                    var nestedResults = Search(groupNode, enumerator, searchOptions);
                     commandNodes.AddRange(nestedResults);
 
                     continue;
@@ -329,6 +267,16 @@ public class CommandTree
         if (!enumerator.MoveNext())
         {
             return false;
+        }
+
+        // Since we're working with a value that we know is just a command path, we can bail out early here
+        if (node is CommandNode)
+        {
+            var state = enumerator;
+            if (state.MoveNext())
+            {
+                return false;
+            }
         }
 
         if (enumerator.Current.Equals(node.Key, searchOptions.KeyComparison))

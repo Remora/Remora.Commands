@@ -151,7 +151,7 @@ public static partial class CommandServiceTests
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    "test single-named --value booga",
+                    "test single-named",
                     values,
                     services
                 );
