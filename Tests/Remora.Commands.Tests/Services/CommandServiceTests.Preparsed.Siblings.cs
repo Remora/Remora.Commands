@@ -97,6 +97,72 @@ public static partial class CommandServiceTests
 
                 Assert.True(executionResult.IsSuccess);
             }
+
+            /// <summary>
+            /// Tests whether the command service can execute a parameterized command that has the same name as a
+            /// sibling group.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+            [Fact]
+            public async Task CanExecuteParameterizedCommandWithSameNameAsSiblingGroup()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SiblingOverloadCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    { "value", new[] { "0" } }
+                };
+
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "parameter-sibling",
+                    values,
+                    services
+                );
+
+                Assert.True(executionResult.IsSuccess);
+            }
+
+            /// <summary>
+            /// Tests whether the command service can execute a parameterized command that is in a group with the same name as a
+            /// sibling command.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+            [Fact]
+            public async Task CanExecuteParameterizedCommandInNestedGroupWithSameNameAsSiblingCommand()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SiblingOverloadCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var values = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    { "value", new[] { "0" } }
+                };
+
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "parameter-sibling nested",
+                    values,
+                    services
+                );
+
+                Assert.True(executionResult.IsSuccess);
+            }
         }
     }
 }

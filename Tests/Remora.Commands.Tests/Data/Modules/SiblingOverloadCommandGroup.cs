@@ -34,10 +34,20 @@ public class SiblingOverloadCommandGroup : CommandGroup
     [Command("sibling")]
     public Task<IResult> SiblingCommand() => Task.FromResult<IResult>(Result.FromSuccess());
 
+    [Command("parameter-sibling")]
+    public Task<IResult> ParameterSiblingCommand(int value) => Task.FromResult<IResult>(Result.FromSuccess());
+
     [Group("sibling")]
     public class SiblingGroup : CommandGroup
     {
         [Command("nested")]
         public Task<IResult> SiblingGroupCommand() => Task.FromResult<IResult>(Result.FromSuccess());
+    }
+
+    [Group("parameter-sibling")]
+    public class ParameterSiblingGroup : CommandGroup
+    {
+        [Command("nested")]
+        public Task<IResult> SiblingGroupCommand(int value) => Task.FromResult<IResult>(Result.FromSuccess());
     }
 }
