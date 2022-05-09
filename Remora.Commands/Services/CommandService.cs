@@ -397,9 +397,22 @@ public class CommandService
             commandCandidates.Select(c => TryPrepareCommandAsync(c, services, ct))
         );
 
+        var successfullyPreparedCommands = preparedCommands.Where(r => r.IsSuccess).Select(r => r.Entity).ToList();
+
         // Then, check if we have to bail out at this point
-        if (preparedCommands.Count(r => r.IsSuccess) > 1)
+        if (successfullyPreparedCommands.Count > 1)
         {
+            // Pick the most specific command, if one exists
+            var mostSpecificCommands = successfullyPreparedCommands
+                    .GroupBy(c => c.Command.Node.CalculateDepth())
+                    .OrderBy(g => g.Key)
+                    .First();
+
+            if (mostSpecificCommands.Count() == 1)
+            {
+                return mostSpecificCommands.Single();
+            }
+
             var ambiguousCommands = preparedCommands
                     .Where(r => r.IsSuccess)
                     .Select(r => r.Entity)

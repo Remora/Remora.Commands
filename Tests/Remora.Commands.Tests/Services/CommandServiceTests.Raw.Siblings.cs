@@ -144,6 +144,33 @@ public static partial class CommandServiceTests
 
                 Assert.True(executionResult.IsSuccess);
             }
+
+            /// <summary>
+            /// Tests whether the command service picks the most specific available command when a command with lesser
+            /// specificity matches as well.
+            /// </summary>
+            /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+            [Fact]
+            public async Task PicksMostSpecificAlternativeWhenSiblingMatches()
+            {
+                var services = new ServiceCollection()
+                    .AddCommands()
+                    .AddCommandTree()
+                    .WithCommandGroup<SiblingSpecificityCommandGroup>()
+                    .Finish()
+                    .BuildServiceProvider(true)
+                    .CreateScope().ServiceProvider;
+
+                var commandService = services.GetRequiredService<CommandService>();
+
+                var executionResult = await commandService.TryExecuteAsync
+                (
+                    "sibling specific",
+                    services
+                );
+
+                Assert.True(executionResult.IsSuccess);
+            }
         }
     }
 }
