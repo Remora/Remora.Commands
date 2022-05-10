@@ -25,6 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
+using Remora.Results;
 using Xunit;
 
 namespace Remora.Commands.Tests.Services;
@@ -170,6 +171,7 @@ public static partial class CommandServiceTests
                 );
 
                 Assert.True(executionResult.IsSuccess);
+                Assert.True(executionResult.Entity.IsSuccess);
             }
         }
     }

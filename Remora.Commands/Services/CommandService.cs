@@ -405,7 +405,7 @@ public class CommandService
             // Pick the most specific command, if one exists
             var mostSpecificCommands = successfullyPreparedCommands
                     .GroupBy(c => c.Command.Node.CalculateDepth())
-                    .OrderBy(g => g.Key)
+                    .OrderByDescending(g => g.Key)
                     .First();
 
             if (mostSpecificCommands.Count() == 1)
