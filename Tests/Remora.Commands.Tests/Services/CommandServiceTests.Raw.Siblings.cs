@@ -25,7 +25,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.Modules;
-using Remora.Results;
 using Xunit;
 
 namespace Remora.Commands.Tests.Services;
