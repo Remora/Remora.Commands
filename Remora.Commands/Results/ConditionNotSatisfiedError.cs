@@ -21,6 +21,7 @@
 //
 
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
@@ -30,4 +31,4 @@ namespace Remora.Commands.Results;
 /// Represents a failure to satisfy a condition applied to a node in the command tree.
 /// </summary>
 [PublicAPI]
-public record ConditionNotSatisfiedError(string Message, IChildNode? Node = default) : ResultError(Message);
+public record ConditionNotSatisfiedError(string Message, ConditionAttribute Attribute, object? Entity = default, IChildNode? Node = default) : ResultError(Message);
