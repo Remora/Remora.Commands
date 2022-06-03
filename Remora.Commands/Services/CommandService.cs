@@ -588,7 +588,8 @@ public class CommandService
                         new ConditionNotSatisfiedError
                         (
                             $"The condition \"{condition.GetType().Name}\" was not satisfied.",
-                            node
+                            (ConditionAttribute)conditionAttribute,
+                            Node: node
                         ),
                         result
                     );
@@ -670,6 +671,8 @@ public class CommandService
                         new ConditionNotSatisfiedError
                         (
                             $"The condition \"{condition.GetType().Name}\" was not satisfied.",
+                            (ConditionAttribute)conditionAttribute,
+                            value,
                             node
                         ),
                         result
