@@ -43,7 +43,7 @@ public class DoubleParser : AbstractTypeParser<double>
         (
             !double.TryParse(value, styles, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<double>(value)
-                : Result<double>.FromSuccess(result)
+                : result
         );
     }
 }

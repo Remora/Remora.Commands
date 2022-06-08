@@ -42,7 +42,7 @@ public class DecimalParser : AbstractTypeParser<decimal>
         (
             !decimal.TryParse(value, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<decimal>(value)
-                : Result<decimal>.FromSuccess(result)
+                : result
         );
     }
 }

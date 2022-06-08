@@ -42,7 +42,7 @@ public class ByteParser : AbstractTypeParser<byte>
         (
             !byte.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<byte>(value)
-                : Result<byte>.FromSuccess(result)
+                : result
         );
     }
 }

@@ -107,7 +107,7 @@ public class CollectionParser : AbstractTypeParser
 
         return errors.Count switch
         {
-            0 => Result<object?>.FromSuccess(collection),
+            0 => (object)collection,
             1 => errors[0],
             _ => new AggregateError(errors.Cast<IResult>().ToArray())
         };

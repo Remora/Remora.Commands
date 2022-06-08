@@ -42,7 +42,7 @@ public class Int32Parser : AbstractTypeParser<int>
         (
             !int.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<int>(value)
-                : Result<int>.FromSuccess(result)
+                : result
         );
     }
 }

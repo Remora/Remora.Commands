@@ -44,7 +44,7 @@ public class EnumParser<TEnum> : AbstractTypeParser<TEnum>
         (
             !Enum.TryParse<TEnum>(value, true, out var result)
                 ? new ParsingError<TEnum>(value)
-                : Result<TEnum>.FromSuccess(result)
+                : result
         );
     }
 }

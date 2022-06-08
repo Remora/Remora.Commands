@@ -42,7 +42,7 @@ public class UInt64Parser : AbstractTypeParser<ulong>
         (
             !ulong.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<ulong>(value)
-                : Result<ulong>.FromSuccess(result)
+                : result
         );
     }
 }

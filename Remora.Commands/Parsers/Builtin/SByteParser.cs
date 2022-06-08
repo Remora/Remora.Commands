@@ -42,7 +42,7 @@ public class SByteParser : AbstractTypeParser<sbyte>
         (
             !sbyte.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<sbyte>(value)
-                : Result<sbyte>.FromSuccess(result)
+                : result
         );
     }
 }

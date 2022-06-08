@@ -43,7 +43,7 @@ public class SingleParser : AbstractTypeParser<float>
         (
             !float.TryParse(value, styles, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<float>(value)
-                : Result<float>.FromSuccess(result)
+                : result
         );
     }
 }

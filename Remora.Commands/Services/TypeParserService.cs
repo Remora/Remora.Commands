@@ -54,13 +54,8 @@ public class TypeParserService
         CancellationToken ct = default
     )
     {
-        var tryParse = await TryParseAsync(services, token, typeof(TType), ct);
-        if (!tryParse.IsSuccess)
-        {
-            return Result<TType>.FromError(tryParse);
-        }
-
-        return (TType?)tryParse.Entity;
+        // TODO: Suspicious nullability suppression
+        return (await TryParseAsync(services, token, typeof(TType), ct)).Map(x => (TType)x!);
     }
 
     /// <summary>
@@ -116,13 +111,8 @@ public class TypeParserService
         CancellationToken ct = default
     )
     {
-        var tryParse = await TryParseAsync(services, tokens, typeof(TType), ct);
-        if (!tryParse.IsSuccess)
-        {
-            return Result<TType>.FromError(tryParse);
-        }
-
-        return (TType?)tryParse.Entity;
+        // TODO: Suspicious nullability suppression
+        return (await TryParseAsync(services, tokens, typeof(TType), ct)).Map(x => (TType)x!);
     }
 
     /// <summary>

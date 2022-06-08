@@ -58,7 +58,7 @@ public class NullableStructParser : AbstractTypeParser
     }
 
     /// <inheritdoc/>
-    public override async ValueTask<Result<object?>> TryParseAsync
+    public override ValueTask<Result<object?>> TryParseAsync
     (
         string token,
         Type type,
@@ -66,10 +66,6 @@ public class NullableStructParser : AbstractTypeParser
     )
     {
         var concreteType = type.GetGenericArguments().Single();
-
-        var tryParse = await _typeParserService.TryParseAsync(_services, token, concreteType, ct);
-        return tryParse.IsSuccess
-            ? tryParse.Entity
-            : Result<object?>.FromError(tryParse);
+        return _typeParserService.TryParseAsync(_services, token, concreteType, ct);
     }
 }

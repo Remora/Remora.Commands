@@ -429,7 +429,7 @@ public class CommandService
         var errors = preparedCommands.Where(r => !r.IsSuccess).ToList();
         return errors.Count switch
         {
-            1 => Result<PreparedCommand>.FromError(errors[0]),
+            1 => errors[0],
             _ => new AggregateError(errors.Cast<IResult>().ToArray())
         };
     }

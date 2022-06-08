@@ -68,10 +68,7 @@ public abstract class AbstractTypeParser<TType> : ITypeParser<TType>
         CancellationToken ct
     )
     {
-        var result = await TryParseAsync(token, ct);
-        return result.IsSuccess
-            ? Result<object?>.FromSuccess(result.Entity)
-            : Result<object?>.FromError(result);
+        return (await TryParseAsync(token, ct)).Map(x => (object?)x);
     }
 
     /// <inheritdoc/>
@@ -82,10 +79,7 @@ public abstract class AbstractTypeParser<TType> : ITypeParser<TType>
         CancellationToken ct
     )
     {
-        var result = await TryParseAsync(tokens, ct);
-        return result.IsSuccess
-            ? Result<object?>.FromSuccess(result.Entity)
-            : Result<object?>.FromError(result);
+        return (await TryParseAsync(tokens, ct)).Map(x => (object?)x);
     }
 }
 

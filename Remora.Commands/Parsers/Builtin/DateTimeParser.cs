@@ -43,7 +43,7 @@ public class DateTimeParser : AbstractTypeParser<DateTime>
         (
             !DateTime.TryParse(value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result)
                 ? new ParsingError<DateTime>(value)
-                : Result<DateTime>.FromSuccess(result)
+                : result
         );
     }
 }

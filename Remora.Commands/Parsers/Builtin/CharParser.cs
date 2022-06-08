@@ -41,7 +41,7 @@ public class CharParser : AbstractTypeParser<char>
         (
             !char.TryParse(value, out var result)
                 ? new ParsingError<char>(value)
-                : Result<char>.FromSuccess(result)
+                : result
         );
     }
 }

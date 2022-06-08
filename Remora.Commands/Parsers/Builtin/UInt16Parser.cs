@@ -42,7 +42,7 @@ public class UInt16Parser : AbstractTypeParser<ushort>
         (
             !ushort.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result)
                 ? new ParsingError<ushort>(value)
-                : Result<ushort>.FromSuccess(result)
+                : result
         );
     }
 }

@@ -43,7 +43,7 @@ public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
         (
             !DateTimeOffset.TryParse(value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result)
                 ? new ParsingError<DateTimeOffset>(value)
-                : Result<DateTimeOffset>.FromSuccess(result)
+                : result
         );
     }
 }
