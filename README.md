@@ -15,7 +15,8 @@ into a call to this:
 [Group("things")]
 public class ThingCommands : CommandGroup
 {
-    public Task<IResult> AddThing
+    [Command("add")]
+    public Task<IResult> AddThingAsync
     (
         string name, // = "new-thing"
         [Option("description") string description, // = "My thing!"
@@ -182,20 +183,20 @@ type, Remora.Commands can parse it.
 ```cs
 public class MyParser : AbstractTypeParser<MyType>
 {
-    public override ValueTask<RetrieveEntityResult<MyType>> TryParse
+    public override ValueTask<Result<MyType>> TryParseAsync
     (
         string value, 
         CancellationToken ct
     )
     {
-        return new ValueTask<RetrieveEntityResult<MyType>>
+        return new ValueTask<Result<MyType>>
         (
             !MyType.TryParse(value, out var result)
-            ? RetrieveEntityResult<short>.FromError
+            ? Result<short>.FromError
               (
                   $"Failed to parse \"{value}\" as an instance of MyType."
               )
-            : RetrieveEntityResult<short>.FromSuccess(result)
+            : Result<short>.FromSuccess(result)
         );
     }
 }
