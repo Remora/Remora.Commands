@@ -6,10 +6,13 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>9.0.7</Version>
+        <Version>9.0.8</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Fix use of OrderBy instead of OrderByDescending.
+            Update README.md.
+            Improve Result usage.
+            Update Remora.Results.
+            Upgrade packages.
         </PackageReleaseNotes>
     </PropertyGroup>
 
