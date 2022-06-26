@@ -34,7 +34,7 @@ public static partial class CommandServiceTests
     public static partial class Raw
     {
         /// <summary>
-        /// Tests sibling groups & commands.
+        /// Tests sibling groups and commands.
         /// </summary>
         public class Siblings
         {
