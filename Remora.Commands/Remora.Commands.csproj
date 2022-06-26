@@ -23,7 +23,7 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Remora.Results" Version="7.2.0" />
+      <PackageReference Include="Remora.Results" Version="7.2.1" />
     </ItemGroup>
 
 </Project>
