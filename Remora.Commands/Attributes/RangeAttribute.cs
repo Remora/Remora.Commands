@@ -30,8 +30,8 @@ namespace Remora.Commands.Attributes;
 /// Marks a parameter as having a restricted range of item counts. This attribute only has an effect on
 /// collection-like parameters (such as <see cref="IEnumerable{T}"/>.
 /// </summary>
-[AttributeUsage(AttributeTargets.Parameter)]
 [PublicAPI]
+[AttributeUsage(AttributeTargets.Parameter)]
 public class RangeAttribute : Attribute
 {
     private ulong? _min;

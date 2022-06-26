@@ -28,8 +28,8 @@ namespace Remora.Commands.Attributes;
 /// <summary>
 /// Marks a parameter as being a boolean switch.
 /// </summary>
-[AttributeUsage(AttributeTargets.Parameter)]
 [PublicAPI]
+[AttributeUsage(AttributeTargets.Parameter)]
 public class SwitchAttribute : OptionAttribute
 {
     /// <summary>

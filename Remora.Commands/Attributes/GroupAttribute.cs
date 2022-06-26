@@ -29,8 +29,8 @@ namespace Remora.Commands.Attributes;
 /// <summary>
 /// Represents the name of a command group.
 /// </summary>
-[AttributeUsage(AttributeTargets.Class)]
 [PublicAPI]
+[AttributeUsage(AttributeTargets.Class)]
 public class GroupAttribute : Attribute
 {
     /// <summary>
