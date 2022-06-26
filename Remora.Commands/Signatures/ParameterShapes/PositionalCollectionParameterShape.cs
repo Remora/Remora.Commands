@@ -38,7 +38,7 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class PositionalCollectionParameterShape : PositionalParameterShape, ICollectionParameterShape
 {
-    private static readonly MethodInfo EmptyArrayMethod;
+    private static readonly MethodInfo _emptyArrayMethod;
     private readonly object _emptyCollection;
 
     /// <inheritdoc />
@@ -69,7 +69,7 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
     static PositionalCollectionParameterShape()
     {
         var emptyArrayMethod = typeof(Array).GetMethod(nameof(Array.Empty));
-        EmptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
+        _emptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
 
         var elementType = this.Parameter.ParameterType.GetCollectionElementType();
 
-        var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+        var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
     }
 

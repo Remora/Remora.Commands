@@ -37,7 +37,7 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class NamedCollectionParameterShape : NamedParameterShape, ICollectionParameterShape
 {
-    private static readonly MethodInfo EmptyArrayMethod;
+    private static readonly MethodInfo _emptyArrayMethod;
     private readonly object _emptyCollection;
 
     /// <inheritdoc />
@@ -68,7 +68,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     static NamedCollectionParameterShape()
     {
         var emptyArrayMethod = typeof(Array).GetMethod(nameof(Array.Empty));
-        EmptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
+        _emptyArrayMethod = emptyArrayMethod ?? throw new MissingMethodException();
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
 
         var elementType = this.Parameter.ParameterType.GetCollectionElementType();
 
-        var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+        var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
     }
 
@@ -123,7 +123,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
 
         var elementType = this.Parameter.ParameterType.GetCollectionElementType();
 
-        var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+        var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
     }
 
@@ -150,7 +150,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
 
         var elementType = this.Parameter.ParameterType.GetCollectionElementType();
 
-        var emptyArrayMethod = EmptyArrayMethod.MakeGenericMethod(elementType);
+        var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
     }
 

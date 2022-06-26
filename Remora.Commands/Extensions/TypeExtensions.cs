@@ -36,8 +36,8 @@ namespace Remora.Commands.Extensions;
 /// </summary>
 internal static class TypeExtensions
 {
-    private static readonly Type TypeParserType = typeof(ITypeParser);
-    private static readonly Type GenericTypeParserType = typeof(ITypeParser<>);
+    private static readonly Type _typeParserType = typeof(ITypeParser);
+    private static readonly Type _genericTypeParserType = typeof(ITypeParser<>);
 
     /// <summary>
     /// Attempts to get an annotated group name from the given type.
@@ -67,8 +67,8 @@ internal static class TypeExtensions
     public static bool IsTypeParser(this Type type)
     {
         var interfaces = type.GetInterfaces();
-        return interfaces.Contains(TypeParserType) ||
-               interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == GenericTypeParserType);
+        return interfaces.Contains(_typeParserType) ||
+               interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == _genericTypeParserType);
     }
 
     /// <summary>

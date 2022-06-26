@@ -38,7 +38,7 @@ namespace Remora.Commands.Parsers;
 [PublicAPI]
 public class TimeSpanParser : AbstractTypeParser<TimeSpan>
 {
-    private static readonly Regex Pattern = new
+    private static readonly Regex _pattern = new
     (
         "(?<Years>\\d+(?=y))|(?<Months>\\d+(?=mo))|(?<Weeks>\\d+(?=w))|(?<Days>\\d+(?=d))|(?<Hours>\\d+(?=h))|(?<Minutes>\\d+(?=m))|(?<Seconds>\\d+(?=s))",
         RegexOptions.Compiled
@@ -59,7 +59,7 @@ public class TimeSpanParser : AbstractTypeParser<TimeSpan>
             return new ValueTask<Result<TimeSpan>>(parsedTimespan);
         }
 
-        var matches = Pattern.Matches(value);
+        var matches = _pattern.Matches(value);
         if (matches.Count == 0)
         {
             return new ValueTask<Result<TimeSpan>>(new ParsingError<TimeSpan>(value));
