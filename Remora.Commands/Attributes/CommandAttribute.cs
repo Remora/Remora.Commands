@@ -29,9 +29,9 @@ namespace Remora.Commands.Attributes;
 /// <summary>
 /// Marks a method as being a command.
 /// </summary>
-[AttributeUsage(AttributeTargets.Method)]
-[MeansImplicitUse]
 [PublicAPI]
+[AttributeUsage(AttributeTargets.Method)]
+[MeansImplicitUse(ImplicitUseKindFlags.Access)]
 public class CommandAttribute : Attribute
 {
     /// <summary>
