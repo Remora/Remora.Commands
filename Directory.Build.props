@@ -33,10 +33,10 @@
         <EmbedAllSources>true</EmbedAllSources>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
-        <RepositoryUrl>https://github.com/Nihlus/Remora.Commands</RepositoryUrl>
-        <RepositoryBranch>master</RepositoryBranch>
+        <RepositoryUrl>https://github.com/Remora/Remora.Commands</RepositoryUrl>
+        <RepositoryBranch>main</RepositoryBranch>
         <PackageOutputPath>$(SolutionDir)/nuget</PackageOutputPath>
-        <PackageProjectUrl>https://github.com/Nihlus/Remora.Commands</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/Remora/Remora.Commands</PackageProjectUrl>
         <PackageTags>commands;parsing;span;performance;getopts;command-line;</PackageTags>
         <PackageIcon>shark.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
