@@ -8,9 +8,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remora.Commands.Tests", "Tests\Remora.Commands.Tests\Remora.Commands.Tests.csproj", "{17F0B333-D282-4A72-8AF0-F9042674A4B3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{69F39D4E-EA11-4291-AAE6-AD1E40A97EAD}"
-	ProjectSection(SolutionItems) = preProject
-		Tests\Directory.Build.props = Tests\Directory.Build.props
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "meta", "meta", "{5724BC99-30EE-44A4-A69F-EE95DF06B6AE}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,8 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "meta", "meta", "{5724BC99-3
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
 		README.md = README.md
-		stylecop.json = stylecop.json
-		stylecop.ruleset = stylecop.ruleset
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject

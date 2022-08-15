@@ -1,9 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-    </PropertyGroup>
-
+<Project Sdk="Remora.Tests.Sdk/1.0.0-preview6">
     <ItemGroup>
       <ProjectReference Include="..\..\Remora.Commands\Remora.Commands.csproj" />
     </ItemGroup>
@@ -155,5 +150,4 @@
         <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
       </Compile>
     </ItemGroup>
-
 </Project>
