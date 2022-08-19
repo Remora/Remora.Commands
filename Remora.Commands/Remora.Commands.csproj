@@ -1,11 +1,11 @@
-<Project Sdk="Remora.Sdk/1.0.0-preview6">
+<Project Sdk="Remora.Sdk/1.0.0">
 
     <PropertyGroup>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>10.0.1</Version>
+        <Version>10.0.2</Version>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
             Fix malformed XML.
@@ -19,11 +19,11 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-      <PackageReference Include="Nullability.Source" Version="2.0.0">
+      <PackageReference Include="Nullability.Source" Version="2.0.1">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Remora.Results" Version="7.2.1" />
+      <PackageReference Include="Remora.Results" Version="7.2.2" />
     </ItemGroup>
 
 </Project>
