@@ -9,13 +9,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remora.Commands.Tests", "Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{69F39D4E-EA11-4291-AAE6-AD1E40A97EAD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "meta", "meta", "{5724BC99-30EE-44A4-A69F-EE95DF06B6AE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", "metadata", "{5724BC99-30EE-44A4-A69F-EE95DF06B6AE}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
 		README.md = README.md
 		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{89047DCF-DA22-4F6E-8F2A-90AE3E4C82A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{AC0BFE89-8FFD-4FEC-924C-BB0D5D1D8D66}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 	EndProjectSection
 EndProject
 Global
@@ -38,6 +45,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{17F0B333-D282-4A72-8AF0-F9042674A4B3} = {69F39D4E-EA11-4291-AAE6-AD1E40A97EAD}
+		{89047DCF-DA22-4F6E-8F2A-90AE3E4C82A2} = {5724BC99-30EE-44A4-A69F-EE95DF06B6AE}
+		{AC0BFE89-8FFD-4FEC-924C-BB0D5D1D8D66} = {89047DCF-DA22-4F6E-8F2A-90AE3E4C82A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6BB17936-D5C2-4868-8E89-BCFD3BECFAB0}
