@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Version>10.0.2</Version>
+        <VersionPrefix>10.0.2</VersionPrefix>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
             Fix malformed XML.
