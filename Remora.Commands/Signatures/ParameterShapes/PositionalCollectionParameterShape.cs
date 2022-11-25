@@ -48,23 +48,7 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
     public ulong? Max { get; }
 
     /// <inheritdoc/>
-    public override object? DefaultValue
-    {
-        get
-        {
-            if (this.Parameter.IsOptional)
-            {
-                return this.Parameter.DefaultValue;
-            }
-
-            if (this.Min is null or 0)
-            {
-                return _emptyCollection;
-            }
-
-            throw new InvalidOperationException();
-        }
-    }
+    public override object? DefaultValue { get; }
 
     static PositionalCollectionParameterShape()
     {
@@ -91,10 +75,13 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
         this.Min = min;
         this.Max = max;
 
-        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+        var elementType = parameter.ParameterType.GetCollectionElementType();
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+
+        DefaultValue = parameter.IsOptional ? parameter.DefaultValue :
+            this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }
 
     /// <inheritdoc />
@@ -150,7 +137,7 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
         // we'll use the actual parameter name as a hint to match against.
         var (name, value) = namedValue;
 
-        if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
+        if (!name.Equals(this.ParameterName, searchOptions.KeyComparison))
         {
             return false;
         }
@@ -179,7 +166,7 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
     /// <inheritdoc/>
     public override bool IsOmissible(TreeSearchOptions? searchOptions = null)
     {
-        if (this.Parameter.IsOptional)
+        if (this.IsOptional)
         {
             return true;
         }

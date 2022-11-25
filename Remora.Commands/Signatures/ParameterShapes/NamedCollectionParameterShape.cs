@@ -47,23 +47,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     public ulong? Max { get; }
 
     /// <inheritdoc/>
-    public override object? DefaultValue
-    {
-        get
-        {
-            if (this.Parameter.IsOptional)
-            {
-                return this.Parameter.DefaultValue;
-            }
-
-            if (this.Min is null or 0)
-            {
-                return _emptyCollection;
-            }
-
-            throw new InvalidOperationException();
-        }
-    }
+    public override object? DefaultValue { get; }
 
     static NamedCollectionParameterShape()
     {
@@ -94,10 +78,13 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         this.Min = min;
         this.Max = max;
 
-        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+        var elementType = parameter.ParameterType.GetCollectionElementType();
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+
+        DefaultValue = parameter.IsOptional ? parameter.DefaultValue :
+            this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -121,10 +108,13 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         this.Min = min;
         this.Max = max;
 
-        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+        var elementType = parameter.ParameterType.GetCollectionElementType();
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+
+        DefaultValue = parameter.IsOptional ? parameter.DefaultValue :
+            this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -148,7 +138,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         this.Min = min;
         this.Max = max;
 
-        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+        var elementType = parameter.ParameterType.GetCollectionElementType();
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
@@ -287,7 +277,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     /// <inheritdoc/>
     public override bool IsOmissible(TreeSearchOptions? searchOptions = null)
     {
-        if (this.Parameter.IsOptional)
+        if (this.IsOptional)
         {
             return true;
         }

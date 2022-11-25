@@ -22,8 +22,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
+using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 using static Remora.Commands.Tokenization.TokenType;
@@ -36,17 +39,29 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class PositionalGreedyParameterShape : IParameterShape
 {
-    /// <inheritdoc />
-    public ParameterInfo Parameter { get; }
+    /// <inheritdoc/>
+    public virtual object? DefaultValue { get; }
 
     /// <inheritdoc/>
-    public virtual object? DefaultValue => this.Parameter.DefaultValue;
-
-    /// <inheritdoc/>
-    public string HintName => this.Parameter.Name ?? throw new InvalidOperationException();
+    public string HintName => _parameterName ?? throw new InvalidOperationException();
 
     /// <inheritdoc/>
     public string Description { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
+
+    /// <inheritdoc/>
+    public Type ParameterType { get; }
+
+    /// <inheritdoc/>
+    public bool IsNullable { get; }
+
+    private readonly bool _isOptional;
+    private readonly string? _parameterName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PositionalGreedyParameterShape"/> class.
@@ -55,7 +70,11 @@ public class PositionalGreedyParameterShape : IParameterShape
     /// <param name="description">The description of the parameter.</param>
     public PositionalGreedyParameterShape(ParameterInfo parameter, string? description = null)
     {
-        this.Parameter = parameter;
+        this.DefaultValue = parameter.DefaultValue;
+        this.ParameterType = parameter.ParameterType;
+        this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
+        this.Conditions = parameter.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
+        this.IsNullable = parameter.AllowsNull();
         this.Description = description ?? Constants.DefaultDescription;
     }
 
@@ -105,7 +124,7 @@ public class PositionalGreedyParameterShape : IParameterShape
         // we'll use the actual parameter name as a hint to match against.
         var (name, value) = namedValue;
 
-        if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
+        if (!name.Equals(this._parameterName, searchOptions.KeyComparison))
         {
             return false;
         }
@@ -120,5 +139,5 @@ public class PositionalGreedyParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.Parameter.IsOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this._isOptional;
 }

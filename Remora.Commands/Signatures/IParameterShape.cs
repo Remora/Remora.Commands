@@ -20,9 +20,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 
@@ -35,11 +37,6 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public interface IParameterShape
 {
-    /// <summary>
-    /// Gets the matching parameter.
-    /// </summary>
-    ParameterInfo Parameter { get; }
-
     /// <summary>
     /// Gets the default value, if any.
     /// </summary>
@@ -55,6 +52,26 @@ public interface IParameterShape
     /// Gets a user-configured description of the parameter.
     /// </summary>
     string Description { get; }
+
+    /// <summary>
+    /// Gets a list of attributes that apply to this parameter.
+    /// </summary>
+    IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <summary>
+    /// Gets a list of conditions that apply to this parameter.
+    /// </summary>
+    IReadOnlyList<ConditionAttribute> Conditions { get; }
+
+    /// <summary>
+    /// Gets the type the parameter represents, or otherwise should be parsed as.
+    /// </summary>
+    Type ParameterType { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the parameter's type allows for null values.
+    /// </summary>
+    bool IsNullable { get; }
 
     /// <summary>
     /// Determines whether the given token sequence matches the parameter shape.

@@ -26,6 +26,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;
 
@@ -54,6 +55,16 @@ public class CommandNode : IChildNode
     /// Gets the general shape of the command.
     /// </summary>
     public CommandShape Shape { get; }
+
+    /// <summary>
+    /// Gets the attributes of the command.
+    /// </summary>
+    public IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <summary>
+    /// Gets the conditions of the command.
+    /// </summary>
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
 
     /// <inheritdoc/>
     /// <remarks>
@@ -87,6 +98,8 @@ public class CommandNode : IChildNode
         this.CommandMethod = commandMethod;
         this.Aliases = aliases ?? Array.Empty<string>();
         this.Shape = CommandShape.FromMethod(this.CommandMethod);
+        this.Attributes = commandMethod.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
+        this.Conditions = commandMethod.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
     }
 
     /// <summary>

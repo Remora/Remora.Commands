@@ -700,25 +700,26 @@ public class CommandService
     {
         var materializedParameters = new List<object?>();
 
-        var boundParameters = boundCommandNode.BoundParameters.ToDictionary(bp => bp.ParameterShape.Parameter);
-        var parameterShapes = boundCommandNode.Node.Shape.Parameters.ToDictionary(p => p.Parameter);
+        // Dictionary<ParameterInfo, BoundParameterShape> // parsed, un-typed parameters
+        var boundParameters = boundCommandNode.BoundParameters.ToDictionary(bp => bp.ParameterShape);
 
-        foreach (var parameter in boundCommandNode.Node.CommandMethod.GetParameters())
+        // for each parameter defined on the command itself
+        foreach (var parameter in boundCommandNode.Node.Shape.Parameters)
         {
+            // Argument not present
             if (!boundParameters.TryGetValue(parameter, out var boundParameter))
             {
-                var shape = parameterShapes[parameter];
-                if (!shape.IsOmissible())
+                if (!parameter.IsOmissible())
                 {
-                    return new RequiredParameterValueMissingError(shape);
+                    return new RequiredParameterValueMissingError(parameter);
                 }
 
-                materializedParameters.Add(shape.DefaultValue);
+                materializedParameters.Add(parameter.DefaultValue);
                 continue;
             }
 
             // Special case: nullability
-            if (boundParameter.ParameterShape.Parameter.AllowsNull())
+            if (boundParameter.ParameterShape.IsNullable)
             {
                 // Support null literals
                 if (boundParameter.Tokens.Count == 1 && boundParameter.Tokens[0].Trim() is "null")

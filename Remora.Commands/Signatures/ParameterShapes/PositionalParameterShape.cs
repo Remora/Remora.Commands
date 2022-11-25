@@ -22,8 +22,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
+using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 using static Remora.Commands.Tokenization.TokenType;
@@ -36,17 +39,36 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class PositionalParameterShape : IParameterShape
 {
-    /// <inheritdoc />
-    public ParameterInfo Parameter { get; }
+    /// <inheritdoc/>
+    public virtual object? DefaultValue { get; }
 
     /// <inheritdoc/>
-    public virtual object? DefaultValue => this.Parameter.DefaultValue;
-
-    /// <inheritdoc/>
-    public string HintName => this.Parameter.Name ?? throw new InvalidOperationException();
+    public string HintName => ParameterName ?? throw new InvalidOperationException();
 
     /// <inheritdoc/>
     public string Description { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
+
+    /// <inheritdoc/>
+    public Type ParameterType { get; }
+
+    /// <inheritdoc/>
+    public bool IsNullable { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether this parameter is optional.
+    /// </summary>
+    protected bool IsOptional { get; }
+
+    /// <summary>
+    /// Gets the parameter's name.
+    /// </summary>
+    protected string? ParameterName { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PositionalParameterShape"/> class.
@@ -55,7 +77,12 @@ public class PositionalParameterShape : IParameterShape
     /// <param name="description">The description of the parameter.</param>
     public PositionalParameterShape(ParameterInfo parameter, string? description = null)
     {
-        this.Parameter = parameter;
+        this.ParameterName = parameter.Name;
+        this.ParameterType = parameter.ParameterType;
+        this.IsOptional = parameter.AllowsNull();
+        this.DefaultValue = parameter.DefaultValue;
+        this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
+        this.Conditions = parameter.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
         this.Description = description ?? Constants.DefaultDescription;
     }
 
@@ -98,7 +125,7 @@ public class PositionalParameterShape : IParameterShape
         // we'll use the actual parameter name as a hint to match against.
         var (name, value) = namedValue;
 
-        if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
+        if (!name.Equals(this.ParameterName, searchOptions.KeyComparison))
         {
             return false;
         }
@@ -113,5 +140,5 @@ public class PositionalParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.Parameter.IsOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.IsOptional;
 }

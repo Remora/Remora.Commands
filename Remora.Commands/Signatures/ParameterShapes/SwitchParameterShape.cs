@@ -22,8 +22,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
+using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 
@@ -47,11 +50,8 @@ public class SwitchParameterShape : IParameterShape
     /// </summary>
     public string? LongName { get; }
 
-    /// <inheritdoc />
-    public ParameterInfo Parameter { get; }
-
     /// <inheritdoc/>
-    public virtual object? DefaultValue => this.Parameter.DefaultValue;
+    public virtual object? DefaultValue { get; }
 
     /// <inheritdoc/>
     public string HintName
@@ -68,12 +68,27 @@ public class SwitchParameterShape : IParameterShape
                 return this.ShortName.ToString() ?? throw new InvalidOperationException();
             }
 
-            return this.Parameter.Name ?? throw new InvalidOperationException();
+            return this._parameterName ?? throw new InvalidOperationException();
         }
     }
 
     /// <inheritdoc/>
     public string Description { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
+
+    /// <inheritdoc/>
+    public Type ParameterType { get; }
+
+    /// <inheritdoc/>
+    public bool IsNullable { get; }
+
+    private readonly bool _isOptional;
+    private readonly string? _parameterName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SwitchParameterShape"/> class.
@@ -89,8 +104,8 @@ public class SwitchParameterShape : IParameterShape
         string longName,
         string? description = null
     )
+    : this(parameter)
     {
-        this.Parameter = parameter;
         this.ShortName = shortName;
         this.LongName = longName;
         this.Description = description ?? Constants.DefaultDescription;
@@ -103,8 +118,8 @@ public class SwitchParameterShape : IParameterShape
     /// <param name="shortName">The short name.</param>
     /// <param name="description">The description of the parameter.</param>
     public SwitchParameterShape(ParameterInfo parameter, char shortName, string? description = null)
+    : this(parameter)
     {
-        this.Parameter = parameter;
         this.ShortName = shortName;
         this.Description = description ?? Constants.DefaultDescription;
     }
@@ -121,10 +136,20 @@ public class SwitchParameterShape : IParameterShape
         string longName,
         string? description = null
     )
+    : this(parameter)
     {
-        this.Parameter = parameter;
         this.LongName = longName;
         this.Description = description ?? Constants.DefaultDescription;
+    }
+
+    private SwitchParameterShape(ParameterInfo parameter)
+    {
+        this.DefaultValue = parameter.DefaultValue;
+        this.ParameterType = parameter.ParameterType;
+        this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
+        this.Conditions = parameter.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
+        this.IsNullable = parameter.AllowsNull();
+        this.Description = Constants.DefaultDescription;
     }
 
     /// <inheritdoc/>
@@ -223,5 +248,5 @@ public class SwitchParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.Parameter.IsOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this._isOptional;
 }
