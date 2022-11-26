@@ -40,12 +40,12 @@ public class CommandParameterBuilder
     private readonly List<Attribute> _attributes;
     private readonly List<ConditionAttribute> _conditions;
 
-    private string? _name;
+    private string _name;
     private bool _isGreedy;
     private bool _isOptional;
     private string? _description;
     private object? _defaultValue;
-    private Type _parameterType;
+    private Type? _parameterType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandParameterBuilder"/> class.
@@ -55,14 +55,12 @@ public class CommandParameterBuilder
     /// <remarks>If <paramref name="type"/> is null, <see cref="WithType"/> MUST be called before <see cref="Finish"/>.</remarks>
     public CommandParameterBuilder(CommandBuilder builder, Type? type)
     {
+        _name = string.Empty;
         _builder = builder;
         _attributes = new();
         _conditions = new();
 
-        if (type is not null)
-        {
-            _parameterType = type;
-        }
+        _parameterType = type;
     }
 
     /// <summary>
@@ -160,7 +158,7 @@ public class CommandParameterBuilder
             ? longName is not null
                 ? new SwitchAttribute(shortName.Value, longName)
                 : new SwitchAttribute(shortName.Value)
-            : new SwitchAttribute(longName);
+            : new SwitchAttribute(longName!);
 
         _attributes.Add(attribute);
 
@@ -193,7 +191,7 @@ public class CommandParameterBuilder
             ? longName is not null
                 ? new OptionAttribute(shortName.Value, longName)
                 : new OptionAttribute(shortName.Value)
-            : new OptionAttribute(longName);
+            : new OptionAttribute(longName!);
 
         _attributes.Add(attribute);
 
@@ -257,7 +255,7 @@ public class CommandParameterBuilder
         CommandParameterBuilder builder
     )
     {
-        var isCollection = builder._parameterType.IsSupportedCollection();
+        var isCollection = builder._parameterType!.IsSupportedCollection();
 
         IParameterShape newNamedParameter;
         if (optionAttribute is SwitchAttribute)
@@ -293,10 +291,10 @@ public class CommandParameterBuilder
         (
          optionAttribute.ShortName,
          optionAttribute.LongName,
-         rangeAttribute?.Min,
-         rangeAttribute?.Max,
+         rangeAttribute?.GetMin(),
+         rangeAttribute?.GetMax(),
          builder._name,
-         builder._parameterType,
+         builder._parameterType!,
          builder._isOptional,
          builder._defaultValue,
          builder._attributes,
@@ -355,7 +353,7 @@ public class CommandParameterBuilder
          optionAttribute.ShortName,
          optionAttribute.LongName,
          builder._name,
-         builder._parameterType,
+         builder._parameterType!,
          builder._isOptional,
          builder._defaultValue,
          builder._attributes,
@@ -379,7 +377,7 @@ public class CommandParameterBuilder
          optionAttribute.ShortName,
          optionAttribute.LongName,
          builder._name,
-         builder._parameterType,
+         builder._parameterType!,
          builder._isOptional,
          builder._defaultValue,
          builder._attributes,
@@ -397,7 +395,7 @@ public class CommandParameterBuilder
     )
     {
         var description = builder._description ?? Constants.DefaultDescription;
-        var isCollection = builder._parameterType.IsSupportedCollection();
+        var isCollection = builder._parameterType!.IsSupportedCollection();
 
         IParameterShape newPositionalParameter;
         if (!isCollection)
@@ -408,7 +406,7 @@ public class CommandParameterBuilder
                 ? new PositionalParameterShape
                   (
                     builder._name,
-                    builder._parameterType,
+                    builder._parameterType!,
                     builder._isOptional,
                     builder._defaultValue,
                     builder._attributes,
@@ -418,7 +416,7 @@ public class CommandParameterBuilder
                 : new PositionalGreedyParameterShape
                   (
                     builder._name,
-                    builder._parameterType,
+                    builder._parameterType!,
                     builder._isOptional,
                     builder._defaultValue,
                     builder._attributes,
@@ -433,7 +431,7 @@ public class CommandParameterBuilder
                 rangeAttribute?.GetMin(),
                 rangeAttribute?.GetMax(),
                 builder._name,
-                builder._parameterType,
+                builder._parameterType!,
                 builder._isOptional,
                 builder._defaultValue,
                 builder._attributes,

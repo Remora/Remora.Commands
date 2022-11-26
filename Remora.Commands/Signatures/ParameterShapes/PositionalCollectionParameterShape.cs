@@ -107,9 +107,18 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
         object? defaultValue,
         IReadOnlyList<Attribute> attributes,
         IReadOnlyList<ConditionAttribute> conditions,
-        string description = null
+        string? description = null
     )
-    : base(parameterName, parameterType, isOptional, defaultValue, attributes, conditions, description)
+    : base
+      (
+         parameterName,
+         parameterType,
+         isOptional,
+         defaultValue,
+         attributes,
+         conditions,
+         description ?? Constants.DefaultDescription
+      )
     {
         this.Min = min;
         this.Max = max;

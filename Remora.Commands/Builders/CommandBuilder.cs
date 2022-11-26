@@ -60,8 +60,10 @@ public class CommandBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandBuilder"/> class.
     /// </summary>
+    /// <param name="parent">The parent of the command.</param>
     public CommandBuilder(GroupBuilder? parent = null)
     {
+        _name = string.Empty;
         _aliases = new();
         _attributes = new();
         Parameters = new();
@@ -184,6 +186,7 @@ public class CommandBuilder
     /// This method should only be called if the instance was generated from <see cref="GroupBuilder.AddCommand"/>.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if the command builder was not associated with a group.</exception>
+    /// <returns>The parent builder.</returns>
     public GroupBuilder Finish()
     {
         return _parent ?? throw new InvalidOperationException("The command builder was not attatched to a group.");

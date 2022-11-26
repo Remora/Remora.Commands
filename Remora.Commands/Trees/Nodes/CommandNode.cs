@@ -103,10 +103,13 @@ public class CommandNode : IChildNode
     )
     {
         // TODO: Either remove this constructor, or make it compatible with the new command invocation system.
+        this.CommandMethod = commandMethod;
+        this.GroupType = groupType;
+        this.Invoke = (_, _) => default;
+
         this.Parent = parent;
         this.Key = key;
         this.GroupType = groupType;
-        this.CommandMethod = commandMethod;
         this.Aliases = aliases ?? Array.Empty<string>();
         this.Shape = CommandShape.FromMethod(this.CommandMethod);
         this.Attributes = commandMethod.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
@@ -127,13 +130,17 @@ public class CommandNode : IChildNode
     (
         IParentNode parent,
         string key,
-        Func<IServiceCollection, object[], ValueTask<IResult>> invoke,
+        Func<IServiceProvider, object[], ValueTask<IResult>> invoke,
         CommandShape shape,
         IReadOnlyList<string>? aliases = null,
-        IReadOnlyList<Attribute> attributes = null,
-        IReadOnlyList<ConditionAttribute> conditions = null
+        IReadOnlyList<Attribute>? attributes = null,
+        IReadOnlyList<ConditionAttribute>? conditions = null
     )
     {
+        this.GroupType = Type.EmptyTypes[0];
+        this.CommandMethod = null!;
+
+        this.Invoke = invoke;
         this.Parent = parent;
         this.Key = key;
         this.Aliases = aliases ?? Array.Empty<string>();
