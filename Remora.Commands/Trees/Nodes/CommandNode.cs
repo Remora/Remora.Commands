@@ -25,10 +25,14 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
+using Remora.Commands.Builders;
 using Remora.Commands.Conditions;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;
+using Remora.Results;
 
 namespace Remora.Commands.Trees.Nodes;
 
@@ -46,7 +50,13 @@ public class CommandNode : IChildNode
     /// <summary>
     /// Gets the method that the command invokes.
     /// </summary>
+    [Obsolete($"Use {nameof(Invoke)} instead")]
     public MethodInfo CommandMethod { get; }
+
+    /// <summary>
+    /// Gets the delegate that represents the command, or invokes it.
+    /// </summary>
+    public Func<IServiceProvider, object[], ValueTask<IResult>> Invoke { get; }
 
     /// <inheritdoc/>
     public IParentNode Parent { get; }
@@ -92,6 +102,7 @@ public class CommandNode : IChildNode
         IReadOnlyList<string>? aliases = null
     )
     {
+        // TODO: Either remove this constructor, or make it compatible with the new command invocation system.
         this.Parent = parent;
         this.Key = key;
         this.GroupType = groupType;
@@ -100,6 +111,35 @@ public class CommandNode : IChildNode
         this.Shape = CommandShape.FromMethod(this.CommandMethod);
         this.Attributes = commandMethod.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
         this.Conditions = commandMethod.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CommandNode"/> class.
+    /// </summary>
+    /// <param name="parent">The parent node.</param>
+    /// <param name="key">The key value of the command node.</param>
+    /// <param name="invoke">The function to invoke the command.</param>
+    /// <param name="shape">The shape of the command.</param>
+    /// <param name="aliases">Additional key aliases, if any.</param>
+    /// <param name="attributes">Applied attributes for the command, if any.</param>
+    /// <param name="conditions">Applied conditions for the command, if any.</param>
+    public CommandNode
+    (
+        IParentNode parent,
+        string key,
+        Func<IServiceCollection, object[], ValueTask<IResult>> invoke,
+        CommandShape shape,
+        IReadOnlyList<string>? aliases = null,
+        IReadOnlyList<Attribute> attributes = null,
+        IReadOnlyList<ConditionAttribute> conditions = null
+    )
+    {
+        this.Parent = parent;
+        this.Key = key;
+        this.Aliases = aliases ?? Array.Empty<string>();
+        this.Shape = shape;
+        this.Attributes = attributes ?? Array.Empty<Attribute>();
+        this.Conditions = conditions ?? Array.Empty<ConditionAttribute>();
     }
 
     /// <summary>
