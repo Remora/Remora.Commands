@@ -26,6 +26,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Remora.Commands.Attributes;
+using Remora.Commands.Builders;
 using Remora.Commands.Extensions;
 
 namespace Remora.Commands.Signatures;
@@ -56,6 +57,19 @@ public class CommandShape
     {
         this.Parameters = parameters;
         this.Description = description ?? Constants.DefaultDescription;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="CommandShape"/> from the given builder.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <returns>The command shape.</returns>
+    public static CommandShape FromBuilder(CommandBuilder builder)
+    {
+        var constructedParameters = new List<IParameterShape>();
+        constructedParameters.AddRange(builder.Parameters.Select(p => p.Build()));
+
+        return new CommandShape(constructedParameters, builder.Description ?? Constants.DefaultDescription);
     }
 
     /// <summary>
