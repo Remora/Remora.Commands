@@ -86,6 +86,36 @@ public class PositionalParameterShape : IParameterShape
         this.Description = description ?? Constants.DefaultDescription;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PositionalParameterShape"/> class.
+    /// </summary>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <param name="parameterType">The type of the parameter.</param>
+    /// <param name="isOptional">Whether the parameter is optional.</param>
+    /// <param name="defaultValue">The default value of the parameter, if any.</param>
+    /// <param name="attributes">The attributes of the parameter.</param>
+    /// <param name="conditions">The conditions of the parameter.</param>
+    /// <param name="description">The description of the paremeter.</param>
+    public PositionalParameterShape
+    (
+        string parameterName,
+        Type parameterType,
+        bool isOptional,
+        object? defaultValue,
+        IReadOnlyList<Attribute> attributes,
+        IReadOnlyList<ConditionAttribute> conditions,
+        string description
+    )
+    {
+        this.ParameterName = parameterName;
+        this.ParameterType = parameterType;
+        this.IsOptional = isOptional;
+        this.DefaultValue = defaultValue;
+        this.Attributes = attributes;
+        this.Conditions = conditions;
+        this.Description = description;
+    }
+
     /// <inheritdoc />
     public virtual bool Matches
     (

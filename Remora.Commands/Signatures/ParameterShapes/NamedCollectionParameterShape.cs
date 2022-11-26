@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
@@ -115,6 +116,39 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
 
         DefaultValue = parameter.IsOptional ? parameter.DefaultValue :
             this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
+    /// </summary>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <param name="parameterType">The type of the parameter.</param>
+    /// <param name="isOptional">Whether the parameter is optional.</param>
+    /// <param name="defaultValue">The default value of the parameter, if any.</param>
+    /// <param name="attributes">The attributes of the parameter.</param>
+    /// <param name="conditions">The conditions of the parameter.</param>
+    /// <param name="description">The description of the paremeter.</param>
+    public NamedCollectionParameterShape
+    (
+        string parameterName,
+        Type parameterType,
+        bool isOptional,
+        object? defaultValue,
+        IReadOnlyList<Attribute> attributes,
+        IReadOnlyList<ConditionAttribute> conditions,
+        string description
+    )
+    : base(parameterName, parameterType, isOptional, defaultValue, attributes, conditions, description)
+    {
+        this.Min = null;
+        this.Max = null;
+
+        var elementType = parameterType.GetCollectionElementType();
+
+        var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
+        _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+
+        DefaultValue = isOptional ? defaultValue : _emptyCollection;
     }
 
     /// <summary>

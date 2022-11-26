@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
@@ -81,6 +82,36 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
 
         DefaultValue = parameter.IsOptional ? parameter.DefaultValue :
+            this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PositionalCollectionParameterShape"/> class.
+    /// </summary>
+    /// <param name="min">The minimum number of elements.</param>
+    /// <param name="max">The maximum number of elements.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <param name="parameterType">The type of the parameter.</param>
+    /// <param name="isOptional">Whether the parameter is optional.</param>
+    /// <param name="defaultValue">The default value of the parameter, if any.</param>
+    /// <param name="attributes">The attributes of the parameter.</param>
+    /// <param name="conditions">The conditions of the parameter.</param>
+    /// <param name="description">The description of the paremeter.</param>
+    public PositionalCollectionParameterShape
+    (
+        ulong? min,
+        ulong? max,
+        string parameterName,
+        Type parameterType,
+        bool isOptional,
+        object? defaultValue,
+        IReadOnlyList<Attribute> attributes,
+        IReadOnlyList<ConditionAttribute> conditions,
+        string description = null
+    )
+    : base(parameterName, parameterType, isOptional, defaultValue, attributes, conditions, description)
+    {
+        this.DefaultValue = IsOptional ? defaultValue :
             this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }
 
