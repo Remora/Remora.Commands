@@ -121,6 +121,10 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     /// <summary>
     /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
     /// </summary>
+    /// <param name="shortName">The short name.</param>
+    /// <param name="longName">The long name.</param>
+    /// <param name="min">The minimum number of items in the collection.</param>
+    /// <param name="max">The maximum number of items in the collection.</param>
     /// <param name="parameterName">The name of the parameter.</param>
     /// <param name="parameterType">The type of the parameter.</param>
     /// <param name="isOptional">Whether the parameter is optional.</param>
@@ -130,6 +134,10 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     /// <param name="description">The description of the paremeter.</param>
     public NamedCollectionParameterShape
     (
+        char? shortName,
+        string? longName,
+        ulong? min,
+        ulong? max,
         string parameterName,
         Type parameterType,
         bool isOptional,
@@ -138,10 +146,10 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         IReadOnlyList<ConditionAttribute> conditions,
         string description
     )
-    : base(parameterName, parameterType, isOptional, defaultValue, attributes, conditions, description)
+    : base(shortName, longName, parameterName, parameterType, isOptional, defaultValue, attributes, conditions, description)
     {
-        this.Min = null;
-        this.Max = null;
+        this.Min = min;
+        this.Max = max;
 
         var elementType = parameterType.GetCollectionElementType();
 

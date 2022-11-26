@@ -111,6 +111,14 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
     )
     : base(parameterName, parameterType, isOptional, defaultValue, attributes, conditions, description)
     {
+        this.Min = min;
+        this.Max = max;
+
+        var elementType = parameterType.GetCollectionElementType();
+
+        var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
+        _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+
         this.DefaultValue = IsOptional ? defaultValue :
             this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }

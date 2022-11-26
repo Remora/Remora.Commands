@@ -162,6 +162,8 @@ public class NamedGreedyParameterShape : IParameterShape
     /// <summary>
     /// Initializes a new instance of the <see cref="NamedGreedyParameterShape"/> class.
     /// </summary>
+    /// <param name="shortName">The short name.</param>
+    /// <param name="longName">The long name.</param>
     /// <param name="parameterName">The name of the parameter.</param>
     /// <param name="parameterType">The type of the parameter.</param>
     /// <param name="isOptional">Whether the parameter is optional.</param>
@@ -171,6 +173,8 @@ public class NamedGreedyParameterShape : IParameterShape
     /// <param name="description">The description of the paremeter.</param>
     public NamedGreedyParameterShape
     (
+        char? shortName,
+        string? longName,
         string parameterName,
         Type parameterType,
         bool isOptional,
@@ -180,6 +184,8 @@ public class NamedGreedyParameterShape : IParameterShape
         string description
     )
     {
+        this.ShortName = shortName;
+        this.LongName = longName;
         this._parameterName = parameterName;
         this.ParameterType = parameterType;
         this._isOptional = isOptional;
