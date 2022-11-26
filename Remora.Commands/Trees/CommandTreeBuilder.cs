@@ -27,6 +27,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Remora.Commands.Attributes;
+using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
 using Remora.Commands.Trees.Nodes;
@@ -131,7 +132,13 @@ public class CommandTreeBuilder
 
                 description ??= Constants.DefaultDescription;
 
-                var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, description);
+                var attributes = group.SelectMany(t => t.GetCustomAttributes<Attribute>()
+                                                        .Where(att => !typeof(ConditionAttribute).IsAssignableFrom(att.GetType())))
+                                      .ToArray();
+
+                var conditions = group.SelectMany(t => t.GetCustomAttributes<ConditionAttribute>()).ToArray();
+
+                var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, attributes, conditions, description);
 
                 foreach (var groupType in group)
                 {
