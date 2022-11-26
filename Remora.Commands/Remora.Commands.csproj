@@ -19,6 +19,7 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="OneOf" Version="3.0.223" />
       <PackageReference Include="Remora.Results" Version="7.2.3" />
       <PackageReference Update="Remora.Results.Analyzers" Version="1.0.0" />
     </ItemGroup>

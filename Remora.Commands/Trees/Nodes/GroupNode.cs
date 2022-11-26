@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 
 namespace Remora.Commands.Trees.Nodes;
 
@@ -42,6 +43,16 @@ public class GroupNode : IParentNode, IChildNode
 
     /// <inheritdoc/>
     public IReadOnlyList<IChildNode> Children { get; }
+
+    /// <summary>
+    /// Gets the attributes that apply to the group.
+    /// </summary>
+    public IReadOnlyList<Attribute> GroupAttributes { get; }
+
+    /// <summary>
+    /// Gets the conditions that apply to the group.
+    /// </summary>
+    public IReadOnlyList<ConditionAttribute> GroupConditions { get; }
 
     /// <inheritdoc/>
     public IParentNode Parent { get; }
@@ -68,6 +79,8 @@ public class GroupNode : IParentNode, IChildNode
     /// <param name="parent">The parent of the group node.</param>
     /// <param name="key">The key value for the group node.</param>
     /// <param name="aliases">Additional key aliases, if any.</param>
+    /// <param name="groupAttributes">Attributes that apply to the group, if any.</param>
+    /// <param name="groupConditions">Conditions that apply to the group, if any.</param>
     /// <param name="description">The description of the group.</param>
     public GroupNode
     (
@@ -76,6 +89,8 @@ public class GroupNode : IParentNode, IChildNode
         IParentNode parent,
         string key,
         IReadOnlyList<string>? aliases = null,
+        IReadOnlyList<Attribute>? groupAttributes = null,
+        IReadOnlyList<ConditionAttribute>? groupConditions = null,
         string? description = null
     )
     {
@@ -84,6 +99,8 @@ public class GroupNode : IParentNode, IChildNode
         this.Parent = parent;
         this.Key = key;
         this.Aliases = aliases ?? Array.Empty<string>();
+        this.GroupAttributes = groupAttributes ?? Array.Empty<Attribute>();
+        this.GroupConditions = groupConditions ?? Array.Empty<ConditionAttribute>();
         this.Description = description ?? Constants.DefaultDescription;
     }
 }
