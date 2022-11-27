@@ -22,13 +22,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using OneOf;
 using Remora.Commands.Attributes;
+using Remora.Commands.Builders;
 using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
@@ -45,6 +48,7 @@ namespace Remora.Commands.Trees;
 public class CommandTreeBuilder
 {
     private readonly List<Type> _registeredModuleTypes = new();
+    private readonly List<OneOf<CommandBuilder, GroupBuilder>> _registeredBuilders = new();
 
     /// <summary>
     /// Registers a module type with the builder.
@@ -64,6 +68,69 @@ public class CommandTreeBuilder
         if (!_registeredModuleTypes.Contains(commandModule))
         {
             _registeredModuleTypes.Add(commandModule);
+
+            AddBuildersFromModule(commandModule);
+        }
+    }
+
+    private void AddBuildersFromModule(Type commandModule, GroupBuilder? parentBuilder = null)
+    {
+        if (!commandModule.TryGetGroupName(out var name))
+        {
+            foreach (var method in commandModule.GetMethods())
+            {
+                var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
+                if (commandAttribute is null)
+                {
+                    continue;
+                }
+
+                if (!method.ReturnType.IsSupportedCommandReturnType())
+                {
+                    throw new InvalidOperationException
+                    (
+                     $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
+                     $"containing a type that implements {typeof(IResult)}."
+                    );
+                }
+
+                _ = CommandBuilder.FromMethod(parentBuilder, method);
+            }
+        }
+        else
+        {
+            // Effectively `.GroupBy(x => x.TryGetGroupName(out var name) ? name : string.Empty)`
+            var builder = _registeredBuilders.Where(rb => rb.IsT1).Cast<GroupBuilder>().FirstOrDefault(rb => rb.Name == name);
+
+            builder ??= parentBuilder ?? new GroupBuilder();
+            builder.WithName(name);
+
+            var description = commandModule.GetCustomAttribute<DescriptionAttribute>();
+            if (description is not null)
+            {
+                builder.WithDescription(description.Description);
+            }
+
+            var attributes = commandModule.GetCustomAttributes().Where(att => att is not ConditionAttribute);
+
+            var conditions = commandModule.GetCustomAttributes<ConditionAttribute>();
+
+            foreach (var condition in conditions)
+            {
+                builder.AddCondition(condition);
+            }
+
+            foreach (var attribute in attributes)
+            {
+                builder.AddAttribute(attribute);
+            }
+
+            var submodules = commandModule.GetNestedTypes().Where(t => t.IsSubclassOf(typeof(CommandGroup)));
+
+            foreach (var submodule in submodules)
+            {
+                AddBuildersFromModule(submodule, builder);
+            }
         }
     }
 
@@ -75,7 +142,11 @@ public class CommandTreeBuilder
     {
         var rootChildren = new List<IChildNode>();
         var rootNode = new RootNode(rootChildren);
-        rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
+        //rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
+
+        var builtCommands = _registeredBuilders.Select(rb => rb.Match(cb => cb.Build(rootNode), gb => (IChildNode)gb.Build(rootNode)));
+
+        rootChildren.AddRange(builtCommands);
 
         return new CommandTree(rootNode);
     }
