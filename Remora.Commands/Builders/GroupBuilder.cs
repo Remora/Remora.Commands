@@ -37,9 +37,17 @@ public class GroupBuilder
     private readonly List<string> _groupAliases;
     private readonly List<Attribute> _groupAttributes;
     private readonly List<ConditionAttribute> _groupConditions;
-    private readonly List<OneOf<CommandBuilder, GroupBuilder>> _children;
 
-    private string _name;
+    /// <summary>
+    /// Gets the children of the group.
+    /// </summary>
+    internal List<OneOf<CommandBuilder, GroupBuilder>> Children { get; private init; }
+
+    /// <summary>
+    /// Gets the name of the group.
+    /// </summary>
+    internal string Name { get; private set; }
+
     private string? _description;
 
     /// <summary>
@@ -48,12 +56,12 @@ public class GroupBuilder
     /// <param name="parent">The parent this group belongs to, if any.</param>
     public GroupBuilder(GroupBuilder? parent = null)
     {
-        _name = string.Empty;
+        Name = string.Empty;
         _parent = parent;
         _groupAliases = new List<string>();
         _groupAttributes = new List<Attribute>();
         _groupConditions = new List<ConditionAttribute>();
-        _children = new List<OneOf<CommandBuilder, GroupBuilder>>();
+        Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
     }
 
     /// <summary>
@@ -63,7 +71,7 @@ public class GroupBuilder
     /// <returns>The current builder to chain calls with.</returns>
     public GroupBuilder WithName(string name)
     {
-        _name = name;
+        Name = name;
         return this;
     }
 
@@ -130,7 +138,7 @@ public class GroupBuilder
     /// <summary>
     /// Adds a command to the group.
     /// </summary>
-    /// <returns>A <see cref="CommandBuilder"> to build the command with</returns>.
+    /// <returns>A <see cref="CommandBuilder"/> to build the command with.</returns>
     public CommandBuilder AddCommand()
     {
         return new CommandBuilder(this);
@@ -143,7 +151,7 @@ public class GroupBuilder
     public GroupBuilder AddGroup()
     {
         var builder = new GroupBuilder(this);
-        _children.Add(OneOf<CommandBuilder, GroupBuilder>.FromT1(builder)); // new() would also work.
+        Children.Add(OneOf<CommandBuilder, GroupBuilder>.FromT1(builder)); // new() would also work.
 
         return builder;
     }
@@ -162,14 +170,14 @@ public class GroupBuilder
          Type.EmptyTypes,
          children,
          parent,
-         _name,
+         Name,
          _groupAliases,
          _groupAttributes,
          _groupConditions,
          _description
         );
 
-        foreach (var child in _children)
+        foreach (var child in Children)
         {
             children.Add(child.Match<IChildNode>
             (
