@@ -107,7 +107,19 @@ public class CommandParameterBuilder
         }
 
         _defaultValue = value;
+        _isOptional = true;
 
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the type of the parameter.
+    /// </summary>
+    /// <param name="type">The type to set the parameter to.</param>
+    /// <returns>The builder to chain calls with.</returns>
+    public CommandParameterBuilder WithType(Type type)
+    {
+        _parameterType = type;
         return this;
     }
 
