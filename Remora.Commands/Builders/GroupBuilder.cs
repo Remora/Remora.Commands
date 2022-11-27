@@ -105,7 +105,7 @@ public class GroupBuilder
     /// </summary>
     /// <param name="attribute">The attribute to add.</param>
     /// <returns>The current builder to chain calls with.</returns>
-    public GroupBuilder AddAttriubte(Attribute attribute)
+    public GroupBuilder AddAttribute(Attribute attribute)
     {
         if (attribute is ConditionAttribute)
         {
