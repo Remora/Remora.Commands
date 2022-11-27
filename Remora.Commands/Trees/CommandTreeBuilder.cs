@@ -23,13 +23,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
+using Remora.Commands.Signatures;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
@@ -201,10 +204,96 @@ public class CommandTreeBuilder
             (
                 parent,
                 commandAttribute.Name,
-                moduleType,
-                method,
-                commandAttribute.Aliases
+                CreateDelegate(method, method.GetParameters().Select(p => p.ParameterType).ToArray()),
+                CommandShape.FromMethod(method),
+                commandAttribute.Aliases,
+                method.GetCustomAttributes().Where(att => att is not ConditionAttribute).ToArray(),
+                method.GetCustomAttributes<ConditionAttribute>().ToArray()
             );
         }
     }
+
+    private static Func<IServiceProvider, object[], ValueTask<IResult>> CreateDelegate(MethodInfo method, Type[] argumentTypes)
+    {
+        // Get the object from the container
+        var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
+        var getRequiredService = typeof(ServiceProviderServiceExtensions).GetMethod
+        (
+            nameof(IServiceProvider.GetService),
+            BindingFlags.Public | BindingFlags.Instance
+        );
+
+        var instance = Expression.Call(serviceProvider, getRequiredService!, Expression.Constant(method.DeclaringType));
+
+        var parameters = Expression.Parameter(typeof(object?[]), "parameters");
+
+        // Create the arguments
+        var arguments = new Expression[argumentTypes.Length];
+        for (var i = 0; i < argumentTypes.Length; i++)
+        {
+            var argumentType = argumentTypes[i];
+            var argument = Expression.ArrayIndex(parameters, Expression.Constant(i));
+            arguments[i] = Expression.Convert(argument, argumentType);
+        }
+
+        var castedInstance = Expression.Convert(instance, method.DeclaringType!);
+
+        var call = Expression.Call(castedInstance, method, arguments);
+
+        // Convert the result to a ValueTask<IResult>
+        call = (MethodCallExpression)CoerceToValueTask(call);
+
+        // Compile the expression
+        var lambda = Expression.Lambda<Func<IServiceProvider, object[], ValueTask<IResult>>>(call, serviceProvider, parameters);
+
+        return lambda.Compile();
+    }
+
+    /// <summary>
+    /// Coerces the static result type of an expression to a <see cref="ValueTask"/>.
+    /// <list type="bullet">
+    /// <item>If the type is <see cref="ValueTask"/>, returns the expression as-is</item>
+    /// <item>If the type is <see cref="Task"/>, returns an expression wrappiung the Task in a <see cref="ValueTask"/></item>
+    /// <item>If the type is <c>void</c>, returns <see cref="ValueTask.CompletedTask"/></item>
+    /// <item>Otherwise, throws <see cref="InvalidOperationException"/></item>
+    /// </list>
+    /// </summary>
+    /// <param name="expression">The input expression.</param>
+    /// <param name="expressionType">The type of the expression; defaults to <see cref="Expression.Type"/>.</param>
+    /// <returns>The new expression.</returns>
+    /// <exception cref="InvalidOperationException">If the type of <paramref name="expression"/> is not wrappable.</exception>
+    public static Expression CoerceToValueTask(Expression expression, Type? expressionType = null)
+    {
+        expressionType ??= expression.Type;
+
+        Expression invokerExpr;
+        if (expressionType.IsConstructedGenericType && expressionType.GetGenericTypeDefinition() == typeof(ValueTask<>))
+        {
+            invokerExpr = Expression.Call(ToResultValueTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
+        }
+        else if (expressionType.IsConstructedGenericType && expressionType.GetGenericTypeDefinition() == typeof(Task<>))
+        {
+            invokerExpr = Expression.Call(ToResultTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
+        }
+        else
+        {
+            throw new InvalidOperationException($"{nameof(CoerceToValueTask)} expression must be {nameof(Task<IResult>)} or {nameof(ValueTask<IResult>)}");
+        }
+
+        return invokerExpr;
+    }
+
+    private static async ValueTask<IResult> ToResultValueTask<T>(ValueTask<T> task) where T : IResult
+        => await task;
+
+    private static async ValueTask<IResult> ToResultTask<T>(Task<T> task) where T : IResult
+        => await task;
+
+    private static readonly MethodInfo ToResultValueTaskInfo
+        = typeof(CommandTreeBuilder).GetMethod(nameof(ToResultValueTask), BindingFlags.Static | BindingFlags.NonPublic)
+          ?? throw new InvalidOperationException($"Did not find {nameof(ToResultValueTask)}");
+
+    private static readonly MethodInfo ToResultTaskInfo
+        = typeof(CommandTreeBuilder).GetMethod(nameof(ToResultTask), BindingFlags.Static | BindingFlags.NonPublic)
+          ?? throw new InvalidOperationException($"Did not find {nameof(ToResultTask)}");
 }

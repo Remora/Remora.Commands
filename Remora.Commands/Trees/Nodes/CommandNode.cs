@@ -90,37 +90,6 @@ public class CommandNode : IChildNode
     /// </summary>
     /// <param name="parent">The parent node.</param>
     /// <param name="key">The key value of the command node.</param>
-    /// <param name="groupType">The module type that the command is in.</param>
-    /// <param name="commandMethod">The method that the command invokes.</param>
-    /// <param name="aliases">Additional key aliases, if any.</param>
-    public CommandNode
-    (
-        IParentNode parent,
-        string key,
-        Type groupType,
-        MethodInfo commandMethod,
-        IReadOnlyList<string>? aliases = null
-    )
-    {
-        // TODO: Either remove this constructor, or make it compatible with the new command invocation system.
-        this.CommandMethod = commandMethod;
-        this.GroupType = groupType;
-        this.Invoke = (_, _) => default;
-
-        this.Parent = parent;
-        this.Key = key;
-        this.GroupType = groupType;
-        this.Aliases = aliases ?? Array.Empty<string>();
-        this.Shape = CommandShape.FromMethod(this.CommandMethod);
-        this.Attributes = commandMethod.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
-        this.Conditions = commandMethod.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CommandNode"/> class.
-    /// </summary>
-    /// <param name="parent">The parent node.</param>
-    /// <param name="key">The key value of the command node.</param>
     /// <param name="invoke">The function to invoke the command.</param>
     /// <param name="shape">The shape of the command.</param>
     /// <param name="aliases">Additional key aliases, if any.</param>
