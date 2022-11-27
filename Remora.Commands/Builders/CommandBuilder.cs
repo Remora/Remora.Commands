@@ -22,10 +22,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
+using Remora.Commands.Extensions;
 using Remora.Commands.Signatures;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
@@ -70,6 +75,8 @@ public class CommandBuilder
         _conditions = new();
 
         _parent = parent;
+
+        _parent?.Children.Add(this);
     }
 
     /// <summary>
@@ -117,7 +124,7 @@ public class CommandBuilder
     }
 
     /// <summary>
-    /// Adds an attribute to the command. Conditions must be added via <see cref="AddCondition{T}"/>.
+    /// Adds an attribute to the command. Conditions must be added via <see cref="AddCondition"/>.
     /// </summary>
     /// <param name="attribute">The attribute to add.</param>
     /// <returns>The current builder to chain calls with.</returns>
@@ -153,6 +160,121 @@ public class CommandBuilder
     {
         _invocation = invokeFunc;
         return this;
+    }
+
+    /// <summary>
+    /// Adds a new parameter to the command.
+    /// </summary>
+    /// <param name="type">The optional type of the parameter.</param>
+    /// <returns>The parameter builder to build the parameter with.</returns>
+    public CommandParameterBuilder AddParameter(Type? type = null)
+    {
+        var parameterBuilder = new CommandParameterBuilder(this, type);
+        Parameters.Add(parameterBuilder);
+        return parameterBuilder;
+    }
+
+    /// <summary>
+    /// Creates a <see cref="CommandBuilder"/> from a method.
+    /// </summary>
+    /// <param name="parent">The parent builder, if applicable.</param>
+    /// <param name="info">The method to extract from.</param>
+    /// <returns>The builder.</returns>
+    public static CommandBuilder FromMethod(GroupBuilder? parent, MethodInfo info)
+    {
+        var builder = new CommandBuilder(parent);
+
+        var commandAttribute = info.GetCustomAttribute<CommandAttribute>()!;
+
+        builder.WithName(commandAttribute.Name);
+        builder.AddAliases(commandAttribute.Aliases);
+
+        var descriptionAttribute = info.GetCustomAttribute<DescriptionAttribute>();
+
+        if (descriptionAttribute is not null)
+        {
+            builder.WithDescription(descriptionAttribute.Description);
+        }
+
+        var parameters = info.GetParameters();
+
+        foreach (var parameter in parameters)
+        {
+            var parameterBuilder = builder.AddParameter(parameter.ParameterType);
+            parameterBuilder.WithName(parameter.Name!);
+
+            var description = parameter.GetCustomAttribute<DescriptionAttribute>();
+            if (description is not null)
+            {
+                parameterBuilder.WithDescription(description.Description);
+            }
+
+            if (parameter.HasDefaultValue)
+            {
+                parameterBuilder.WithDefaultValue(parameter.DefaultValue);
+            }
+
+            var conditions = parameter.GetCustomAttributes<ConditionAttribute>();
+
+            foreach (var condition in conditions)
+            {
+                parameterBuilder.AddCondition(condition);
+            }
+
+            var attributes = parameter.GetCustomAttributes().Where(att => att is not ConditionAttribute);
+
+            foreach (var attribute in attributes)
+            {
+                parameterBuilder.AddAttribute(attribute);
+            }
+
+            var switchOrOptionAttribute = parameter.GetCustomAttribute<OptionAttribute>();
+
+            if (switchOrOptionAttribute is SwitchAttribute sa)
+            {
+                parameterBuilder.IsSwitch((bool)parameter.DefaultValue, sa.ShortName, sa.LongName);
+            }
+            else if (switchOrOptionAttribute is OptionAttribute oa)
+            {
+                parameterBuilder.IsOption(oa.ShortName, oa.LongName);
+            }
+
+            var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
+
+            if (greedyAttribute is not null)
+            {
+                parameterBuilder.IsGreedy();
+            }
+        }
+
+        // Alternatively check if the builder is null? Expected case is from Remora.Commands invoking this,
+        // in which case it's expected that a group builder is ALWAYS passed if the command is within a group.
+        if (!info.DeclaringType!.TryGetGroupName(out _))
+        {
+            foreach (var attribute in info.DeclaringType!.GetCustomAttributes().Where(att => att is not ConditionAttribute))
+            {
+                builder.AddAttribute(attribute);
+            }
+
+            var conditions = info.DeclaringType!.GetCustomAttributes<ConditionAttribute>();
+
+            foreach (var condition in conditions)
+            {
+                builder.AddCondition(condition);
+            }
+        }
+
+        foreach (var attribute in info.GetCustomAttributes().Where(att => att is not ConditionAttribute))
+        {
+            builder.AddAttribute(attribute);
+        }
+
+        foreach (var condition in info.GetCustomAttributes<ConditionAttribute>())
+        {
+            builder.AddCondition(condition);
+        }
+
+        return builder;
     }
 
     /// <summary>
