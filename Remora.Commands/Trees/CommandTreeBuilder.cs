@@ -286,7 +286,7 @@ public class CommandTreeBuilder
         }
     }
 
-    private static Func<IServiceProvider, object[], ValueTask<IResult>> CreateDelegate(MethodInfo method, Type[] argumentTypes)
+    private static Func<IServiceProvider, object?[], ValueTask<IResult>> CreateDelegate(MethodInfo method, Type[] argumentTypes)
     {
         // Get the object from the container
         var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
@@ -317,7 +317,7 @@ public class CommandTreeBuilder
         call = (MethodCallExpression)CoerceToValueTask(call);
 
         // Compile the expression
-        var lambda = Expression.Lambda<Func<IServiceProvider, object[], ValueTask<IResult>>>(call, serviceProvider, parameters);
+        var lambda = Expression.Lambda<Func<IServiceProvider, object?[], ValueTask<IResult>>>(call, serviceProvider, parameters);
 
         return lambda.Compile();
     }
