@@ -94,7 +94,9 @@ public class CommandTreeBuilder
                     );
                 }
 
-                _ = CommandBuilder.FromMethod(parentBuilder, method);
+                var command = CommandBuilder.FromMethod(parentBuilder, method);
+
+                command.WithInvocation(CreateDelegate(method, method.GetParameters().Select(p => p.ParameterType).ToArray()));
             }
         }
         else
