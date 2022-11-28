@@ -266,7 +266,7 @@ public class CommandTreeBuilder
         );
 
         // Compile the expression
-        var lambda = Expression.Lambda<Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>>>(call, serviceProvider, parameters, ct);
+        var lambda = Expression.Lambda<Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>>>(block, serviceProvider, parameters, ct);
 
         return lambda.Compile();
     }
