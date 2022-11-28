@@ -74,6 +74,11 @@ public interface IParameterShape
     bool IsNullable { get; }
 
     /// <summary>
+    /// Gets the index of the parameter in the command's signature.
+    /// </summary>
+    int ParameterIndex { get; }
+
+    /// <summary>
     /// Determines whether the given token sequence matches the parameter shape.
     /// </summary>
     /// <param name="tokenizer">The token sequence.</param>

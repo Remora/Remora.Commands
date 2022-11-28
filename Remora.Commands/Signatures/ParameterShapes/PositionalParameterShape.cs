@@ -60,6 +60,9 @@ public class PositionalParameterShape : IParameterShape
     /// <inheritdoc/>
     public bool IsNullable { get; }
 
+    /// <inheritdoc/>
+    public int ParameterIndex { get; }
+
     /// <summary>
     /// Gets a value indicating whether this parameter is optional.
     /// </summary>
@@ -74,8 +77,9 @@ public class PositionalParameterShape : IParameterShape
     /// Initializes a new instance of the <see cref="PositionalParameterShape"/> class.
     /// </summary>
     /// <param name="parameter">The underlying parameter.</param>
+    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
-    public PositionalParameterShape(ParameterInfo parameter, string? description = null)
+    public PositionalParameterShape(ParameterInfo parameter, int index, string? description = null)
     {
         this.ParameterName = parameter.Name;
         this.ParameterType = parameter.ParameterType;
@@ -95,6 +99,7 @@ public class PositionalParameterShape : IParameterShape
     /// <param name="defaultValue">The default value of the parameter, if any.</param>
     /// <param name="attributes">The attributes of the parameter.</param>
     /// <param name="conditions">The conditions of the parameter.</param>
+    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the paremeter.</param>
     public PositionalParameterShape
     (
@@ -104,6 +109,7 @@ public class PositionalParameterShape : IParameterShape
         object? defaultValue,
         IReadOnlyList<Attribute> attributes,
         IReadOnlyList<ConditionAttribute> conditions,
+        int index,
         string description
     )
     {
@@ -113,6 +119,7 @@ public class PositionalParameterShape : IParameterShape
         this.DefaultValue = defaultValue;
         this.Attributes = attributes;
         this.Conditions = conditions;
+        this.ParameterIndex = index;
         this.Description = description;
     }
 

@@ -666,7 +666,7 @@ public class CommandService
         var boundParameters = boundCommandNode.BoundParameters.ToDictionary(bp => bp.ParameterShape);
 
         // for each parameter defined on the command itself
-        foreach (var parameter in boundCommandNode.Node.Shape.Parameters)
+        foreach (var parameter in boundCommandNode.Node.Shape.Parameters.OrderBy(p => p.ParameterIndex))
         {
             // Argument not present
             if (!boundParameters.TryGetValue(parameter, out var boundParameter))

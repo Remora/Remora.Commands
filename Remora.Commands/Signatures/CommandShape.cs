@@ -83,6 +83,8 @@ public class CommandShape
         var positionalParameters = new List<IParameterShape>();
         var namedParameters = new List<IParameterShape>();
 
+        var index = -1;
+
         foreach (var parameter in method.GetParameters())
         {
             var optionAttribute = parameter.GetCustomAttribute<OptionAttribute>();
@@ -93,7 +95,8 @@ public class CommandShape
                 var newPositionalParameter = CreatePositionalParameterShape
                 (
                     rangeAttribute,
-                    parameter
+                    parameter,
+                    ++index
                 );
 
                 positionalParameters.Add(newPositionalParameter);
@@ -104,7 +107,8 @@ public class CommandShape
                 (
                     optionAttribute,
                     rangeAttribute,
-                    parameter
+                    parameter,
+                    ++index
                 );
 
                 namedParameters.Add(newNamedParameter);
@@ -119,7 +123,8 @@ public class CommandShape
     (
         OptionAttribute optionAttribute,
         RangeAttribute? rangeAttribute,
-        ParameterInfo parameter
+        ParameterInfo parameter,
+        int index
     )
     {
         var isCollection = parameter.ParameterType.IsSupportedCollection();
@@ -127,19 +132,19 @@ public class CommandShape
         IParameterShape newNamedParameter;
         if (optionAttribute is SwitchAttribute)
         {
-            newNamedParameter = CreateNamedSwitchParameterShape(optionAttribute, parameter);
+            newNamedParameter = CreateNamedSwitchParameterShape(optionAttribute, parameter, index);
         }
         else if (!isCollection)
         {
             var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
 
             newNamedParameter = greedyAttribute is null
-                ? CreateNamedSingleValueParameterShape(optionAttribute, parameter)
-                : CreateGreedyNamedSingleValueParameterShape(optionAttribute, parameter);
+                ? CreateNamedSingleValueParameterShape(optionAttribute, parameter, index)
+                : CreateGreedyNamedSingleValueParameterShape(optionAttribute, parameter, index);
         }
         else
         {
-            newNamedParameter = CreateNamedCollectionParameterShape(optionAttribute, rangeAttribute, parameter);
+            newNamedParameter = CreateNamedCollectionParameterShape(optionAttribute, rangeAttribute, parameter, index);
         }
 
         return newNamedParameter;
@@ -149,7 +154,8 @@ public class CommandShape
     (
         OptionAttribute optionAttribute,
         RangeAttribute? rangeAttribute,
-        ParameterInfo parameter
+        ParameterInfo parameter,
+        int index
     )
     {
         var description = parameter.GetDescriptionOrDefault();
@@ -163,6 +169,7 @@ public class CommandShape
                 optionAttribute.LongName ?? throw new InvalidOperationException(),
                 rangeAttribute?.GetMin(),
                 rangeAttribute?.GetMax(),
+                index,
                 description
             );
         }
@@ -174,6 +181,7 @@ public class CommandShape
                 optionAttribute.ShortName ?? throw new InvalidOperationException(),
                 rangeAttribute?.GetMin(),
                 rangeAttribute?.GetMax(),
+                index,
                 description
             );
         }
@@ -186,6 +194,7 @@ public class CommandShape
                 optionAttribute.LongName ?? throw new InvalidOperationException(),
                 rangeAttribute?.GetMin(),
                 rangeAttribute?.GetMax(),
+                index,
                 description
             );
         }
@@ -196,7 +205,8 @@ public class CommandShape
     private static IParameterShape CreateNamedSwitchParameterShape
     (
         OptionAttribute optionAttribute,
-        ParameterInfo parameter
+        ParameterInfo parameter,
+        int index
     )
     {
         if (!parameter.IsOptional)
@@ -226,6 +236,7 @@ public class CommandShape
             (
                 parameter,
                 optionAttribute.LongName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -235,6 +246,7 @@ public class CommandShape
             (
                 parameter,
                 optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -245,6 +257,7 @@ public class CommandShape
                 parameter,
                 optionAttribute.ShortName ?? throw new InvalidOperationException(),
                 optionAttribute.LongName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -255,7 +268,8 @@ public class CommandShape
     private static IParameterShape CreateNamedSingleValueParameterShape
     (
         OptionAttribute optionAttribute,
-        ParameterInfo parameter
+        ParameterInfo parameter,
+        int index
     )
     {
         var description = parameter.GetDescriptionOrDefault();
@@ -267,6 +281,7 @@ public class CommandShape
             (
                 parameter,
                 optionAttribute.LongName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -276,6 +291,7 @@ public class CommandShape
             (
                 parameter,
                 optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -286,6 +302,7 @@ public class CommandShape
                 parameter,
                 optionAttribute.ShortName ?? throw new InvalidOperationException(),
                 optionAttribute.LongName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -296,7 +313,8 @@ public class CommandShape
     private static IParameterShape CreateGreedyNamedSingleValueParameterShape
     (
         OptionAttribute optionAttribute,
-        ParameterInfo parameter
+        ParameterInfo parameter,
+        int index
     )
     {
         var description = parameter.GetDescriptionOrDefault();
@@ -308,6 +326,7 @@ public class CommandShape
             (
                 parameter,
                 optionAttribute.LongName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -317,6 +336,7 @@ public class CommandShape
             (
                 parameter,
                 optionAttribute.ShortName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -327,6 +347,7 @@ public class CommandShape
                 parameter,
                 optionAttribute.ShortName ?? throw new InvalidOperationException(),
                 optionAttribute.LongName ?? throw new InvalidOperationException(),
+                index,
                 description
             );
         }
@@ -337,7 +358,8 @@ public class CommandShape
     private static IParameterShape CreatePositionalParameterShape
     (
         RangeAttribute? rangeAttribute,
-        ParameterInfo parameter
+        ParameterInfo parameter,
+        int index
     )
     {
         var description = parameter.GetDescriptionOrDefault();
@@ -349,8 +371,8 @@ public class CommandShape
             var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
 
             newPositionalParameter = greedyAttribute is null
-                ? new PositionalParameterShape(parameter, description)
-                : new PositionalGreedyParameterShape(parameter, description);
+                ? new PositionalParameterShape(parameter, index, description)
+                : new PositionalGreedyParameterShape(parameter, index, description);
         }
         else
         {
@@ -359,6 +381,7 @@ public class CommandShape
                 parameter,
                 rangeAttribute?.GetMin(),
                 rangeAttribute?.GetMax(),
+                index,
                 description
             );
         }

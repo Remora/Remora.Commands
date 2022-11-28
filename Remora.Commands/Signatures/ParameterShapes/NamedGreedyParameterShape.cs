@@ -87,6 +87,9 @@ public class NamedGreedyParameterShape : IParameterShape
     /// <inheritdoc/>
     public bool IsNullable { get; }
 
+    /// <inheritdoc/>
+    public int ParameterIndex { get; }
+
     private readonly bool _isOptional;
     private readonly string? _parameterName;
 
@@ -96,15 +99,17 @@ public class NamedGreedyParameterShape : IParameterShape
     /// <param name="parameter">The underlying parameter.</param>
     /// <param name="shortName">The short name.</param>
     /// <param name="longName">The long name.</param>
+    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public NamedGreedyParameterShape
     (
         ParameterInfo parameter,
         char shortName,
         string longName,
+        int index,
         string? description = null
     )
-    : this(parameter)
+    : this(parameter, index)
     {
         this.ShortName = shortName;
         this.LongName = longName;
@@ -116,14 +121,16 @@ public class NamedGreedyParameterShape : IParameterShape
     /// </summary>
     /// <param name="parameter">The underlying parameter.</param>
     /// <param name="longName">The long name.</param>
+    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public NamedGreedyParameterShape
     (
         ParameterInfo parameter,
         string longName,
+        int index,
         string? description = null
     )
-    : this(parameter)
+    : this(parameter, index)
     {
         this.LongName = longName;
         this.Description = description ?? Constants.DefaultDescription;
@@ -134,20 +141,22 @@ public class NamedGreedyParameterShape : IParameterShape
     /// </summary>
     /// <param name="parameter">The underlying parameter.</param>
     /// <param name="shortName">The short name.</param>
+    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public NamedGreedyParameterShape
     (
         ParameterInfo parameter,
         char shortName,
+        int index,
         string? description = null
     )
-    : this(parameter)
+    : this(parameter, index)
     {
         this.ShortName = shortName;
         this.Description = description ?? Constants.DefaultDescription;
     }
 
-    private NamedGreedyParameterShape(ParameterInfo parameter)
+    private NamedGreedyParameterShape(ParameterInfo parameter, int index)
     {
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
@@ -155,7 +164,7 @@ public class NamedGreedyParameterShape : IParameterShape
         this.Conditions = parameter.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
         this.IsNullable = parameter.AllowsNull();
         this._parameterName = parameter.Name;
-
+        this.ParameterIndex = index;
         this.Description = Constants.DefaultDescription;
     }
 
