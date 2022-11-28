@@ -322,7 +322,7 @@ public class CommandTreeBuilder
     {
         // Get the object from the container
         var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
-        var getRequiredService = typeof(ServiceProviderServiceExtensions).GetMethod
+        var getRequiredService = typeof(IServiceProvider).GetMethod
         (
             nameof(IServiceProvider.GetService),
             BindingFlags.Public | BindingFlags.Instance
