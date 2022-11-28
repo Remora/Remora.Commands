@@ -20,8 +20,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 
 namespace Remora.Commands.Trees.Nodes;
 
@@ -45,4 +47,14 @@ public interface IChildNode
     /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
     /// </summary>
     IReadOnlyList<string> Aliases { get; }
+    
+    /// <summary>
+    /// Gets the attributes of the node.
+    /// </summary>
+    public IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <summary>
+    /// Gets the conditions of the node.
+    /// </summary>
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
 }
