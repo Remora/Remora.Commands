@@ -152,6 +152,7 @@ public class SwitchParameterShape : IParameterShape
 
     private SwitchParameterShape(ParameterInfo parameter, int index)
     {
+        this._parameterName = parameter.Name;
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
         this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();

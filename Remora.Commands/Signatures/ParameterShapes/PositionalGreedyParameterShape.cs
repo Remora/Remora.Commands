@@ -74,6 +74,7 @@ public class PositionalGreedyParameterShape : IParameterShape
     /// <param name="description">The description of the parameter.</param>
     public PositionalGreedyParameterShape(ParameterInfo parameter, int index, string? description = null)
     {
+        this._parameterName = parameter.Name;
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
         this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
