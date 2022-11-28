@@ -105,9 +105,9 @@ public class CommandTreeBuilder
         else
         {
             // Effectively `.GroupBy(x => x.TryGetGroupName(out var name) ? name : string.Empty)`
-            var builder = _registeredBuilders.Where(rb => rb.IsT1).Cast<GroupBuilder>().FirstOrDefault(rb => rb.Name == name);
+            var existingBuilder = _registeredBuilders.Where(rb => rb.IsT1).Cast<GroupBuilder>().FirstOrDefault(rb => rb.Name == name);
 
-            builder ??= parentBuilder ?? new GroupBuilder();
+            var builder = existingBuilder ?? parentBuilder ?? new GroupBuilder();
             builder.WithName(name);
 
             var description = commandModule.GetCustomAttribute<DescriptionAttribute>();
@@ -131,10 +131,37 @@ public class CommandTreeBuilder
             }
 
             var submodules = commandModule.GetNestedTypes().Where(t => t.IsSubclassOf(typeof(CommandGroup)));
+            var subcommands = commandModule.GetMethods();
+
+            foreach (var subcommand in subcommands)
+            {
+                if (subcommand.GetCustomAttribute<CommandAttribute>() is null)
+                {
+                    continue;
+                }
+
+                if (!subcommand.ReturnType.IsSupportedCommandReturnType())
+                {
+                    throw new InvalidOperationException
+                        (
+                         $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
+                         $"containing a type that implements {typeof(IResult)}."
+                        );
+                }
+
+                var command = CommandBuilder.FromMethod(builder, subcommand);
+
+                command.WithInvocation(CreateDelegate(subcommand, subcommand.GetParameters().Select(p => p.ParameterType).ToArray()));
+            }
 
             foreach (var submodule in submodules)
             {
                 AddBuildersFromModule(submodule, builder);
+            }
+
+            if (existingBuilder is null && parentBuilder is null)
+            {
+                _registeredBuilders.Add(builder);
             }
         }
     }
