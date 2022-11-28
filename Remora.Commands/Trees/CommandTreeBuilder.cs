@@ -26,6 +26,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -286,7 +287,7 @@ public class CommandTreeBuilder
         }
     }
 
-    private static Func<IServiceProvider, object?[], ValueTask<IResult>> CreateDelegate(MethodInfo method, Type[] argumentTypes)
+    private static Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> CreateDelegate(MethodInfo method, Type[] argumentTypes)
     {
         // Get the object from the container
         var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
@@ -316,8 +317,18 @@ public class CommandTreeBuilder
         // Convert the result to a ValueTask<IResult>
         call = (MethodCallExpression)CoerceToValueTask(call);
 
+        var ct = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
+
+        var setCancellationToken = typeof(CommandGroup).GetMethod(nameof(CommandGroup.SetCancellationToken), BindingFlags.NonPublic | BindingFlags.Instance);
+
+        var block = Expression.Block
+        (
+            Expression.Call(castedInstance, setCancellationToken!, ct),
+            call
+        );
+
         // Compile the expression
-        var lambda = Expression.Lambda<Func<IServiceProvider, object?[], ValueTask<IResult>>>(call, serviceProvider, parameters);
+        var lambda = Expression.Lambda<Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>>>(call, serviceProvider, parameters, ct);
 
         return lambda.Compile();
     }

@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,17 +47,11 @@ public class CommandNode : IChildNode
     /// Gets the module type that the command is in.
     /// </summary>
     public Type GroupType { get; }
-
-    /// <summary>
-    /// Gets the method that the command invokes.
-    /// </summary>
-    [Obsolete($"Use {nameof(Invoke)} instead")]
-    public MethodInfo CommandMethod { get; }
-
+    
     /// <summary>
     /// Gets the delegate that represents the command, or invokes it.
     /// </summary>
-    public Func<IServiceProvider, object[], ValueTask<IResult>> Invoke { get; }
+    public Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> Invoke { get; }
 
     /// <inheritdoc/>
     public IParentNode Parent { get; }
@@ -99,16 +94,13 @@ public class CommandNode : IChildNode
     (
         IParentNode parent,
         string key,
-        Func<IServiceProvider, object[], ValueTask<IResult>> invoke,
+        Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> invoke,
         CommandShape shape,
         IReadOnlyList<string>? aliases = null,
         IReadOnlyList<Attribute>? attributes = null,
         IReadOnlyList<ConditionAttribute>? conditions = null
     )
     {
-        this.GroupType = Type.EmptyTypes[0];
-        this.CommandMethod = null!;
-
         this.Invoke = invoke;
         this.Parent = parent;
         this.Key = key;

@@ -26,6 +26,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Attributes;
@@ -60,7 +61,7 @@ public class CommandBuilder
     private readonly GroupBuilder? _parent;
 
     private string _name;
-    private Func<IServiceProvider, object[], ValueTask<IResult>>? _invocation;
+    private Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>>? _invocation;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandBuilder"/> class.
@@ -156,7 +157,7 @@ public class CommandBuilder
     /// <param name="invokeFunc">The function to invoke the command, or the command itself.</param>
     /// <remarks>This method MUST be called before <see cref="Build"/>.</remarks>
     /// <returns>The current builder to chain calls with.</returns>
-    public CommandBuilder WithInvocation(Func<IServiceProvider, object?[], ValueTask<IResult>> invokeFunc)
+    public CommandBuilder WithInvocation(Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> invokeFunc)
     {
         _invocation = invokeFunc;
         return this;
