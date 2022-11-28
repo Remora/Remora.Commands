@@ -28,6 +28,7 @@ using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
+using Remora.Commands.Groups;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
@@ -219,6 +220,11 @@ public class GroupBuilder
 
         foreach (var childType in moduleType.GetNestedTypes())
         {
+            if (!childType.TryGetGroupName(out _) || !childType.IsSubclassOf(typeof(CommandGroup)))
+            {
+                continue;
+            }
+
             var childGroup = FromType(childType, builder);
             builder.Children.Add(childGroup);
         }
