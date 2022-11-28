@@ -98,6 +98,8 @@ public class CommandTreeBuilder
                 var command = CommandBuilder.FromMethod(parentBuilder, method);
 
                 command.WithInvocation(CreateDelegate(method, method.GetParameters().Select(p => p.ParameterType).ToArray()));
+
+                _registeredBuilders.Add(command);
             }
         }
         else
