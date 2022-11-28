@@ -69,6 +69,7 @@ public class CommandShape
         var constructedParameters = new List<IParameterShape>();
         constructedParameters.AddRange(builder.Parameters.Select(p => p.Build()));
 
+        // TODO: Make ordering consistent.
         return new CommandShape(constructedParameters, builder.Description ?? Constants.DefaultDescription);
     }
 

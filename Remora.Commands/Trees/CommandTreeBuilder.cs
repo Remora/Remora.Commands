@@ -69,100 +69,6 @@ public class CommandTreeBuilder
         if (!_registeredModuleTypes.Contains(commandModule))
         {
             _registeredModuleTypes.Add(commandModule);
-
-            AddBuildersFromModule(commandModule);
-        }
-    }
-
-    private void AddBuildersFromModule(Type commandModule, GroupBuilder? parentBuilder = null)
-    {
-        if (!commandModule.TryGetGroupName(out var name))
-        {
-            foreach (var method in commandModule.GetMethods())
-            {
-                var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
-                if (commandAttribute is null)
-                {
-                    continue;
-                }
-
-                if (!method.ReturnType.IsSupportedCommandReturnType())
-                {
-                    throw new InvalidOperationException
-                    (
-                     $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
-                     $"containing a type that implements {typeof(IResult)}."
-                    );
-                }
-
-                var command = CommandBuilder.FromMethod(parentBuilder, method);
-
-                command.WithInvocation(CreateDelegate(method, method.GetParameters().Select(p => p.ParameterType).ToArray()));
-
-                _registeredBuilders.Add(command);
-            }
-        }
-        else
-        {
-            // Effectively `.GroupBy(x => x.TryGetGroupName(out var name) ? name : string.Empty)`
-            var existingBuilder = _registeredBuilders.Where(rb => rb.IsT1).Cast<GroupBuilder>().FirstOrDefault(rb => rb.Name == name);
-
-            var builder = existingBuilder ?? parentBuilder ?? new GroupBuilder();
-            builder.WithName(name);
-
-            var description = commandModule.GetCustomAttribute<DescriptionAttribute>();
-            if (description is not null)
-            {
-                builder.WithDescription(description.Description);
-            }
-
-            var attributes = commandModule.GetCustomAttributes().Where(att => att is not ConditionAttribute);
-
-            var conditions = commandModule.GetCustomAttributes<ConditionAttribute>();
-
-            foreach (var condition in conditions)
-            {
-                builder.AddCondition(condition);
-            }
-
-            foreach (var attribute in attributes)
-            {
-                builder.AddAttribute(attribute);
-            }
-
-            var submodules = commandModule.GetNestedTypes().Where(t => t.IsSubclassOf(typeof(CommandGroup)));
-            var subcommands = commandModule.GetMethods();
-
-            foreach (var subcommand in subcommands)
-            {
-                if (subcommand.GetCustomAttribute<CommandAttribute>() is null)
-                {
-                    continue;
-                }
-
-                if (!subcommand.ReturnType.IsSupportedCommandReturnType())
-                {
-                    throw new InvalidOperationException
-                        (
-                         $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
-                         $"containing a type that implements {typeof(IResult)}."
-                        );
-                }
-
-                var command = CommandBuilder.FromMethod(builder, subcommand);
-
-                command.WithInvocation(CreateDelegate(subcommand, subcommand.GetParameters().Select(p => p.ParameterType).ToArray()));
-            }
-
-            foreach (var submodule in submodules)
-            {
-                AddBuildersFromModule(submodule, builder);
-            }
-
-            if (existingBuilder is null && parentBuilder is null)
-            {
-                _registeredBuilders.Add(builder);
-            }
         }
     }
 
@@ -174,10 +80,11 @@ public class CommandTreeBuilder
     {
         var rootChildren = new List<IChildNode>();
         var rootNode = new RootNode(rootChildren);
-        //rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
 
+        rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
+
+        //TODO?: Merge built groups?
         var builtCommands = _registeredBuilders.Select(rb => rb.Match(cb => cb.Build(rootNode), gb => (IChildNode)gb.Build(rootNode)));
-
         rootChildren.AddRange(builtCommands);
 
         return new CommandTree(rootNode);
