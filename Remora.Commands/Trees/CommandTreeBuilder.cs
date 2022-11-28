@@ -274,6 +274,8 @@ public class CommandTreeBuilder
                 );
             }
 
+            method.GetAttributesAndConditions(out var attributes, out var conditions);
+
             yield return new CommandNode
             (
                 parent,
@@ -281,8 +283,8 @@ public class CommandTreeBuilder
                 CreateDelegate(method, method.GetParameters().Select(p => p.ParameterType).ToArray()),
                 CommandShape.FromMethod(method),
                 commandAttribute.Aliases,
-                method.GetCustomAttributes().Where(att => att is not ConditionAttribute).ToArray(),
-                method.GetCustomAttributes<ConditionAttribute>().ToArray()
+                attributes,
+                conditions
             );
         }
     }

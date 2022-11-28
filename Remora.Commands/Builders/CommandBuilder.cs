@@ -215,18 +215,16 @@ public class CommandBuilder
                 parameterBuilder.WithDefaultValue(parameter.DefaultValue);
             }
 
-            var conditions = parameter.GetCustomAttributes<ConditionAttribute>();
-
-            foreach (var condition in conditions)
-            {
-                parameterBuilder.AddCondition(condition);
-            }
-
-            var attributes = parameter.GetCustomAttributes().Where(att => att is not ConditionAttribute);
+            parameter.GetAttributesAndConditions(out var attributes, out var conditions);
 
             foreach (var attribute in attributes)
             {
                 parameterBuilder.AddAttribute(attribute);
+            }
+
+            foreach (var condition in conditions)
+            {
+                parameterBuilder.AddCondition(condition);
             }
 
             var switchOrOptionAttribute = parameter.GetCustomAttribute<OptionAttribute>();
@@ -252,28 +250,16 @@ public class CommandBuilder
         // in which case it's expected that a group builder is ALWAYS passed if the command is within a group.
         if (!info.DeclaringType!.TryGetGroupName(out _))
         {
-            foreach (var attribute in info.DeclaringType!.GetCustomAttributes().Where(att => att is not ConditionAttribute))
-            {
-                builder.AddAttribute(attribute);
-            }
+            info.DeclaringType!.GetAttributesAndConditions(out var attributes, out var conditions);
 
-            var conditions = info.DeclaringType!.GetCustomAttributes<ConditionAttribute>();
-
-            foreach (var condition in conditions)
-            {
-                builder.AddCondition(condition);
-            }
+            builder._attributes.AddRange(attributes);
+            builder._conditions.AddRange(conditions);
         }
 
-        foreach (var attribute in info.GetCustomAttributes().Where(att => att is not ConditionAttribute))
-        {
-            builder.AddAttribute(attribute);
-        }
+        info.GetAttributesAndConditions(out var methodAttributes, out var methodConditions);
 
-        foreach (var condition in info.GetCustomAttributes<ConditionAttribute>())
-        {
-            builder.AddCondition(condition);
-        }
+        builder._attributes.AddRange(methodAttributes);
+        builder._conditions.AddRange(methodConditions);
 
         return builder;
     }
