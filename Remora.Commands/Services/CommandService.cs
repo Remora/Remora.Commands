@@ -334,44 +334,10 @@ public class CommandService
     )
     {
         var (boundCommandNode, parameters) = preparedCommand;
-
-        var groupType = boundCommandNode.Node.GroupType;
-        var groupInstance = (CommandGroup)services.GetRequiredService(groupType);
-
-        groupInstance.SetCancellationToken(ct);
-
-        var method = boundCommandNode.Node.CommandMethod;
-
+        
         try
         {
-            IResult result;
-            if (method.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>))
-            {
-                var genericUnwrapMethod = GetType()
-                                              .GetMethod(nameof(UnwrapCommandValueTask), BindingFlags.NonPublic | BindingFlags.Static)
-                                          ?? throw new InvalidOperationException();
-
-                var unwrapMethod = genericUnwrapMethod
-                    .MakeGenericMethod(method.ReturnType.GetGenericArguments().Single());
-
-                var invocationResult = method.Invoke(groupInstance, parameters);
-                var unwrapTask = (Task<IResult>)(unwrapMethod.Invoke
-                (
-                    null, new[] { invocationResult }
-                ) ?? throw new InvalidOperationException());
-
-                result = await unwrapTask;
-            }
-            else
-            {
-                var invocationResult = (Task)(method.Invoke(groupInstance, parameters)
-                                              ?? throw new InvalidOperationException());
-                await invocationResult;
-
-                result = (IResult)(invocationResult.GetType().GetProperty(nameof(Task<object>.Result))
-                    ?.GetValue(invocationResult) ?? throw new InvalidOperationException());
-            }
-
+            var result = await boundCommandNode.Node.Invoke(services, parameters, ct);
             return Result<IResult>.FromSuccess(result);
         }
         catch (Exception ex)
@@ -442,7 +408,6 @@ public class CommandService
     )
     {
         // Check group-level conditions, if any
-        var groupTypeWithConditions = boundCommandNode.Node.GroupType;
         var groupNode = boundCommandNode.Node.Parent as GroupNode;
 
         while (true)
@@ -451,7 +416,6 @@ public class CommandService
             (
                 services,
                 groupNode,
-                groupTypeWithConditions,
                 ct
             );
 
@@ -460,25 +424,25 @@ public class CommandService
                 return Result<PreparedCommand>.FromError(groupConditionsResult);
             }
 
-            if (!typeof(CommandGroup).IsAssignableFrom(groupTypeWithConditions.DeclaringType))
+            // If we're at the root, we're done
+            // Any root-level commands copy the conditions applied to the module type
+            // so we don't have to worry about that.
+            if (groupNode?.Parent is RootNode)
             {
                 break;
             }
-
-            groupTypeWithConditions = groupTypeWithConditions.DeclaringType;
-            if (groupNode is not null && !groupNode.GroupTypes.Contains(groupTypeWithConditions))
+            
+            if (groupNode is not null)
             {
                 groupNode = groupNode.Parent as GroupNode;
             }
         }
 
         // Check method-level conditions, if any
-        var method = boundCommandNode.Node.CommandMethod;
         var methodConditionsResult = await CheckConditionsAsync
         (
             services,
             boundCommandNode.Node,
-            method,
             ct
         );
 
@@ -502,7 +466,7 @@ public class CommandService
         var materializedParameters = materializeResult.Entity;
 
         // Check parameter-level conditions, if any
-        var methodParameters = method.GetParameters();
+        var methodParameters = boundCommandNode.Node.Shape.Parameters;
         foreach (var (parameter, value) in methodParameters.Zip(materializedParameters, (info, o) => (info, o)))
         {
             var parameterConditionResult = await CheckConditionsAsync
@@ -534,13 +498,12 @@ public class CommandService
     /// <returns>A condition result which may or may not have succeeded.</returns>
     private async Task<Result> CheckConditionsAsync
     (
-        IServiceProvider services,
-        IChildNode? node,
-        ICustomAttributeProvider attributeProvider,
+        IServiceProvider  services,
+        IChildNode?       node,
         CancellationToken ct
     )
     {
-        var conditionAttributes = attributeProvider.GetCustomAttributes(typeof(ConditionAttribute), false);
+        var conditionAttributes = node?.Conditions ?? Array.Empty<ConditionAttribute>();
         if (!conditionAttributes.Any())
         {
             return Result.FromSuccess();
@@ -575,7 +538,7 @@ public class CommandService
                 var invocationResult = conditionMethod.Invoke
                                        (
                                            condition,
-                                           new[] { conditionAttribute, ct }
+                                           new object[] { conditionAttribute, ct }
                                        )
                                        ?? throw new InvalidOperationException();
 
@@ -614,12 +577,12 @@ public class CommandService
     (
         IServiceProvider services,
         IChildNode node,
-        ParameterInfo parameter,
+        IParameterShape parameter,
         object? value,
         CancellationToken ct
     )
     {
-        var conditionAttributes = parameter.GetCustomAttributes(typeof(ConditionAttribute), false);
+        var conditionAttributes = parameter.Conditions;
         if (!conditionAttributes.Any())
         {
             return Result.FromSuccess();
