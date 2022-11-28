@@ -427,15 +427,12 @@ public class CommandService
             // If we're at the root, we're done
             // Any root-level commands copy the conditions applied to the module type
             // so we don't have to worry about that.
-            if (groupNode?.Parent is RootNode)
+            if (groupNode?.Parent is RootNode or null)
             {
                 break;
             }
 
-            if (groupNode is not null)
-            {
-                groupNode = groupNode.Parent as GroupNode;
-            }
+            groupNode = groupNode.Parent as GroupNode;
         }
 
         // Check method-level conditions, if any
