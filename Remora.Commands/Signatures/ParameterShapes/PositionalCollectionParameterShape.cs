@@ -49,7 +49,22 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
     public ulong? Max { get; }
 
     /// <inheritdoc/>
-    public override object? DefaultValue { get; }
+    public override object? DefaultValue
+    {
+        get
+        {
+            if (this.IsOptional)
+            {
+                return null;
+            }
+            else if (this.Min is null or 0)
+            {
+                return _emptyCollection;
+            }
+
+            throw new InvalidOperationException();
+        }
+    }
 
     static PositionalCollectionParameterShape()
     {
@@ -82,9 +97,6 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-
-        DefaultValue = parameter.IsOptional ? parameter.DefaultValue :
-            this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -132,9 +144,6 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-
-        this.DefaultValue = IsOptional ? defaultValue :
-            this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }
 
     /// <inheritdoc />

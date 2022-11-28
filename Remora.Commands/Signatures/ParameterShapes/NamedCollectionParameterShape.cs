@@ -48,7 +48,22 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     public ulong? Max { get; }
 
     /// <inheritdoc/>
-    public override object? DefaultValue { get; }
+    public override object? DefaultValue
+    {
+        get
+        {
+            if (this.IsOptional)
+            {
+                return null;
+            }
+            else if (this.Min is null or 0)
+            {
+                return _emptyCollection;
+            }
+
+            throw new InvalidOperationException();
+        }
+    }
 
     static NamedCollectionParameterShape()
     {
@@ -85,9 +100,6 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-
-        DefaultValue = parameter.IsOptional ? parameter.DefaultValue :
-            this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -117,9 +129,6 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-
-        DefaultValue = parameter.IsOptional ? parameter.DefaultValue :
-            this.Min is null or 0 ? _emptyCollection : throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -161,8 +170,6 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
-
-        DefaultValue = isOptional ? defaultValue : _emptyCollection;
     }
 
     /// <summary>
