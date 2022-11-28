@@ -22,9 +22,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using OneOf;
+using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
+using Remora.Commands.Extensions;
 using Remora.Commands.Trees.Nodes;
+using Remora.Results;
 
 namespace Remora.Commands.Builders;
 
@@ -37,6 +42,8 @@ public class GroupBuilder
     private readonly List<string> _groupAliases;
     private readonly List<Attribute> _groupAttributes;
     private readonly List<ConditionAttribute> _groupConditions;
+
+    private Type? _groupType;
 
     /// <summary>
     /// Gets the children of the group.
@@ -152,6 +159,69 @@ public class GroupBuilder
     {
         var builder = new GroupBuilder(this);
         Children.Add(OneOf<CommandBuilder, GroupBuilder>.FromT1(builder)); // new() would also work.
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Constructs a <see cref="GroupBuilder"/> from a given module type.
+    /// </summary>
+    /// <param name="moduleType">The type of the module to construct from.</param>
+    /// <param name="parent">The parent of the builder, if applicable.</param>
+    /// <returns>The constructed builder.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when a command method is marked with
+    /// <see cref="CommandAttribute"/> but the return type of the command is not supported.</exception>
+    public static GroupBuilder FromType(Type moduleType, GroupBuilder? parent = null)
+    {
+        var builder = new GroupBuilder(parent);
+
+        builder._groupType = moduleType;
+
+        var groupAttribute = moduleType.GetCustomAttribute<GroupAttribute>()!;
+
+        builder.WithName(groupAttribute.Name);
+
+        builder.AddAliases(groupAttribute.Aliases);
+
+        var description = moduleType.GetCustomAttribute<DescriptionAttribute>();
+
+        if (description is not null)
+        {
+            builder.WithDescription(description.Description);
+        }
+
+        moduleType.GetAttributesAndConditions(out var attributes, out var conditions);
+
+        builder._groupAttributes.AddRange(attributes);
+        builder._groupConditions.AddRange(conditions);
+
+        foreach (var childMethod in moduleType.GetMethods())
+        {
+            var commandAttribute = childMethod.GetCustomAttribute<CommandAttribute>();
+
+            if (commandAttribute is null)
+            {
+                continue;
+            }
+
+            if (!childMethod.ReturnType.IsSupportedCommandReturnType())
+            {
+                throw new InvalidOperationException
+                (
+                 $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
+                 $"containing a type that implements {typeof(IResult)}."
+                );
+            }
+
+            var commandBuilder = CommandBuilder.FromMethod(builder, childMethod);
+            builder.Children.Add(commandBuilder);
+        }
+
+        foreach (var childType in moduleType.GetNestedTypes())
+        {
+            var childGroup = FromType(childType, builder);
+            builder.Children.Add(childGroup);
+        }
 
         return builder;
     }
