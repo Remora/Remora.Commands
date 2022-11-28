@@ -44,11 +44,6 @@ namespace Remora.Commands.Trees.Nodes;
 public class CommandNode : IChildNode
 {
     /// <summary>
-    /// Gets the module type that the command is in.
-    /// </summary>
-    public Type GroupType { get; }
-    
-    /// <summary>
     /// Gets the delegate that represents the command, or invokes it.
     /// </summary>
     public Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> Invoke { get; }

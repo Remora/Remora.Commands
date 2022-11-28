@@ -47,7 +47,7 @@ public interface IChildNode
     /// Gets a set of additional keys that the child node has, in addition to its primary key (<see cref="Key"/>).
     /// </summary>
     IReadOnlyList<string> Aliases { get; }
-    
+
     /// <summary>
     /// Gets the attributes of the node.
     /// </summary>

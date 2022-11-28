@@ -334,7 +334,7 @@ public class CommandService
     )
     {
         var (boundCommandNode, parameters) = preparedCommand;
-        
+
         try
         {
             var result = await boundCommandNode.Node.Invoke(services, parameters, ct);
@@ -431,7 +431,7 @@ public class CommandService
             {
                 break;
             }
-            
+
             if (groupNode is not null)
             {
                 groupNode = groupNode.Parent as GroupNode;
@@ -493,13 +493,12 @@ public class CommandService
     /// </summary>
     /// <param name="services">The available services.</param>
     /// <param name="node">The node whose conditions are being checked.</param>
-    /// <param name="attributeProvider">The group.</param>
     /// <param name="ct">The cancellation token for this operation.</param>
     /// <returns>A condition result which may or may not have succeeded.</returns>
     private async Task<Result> CheckConditionsAsync
     (
-        IServiceProvider  services,
-        IChildNode?       node,
+        IServiceProvider services,
+        IChildNode? node,
         CancellationToken ct
     )
     {
