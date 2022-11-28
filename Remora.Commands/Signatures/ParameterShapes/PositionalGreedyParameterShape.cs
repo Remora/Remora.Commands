@@ -74,12 +74,15 @@ public class PositionalGreedyParameterShape : IParameterShape
     /// <param name="description">The description of the parameter.</param>
     public PositionalGreedyParameterShape(ParameterInfo parameter, int index, string? description = null)
     {
+        parameter.GetAttributesAndConditions(out var attributes, out var conditions);
+
         this._parameterName = parameter.Name;
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
-        this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
-        this.Conditions = parameter.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
+        this.Attributes = attributes;
+        this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
+        this._isOptional = parameter.IsOptional;
         this.ParameterIndex = index;
         this.Description = description ?? Constants.DefaultDescription;
     }
@@ -111,6 +114,7 @@ public class PositionalGreedyParameterShape : IParameterShape
         this.ParameterType = parameterType;
         this._isOptional = isOptional;
         this.DefaultValue = defaultValue;
+        this.IsNullable = parameterType.IsNullable();
         this.Attributes = attributes;
         this.Conditions = conditions;
         this.ParameterIndex = index;

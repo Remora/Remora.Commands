@@ -165,6 +165,7 @@ public class NamedGreedyParameterShape : IParameterShape
         this.IsNullable = parameter.AllowsNull();
         this._parameterName = parameter.Name;
         this.ParameterIndex = index;
+        this._isOptional = parameter.IsOptional;
         this.Description = Constants.DefaultDescription;
     }
 
@@ -198,6 +199,7 @@ public class NamedGreedyParameterShape : IParameterShape
         this._parameterName = parameterName;
         this.ParameterType = parameterType;
         this._isOptional = isOptional;
+        this.IsNullable = parameterType.IsNullable();
         this.DefaultValue = defaultValue;
         this.Attributes = attributes;
         this.Conditions = conditions;

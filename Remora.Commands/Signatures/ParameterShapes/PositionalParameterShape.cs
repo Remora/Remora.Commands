@@ -81,12 +81,14 @@ public class PositionalParameterShape : IParameterShape
     /// <param name="description">The description of the parameter.</param>
     public PositionalParameterShape(ParameterInfo parameter, int index, string? description = null)
     {
+        parameter.GetAttributesAndConditions(out var attributes, out var conditions);
         this.ParameterName = parameter.Name;
         this.ParameterType = parameter.ParameterType;
-        this.IsOptional = parameter.AllowsNull();
+        this.IsOptional = parameter.IsOptional;
+        this.IsNullable = parameter.IsNullable();
         this.DefaultValue = parameter.DefaultValue;
-        this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
-        this.Conditions = parameter.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
+        this.Attributes = attributes;
+        this.Conditions = conditions;
         this.Description = description ?? Constants.DefaultDescription;
     }
 

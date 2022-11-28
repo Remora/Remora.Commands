@@ -152,12 +152,14 @@ public class SwitchParameterShape : IParameterShape
 
     private SwitchParameterShape(ParameterInfo parameter, int index)
     {
+        parameter.GetAttributesAndConditions(out var attributes, out var conditions);
         this._parameterName = parameter.Name;
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
-        this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
-        this.Conditions = parameter.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
+        this.Attributes = attributes;
+        this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
+        this._isOptional = parameter.IsOptional;
         this.Description = Constants.DefaultDescription;
         this.ParameterIndex = index;
     }
@@ -194,6 +196,7 @@ public class SwitchParameterShape : IParameterShape
         this._parameterName = parameterName;
         this.ParameterType = parameterType;
         this._isOptional = isOptional;
+        this.IsNullable = parameterType.IsNullable();
         this.DefaultValue = defaultValue;
         this.Attributes = attributes;
         this.Conditions = conditions;

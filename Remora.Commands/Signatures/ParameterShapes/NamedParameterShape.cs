@@ -162,10 +162,11 @@ public class NamedParameterShape : IParameterShape
 
     private NamedParameterShape(ParameterInfo parameter, int index)
     {
+        parameter.GetAttributesAndConditions(out var attributes, out var conditions);
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
-        this.Attributes = parameter.GetCustomAttributes().Where(a => !typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).ToArray();
-        this.Conditions = parameter.GetCustomAttributes().Where(a => typeof(ConditionAttribute).IsAssignableFrom(a.GetType())).Cast<ConditionAttribute>().ToArray();
+        this.Attributes = attributes;
+        this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
         this._parameterName = parameter.Name;
         this.IsOptional = parameter.IsOptional;
@@ -205,6 +206,7 @@ public class NamedParameterShape : IParameterShape
         this._parameterName = parameterName;
         this.ParameterType = parameterType;
         this.IsOptional = isOptional;
+        this.IsNullable = parameterType.IsNullable();
         this.DefaultValue = defaultValue;
         this.Attributes = attributes;
         this.Conditions = conditions;
