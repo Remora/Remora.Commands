@@ -47,12 +47,12 @@ public class GroupNode : IParentNode, IChildNode
     /// <summary>
     /// Gets the attributes that apply to the group.
     /// </summary>
-    public IReadOnlyList<Attribute> GroupAttributes { get; }
+    public IReadOnlyList<Attribute> Attributes { get; }
 
     /// <summary>
     /// Gets the conditions that apply to the group.
     /// </summary>
-    public IReadOnlyList<ConditionAttribute> GroupConditions { get; }
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
 
     /// <inheritdoc/>
     public IParentNode Parent { get; }
@@ -99,8 +99,8 @@ public class GroupNode : IParentNode, IChildNode
         this.Parent = parent;
         this.Key = key;
         this.Aliases = aliases ?? Array.Empty<string>();
-        this.GroupAttributes = groupAttributes ?? Array.Empty<Attribute>();
-        this.GroupConditions = groupConditions ?? Array.Empty<ConditionAttribute>();
+        this.Attributes = groupAttributes ?? Array.Empty<Attribute>();
+        this.Conditions = groupConditions ?? Array.Empty<ConditionAttribute>();
         this.Description = description ?? Constants.DefaultDescription;
     }
 }
