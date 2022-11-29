@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
+using Remora.Commands.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Signatures;
 using Remora.Commands.Trees.Nodes;
@@ -59,6 +60,7 @@ public class CommandBuilder
     private readonly List<ConditionAttribute> _conditions;
 
     private readonly GroupBuilder? _parent;
+    private readonly TreeRegistrationBuilder _treeBuilder;
 
     private string _name;
     private Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>>? _invocation;
@@ -78,6 +80,16 @@ public class CommandBuilder
         _parent = parent;
 
         _parent?.Children.Add(this);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CommandBuilder"/> class.
+    /// </summary>
+    /// <param name="treeBuilder">The registration builder.</param>
+    public CommandBuilder(TreeRegistrationBuilder treeBuilder)
+    : this()
+    {
+        _treeBuilder = treeBuilder;
     }
 
     /// <summary>

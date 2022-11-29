@@ -27,8 +27,10 @@ using System.Threading.Tasks;
 using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
+using Remora.Commands.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
+using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
@@ -40,6 +42,7 @@ namespace Remora.Commands.Builders;
 public class GroupBuilder
 {
     private readonly GroupBuilder? _parent;
+    private readonly TreeRegistrationBuilder? _treeBuilder;
     private readonly List<string> _groupAliases;
     private readonly List<Attribute> _groupAttributes;
     private readonly List<ConditionAttribute> _groupConditions;
@@ -70,6 +73,16 @@ public class GroupBuilder
         _groupAttributes = new List<Attribute>();
         _groupConditions = new List<ConditionAttribute>();
         Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GroupBuilder"/> class.
+    /// </summary>
+    /// <param name="treeBuilder">The registration builder.</param>
+    public GroupBuilder(TreeRegistrationBuilder treeBuilder)
+    : this()
+    {
+        _treeBuilder = treeBuilder;
     }
 
     /// <summary>
@@ -162,6 +175,38 @@ public class GroupBuilder
         Children.Add(OneOf<CommandBuilder, GroupBuilder>.FromT1(builder)); // new() would also work.
 
         return builder;
+    }
+
+    /// <summary>
+    /// Returns the parent builder of the current group.
+    /// </summary>
+    /// <returns>The parent builder of the group, if applicable.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the group does not belong to a parent.</exception>
+    /// <remarks>This method should only be called if the builder was instantiated from a call to <see cref="AddGroup"/>.</remarks>
+    public GroupBuilder Complete()
+    {
+        if (_parent is null)
+        {
+            throw new InvalidOperationException("Cannot complete a group that has no parent.");
+        }
+
+        return _parent;
+    }
+
+    /// <summary>
+    /// Returns the registration builder of the current group.
+    /// </summary>
+    /// <returns>The <see cref="TreeRegistrationBuilder"/> that created this builder, if applicable.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the group was not created via a registration builder.</exception>
+    /// <remarks>This method should only be called if the builder was instnatiated from a call to <see cref="TreeRegistrationBuilder.CreateCommandGroup"/>.</remarks>
+    public TreeRegistrationBuilder Finish()
+    {
+        if (_treeBuilder is null)
+        {
+            throw new InvalidOperationException("Cannot complete a group that has no parent.");
+        }
+
+        return _treeBuilder;
     }
 
     /// <summary>
