@@ -290,7 +290,7 @@ public class CommandTreeBuilder
         }
     }
 
-    private static Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> CreateDelegate(MethodInfo method, Type[] argumentTypes)
+    private static CommandInvocation CreateDelegate(MethodInfo method, Type[] argumentTypes)
     {
         // Get the object from the container
         var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
@@ -324,7 +324,7 @@ public class CommandTreeBuilder
         );
 
         // Compile the expression
-        var lambda = Expression.Lambda<Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>>>(block, serviceProvider, parameters, ct);
+        var lambda = Expression.Lambda<CommandInvocation>(block, serviceProvider, parameters, ct);
 
         return lambda.Compile();
     }

@@ -63,7 +63,7 @@ public class CommandBuilder
     private readonly TreeRegistrationBuilder? _treeBuilder;
 
     private string _name;
-    private Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>>? _invocation;
+    private CommandInvocation? _invocation;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandBuilder"/> class.
@@ -169,7 +169,7 @@ public class CommandBuilder
     /// <param name="invokeFunc">The function to invoke the command, or the command itself.</param>
     /// <remarks>This method MUST be called before <see cref="Build"/>.</remarks>
     /// <returns>The current builder to chain calls with.</returns>
-    public CommandBuilder WithInvocation(Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> invokeFunc)
+    public CommandBuilder WithInvocation(CommandInvocation invokeFunc)
     {
         _invocation = invokeFunc;
         return this;

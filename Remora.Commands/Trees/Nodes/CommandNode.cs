@@ -37,6 +37,8 @@ using Remora.Results;
 
 namespace Remora.Commands.Trees.Nodes;
 
+public delegate ValueTask<IResult> CommandInvocation(IServiceProvider services, object?[] parameters, CancellationToken cancellationToken);
+
 /// <summary>
 /// Represents a command in a command group.
 /// </summary>
@@ -46,7 +48,7 @@ public class CommandNode : IChildNode
     /// <summary>
     /// Gets the delegate that represents the command, or invokes it.
     /// </summary>
-    public Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> Invoke { get; }
+    public CommandInvocation Invoke { get; }
 
     /// <inheritdoc/>
     public IParentNode Parent { get; }
@@ -89,7 +91,7 @@ public class CommandNode : IChildNode
     (
         IParentNode parent,
         string key,
-        Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>> invoke,
+        CommandInvocation invoke,
         CommandShape shape,
         IReadOnlyList<string>? aliases = null,
         IReadOnlyList<Attribute>? attributes = null,
