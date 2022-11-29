@@ -52,7 +52,7 @@ public class CommandTreeBuilder
     private readonly List<OneOf<CommandBuilder, GroupBuilder>> _registeredBuilders = new();
 
     private static readonly MethodInfo GetServiceMethodInfo = typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService), BindingFlags.Instance | BindingFlags.Public)!;
-    private static readonly MethodInfo SetCancellationTokenMethodInfo = typeof(CommandGroup).GetMethod(nameof(CommandGroup.SetCancellationToken), BindingFlags.Instance | BindingFlags.Public)!;
+    private static readonly MethodInfo SetCancellationTokenMethodInfo = typeof(CommandGroup).GetMethod(nameof(CommandGroup.SetCancellationToken), BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     /// <summary>
     /// Registers a module type with the builder.
