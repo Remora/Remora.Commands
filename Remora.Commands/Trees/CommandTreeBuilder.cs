@@ -229,7 +229,7 @@ public class CommandTreeBuilder
             extraAttributes.AddRange(parentAttributes.Reverse());
             extraConditions.AddRange(parentConditions.Reverse());
         }
-        while ((parentGroupType = parentGroupType!.DeclaringType!) is not null);
+        while ((parentGroupType = parentGroupType!.DeclaringType) is not null);
 
         // These are inserted in reverse order as we traverse up the
         // inheritance tree, so re-reversing the list gives us all attributes
