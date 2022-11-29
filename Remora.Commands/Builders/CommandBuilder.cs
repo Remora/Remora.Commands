@@ -231,7 +231,7 @@ public class CommandBuilder
 
             if (switchOrOptionAttribute is SwitchAttribute sa)
             {
-                parameterBuilder.IsSwitch((bool)parameter.DefaultValue, sa.ShortName, sa.LongName);
+                parameterBuilder.IsSwitch((bool)parameter.DefaultValue!, sa.ShortName, sa.LongName);
             }
             else if (switchOrOptionAttribute is OptionAttribute oa)
             {

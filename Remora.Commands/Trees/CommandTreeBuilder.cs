@@ -83,7 +83,7 @@ public class CommandTreeBuilder
 
         rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
 
-        //TODO?: Merge built groups?
+        // TODO?: Merge built groups?
         var builtCommands = _registeredBuilders.Select(rb => rb.Match(cb => cb.Build(rootNode), gb => (IChildNode)gb.Build(rootNode)));
         rootChildren.AddRange(builtCommands);
 

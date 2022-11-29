@@ -249,7 +249,7 @@ public class CommandParameterBuilder
     }
 
     /// <summary>
-    /// Builds the current builder into a <see cref="CommandParameter"/>.
+    /// Builds the current builder into a <see cref="IParameterShape"/>.
     /// </summary>
     /// <returns>The constructed <see cref="IParameterShape"/>.</returns>
     public IParameterShape Build()
