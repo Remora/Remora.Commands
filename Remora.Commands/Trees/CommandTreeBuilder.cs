@@ -79,7 +79,7 @@ public class CommandTreeBuilder
     /// Registers a command with the builder.
     /// </summary>
     /// <param name="builder">The builder to register.</param>
-    public void RegisterBuilder(OneOf<CommandBuilder, GroupBuilder> builder)
+    public void RegisterNodeBuilder(OneOf<CommandBuilder, GroupBuilder> builder)
     {
         _registeredBuilders.Add(builder);
     }

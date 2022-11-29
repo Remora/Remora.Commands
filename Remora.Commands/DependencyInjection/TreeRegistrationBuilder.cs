@@ -119,7 +119,7 @@ public class TreeRegistrationBuilder
         _serviceCollection.Configure<CommandTreeBuilder>
         (
             _treeName,
-            b => b.RegisterBuilder(builder)
+            b => b.RegisterNodeBuilder(builder)
         );
 
         return builder;
@@ -136,7 +136,7 @@ public class TreeRegistrationBuilder
         _serviceCollection.Configure<CommandTreeBuilder>
         (
             _treeName,
-            b => b.RegisterBuilder(builder)
+            b => b.RegisterNodeBuilder(builder)
         );
 
         return builder;
