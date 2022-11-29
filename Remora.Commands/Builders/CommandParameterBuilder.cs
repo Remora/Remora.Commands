@@ -347,8 +347,7 @@ public class CommandParameterBuilder
 
         if (builder._parameterType != typeof(bool))
         {
-            throw new InvalidOperationException
-            ("Switches must be booleans.");
+            throw new InvalidOperationException("Switches must be booleans.");
         }
 
         var description = builder._description ?? Constants.DefaultDescription;

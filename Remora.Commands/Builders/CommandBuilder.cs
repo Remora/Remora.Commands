@@ -243,6 +243,16 @@ public class CommandBuilder
 
             if (switchOrOptionAttribute is SwitchAttribute sa)
             {
+                if (parameter.ParameterType != typeof(bool))
+                {
+                    throw new InvalidOperationException("Switches must be of type bool.");
+                }
+                
+                if (!parameter.HasDefaultValue)
+                {
+                    throw new InvalidOperationException("Switches must have a default value.");
+                }
+                
                 parameterBuilder.IsSwitch((bool)parameter.DefaultValue!, sa.ShortName, sa.LongName);
             }
             else if (switchOrOptionAttribute is OptionAttribute oa)

@@ -172,7 +172,7 @@ public class GroupBuilder
     public GroupBuilder AddGroup()
     {
         var builder = new GroupBuilder(this);
-        Children.Add(OneOf<CommandBuilder, GroupBuilder>.FromT1(builder)); // new() would also work.
+        Children.Add(builder);
 
         return builder;
     }
