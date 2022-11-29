@@ -51,19 +51,8 @@ public class CommandTreeBuilder
     private readonly List<Type> _registeredModuleTypes = new();
     private readonly List<OneOf<CommandBuilder, GroupBuilder>> _registeredBuilders = new();
 
-    private static readonly MethodInfo GetServiceMethodInfo = GetMethodInfo<Func<IServiceProvider, Type, object?>>((p,   t) => p.GetService(t));
-    private static readonly MethodInfo SetCancellationTokenMethodInfo = GetMethodInfo<Action<CommandGroup, CancellationToken>>((g, c) => g.SetCancellationToken(c));
-
-    /// <summary>
-    /// Gets a <see cref="MethodInfo"/> of the given type.
-    /// </summary>
-    /// <param name="expression">The expression to retrive the method info from.</param>
-    /// <typeparam name="T">The delegate type.</typeparam>
-    /// <returns>The <see cref="MethodInfo"/> of the called method.</returns>
-    private static MethodInfo GetMethodInfo<T>(Expression<T> expression)
-    {
-        return ((MethodCallExpression)expression.Body).Method;
-    }
+    private static readonly MethodInfo GetServiceMethodInfo = typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService), BindingFlags.Instance | BindingFlags.Public)!;
+    private static readonly MethodInfo SetCancellationTokenMethodInfo = typeof(CommandGroup).GetMethod(nameof(CommandGroup.SetCancellationToken), BindingFlags.Instance | BindingFlags.Public)!;
 
     /// <summary>
     /// Registers a module type with the builder.
