@@ -159,7 +159,7 @@ public class NamedGreedyParameterShape : IParameterShape
     private NamedGreedyParameterShape(ParameterInfo parameter, int index)
     {
         parameter.GetAttributesAndConditions(out var attributes, out var conditions);
-        
+
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
         this.Attributes = attributes;

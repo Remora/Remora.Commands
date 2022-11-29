@@ -37,6 +37,13 @@ using Remora.Results;
 
 namespace Remora.Commands.Trees.Nodes;
 
+/// <summary>
+/// Represents a delegate that executes a command.
+/// </summary>
+/// <param name="services">The service provider.</param>
+/// <param name="parameters">The parameters to be passed to the command.</param>
+/// <param name="cancellationToken">The cancellation token.</param>
+/// <returns>The result of executing the command.</returns>
 public delegate ValueTask<IResult> CommandInvocation(IServiceProvider services, object?[] parameters, CancellationToken cancellationToken);
 
 /// <summary>

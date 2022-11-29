@@ -126,7 +126,7 @@ public class CommandParameterBuilder
         {
             throw new InvalidOperationException("The type of the parameter must match the default value's type.");
         }
-        
+
         _parameterType = type;
         return this;
     }
