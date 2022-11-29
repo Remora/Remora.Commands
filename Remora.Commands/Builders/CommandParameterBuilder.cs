@@ -294,9 +294,7 @@ public class CommandParameterBuilder
         }
         else if (!isCollection)
         {
-            var isGreedy = builder._isGreedy;
-
-            newNamedParameter = isGreedy
+            newNamedParameter = builder._isGreedy
                 ? CreateNamedSingleValueParameterShape(optionAttribute, builder)
                 : CreateGreedyNamedSingleValueParameterShape(optionAttribute, builder);
         }
