@@ -60,7 +60,7 @@ public class CommandBuilder
     private readonly List<ConditionAttribute> _conditions;
 
     private readonly GroupBuilder? _parent;
-    private readonly TreeRegistrationBuilder _treeBuilder;
+    private readonly TreeRegistrationBuilder? _treeBuilder;
 
     private string _name;
     private Func<IServiceProvider, object?[], CancellationToken, ValueTask<IResult>>? _invocation;
