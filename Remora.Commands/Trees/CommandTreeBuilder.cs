@@ -313,7 +313,7 @@ public class CommandTreeBuilder
         var call = Expression.Call(castedInstance, method, arguments);
 
         // Convert the result to a ValueTask<IResult>
-        call = (MethodCallExpression)CoerceToValueTask(call);
+        call = CoerceToValueTask(call);
 
         var ct = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
 
@@ -330,23 +330,21 @@ public class CommandTreeBuilder
     }
 
     /// <summary>
-    /// Coerces the static result type of an expression to a <see cref="ValueTask"/>.
+    /// Coerces the static result type of an expression to a <see cref="ValueTask{IResult}"/>.
     /// <list type="bullet">
-    /// <item>If the type is <see cref="ValueTask"/>, returns the expression as-is</item>
-    /// <item>If the type is <see cref="Task"/>, returns an expression wrappiung the Task in a <see cref="ValueTask"/></item>
-    /// <item>If the type is <c>void</c>, returns <see cref="ValueTask.CompletedTask"/></item>
+    /// <item>If the type is <see cref="ValueTask{T}"/>, returns the expression as-is</item>
+    /// <item>If the type is <see cref="Task{T}"/>, returns an expression wrapping the Task in a <see cref="ValueTask{IResult}"/></item>
     /// <item>Otherwise, throws <see cref="InvalidOperationException"/></item>
     /// </list>
     /// </summary>
     /// <param name="expression">The input expression.</param>
-    /// <param name="expressionType">The type of the expression; defaults to <see cref="Expression.Type"/>.</param>
     /// <returns>The new expression.</returns>
     /// <exception cref="InvalidOperationException">If the type of <paramref name="expression"/> is not wrappable.</exception>
-    public static Expression CoerceToValueTask(Expression expression, Type? expressionType = null)
+    public static MethodCallExpression CoerceToValueTask(Expression expression)
     {
-        expressionType ??= expression.Type;
+        var expressionType = expression.Type;
 
-        Expression invokerExpr;
+        MethodCallExpression invokerExpr;
         if (expressionType.IsConstructedGenericType && expressionType.GetGenericTypeDefinition() == typeof(ValueTask<>))
         {
             invokerExpr = Expression.Call(ToResultValueTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
