@@ -119,8 +119,14 @@ public class CommandParameterBuilder
     /// </summary>
     /// <param name="type">The type to set the parameter to.</param>
     /// <returns>The builder to chain calls with.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the type set on the builder does not match the default value (if set).</exception>
     public CommandParameterBuilder WithType(Type type)
     {
+        if (_defaultValue is not null && _defaultValue.GetType() != type)
+        {
+            throw new InvalidOperationException("The type of the parameter must match the default value's type.");
+        }
+        
         _parameterType = type;
         return this;
     }
@@ -151,10 +157,8 @@ public class CommandParameterBuilder
     /// and <paramref name="longName"/> are both <c>null</c>.</exception>
     public CommandParameterBuilder IsSwitch(bool defaultValue, char? shortName = null, string? longName = null)
     {
-        if (_parameterType is not null && _parameterType != typeof(bool))
-        {
-            throw new InvalidOperationException("The parameter type must be a boolean to be a switch.");
-        }
+        _defaultValue = defaultValue;
+        _parameterType = typeof(bool);
 
         if (shortName is null && longName is null)
         {
@@ -256,6 +260,18 @@ public class CommandParameterBuilder
     {
         var rangeAttribute = _attributes.OfType<RangeAttribute>().SingleOrDefault();
         var optionAttribute = _attributes.OfType<OptionAttribute>().SingleOrDefault();
+
+        if (optionAttribute is SwitchAttribute)
+        {
+            if (_defaultValue is not bool || _parameterType != typeof(bool))
+            {
+                throw new InvalidOperationException
+                (
+                 $"A switch parameter must be a {typeof(bool)}" +
+                 $" (The parameter \"{_name}\" was marked as ({_parameterType})."
+                );
+            }
+        }
 
         return optionAttribute is null
                    ? CreatePositionalParameterShape(rangeAttribute, this)
