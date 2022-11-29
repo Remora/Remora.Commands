@@ -66,11 +66,7 @@ public class CommandShape
     /// <returns>The command shape.</returns>
     public static CommandShape FromBuilder(CommandBuilder builder)
     {
-        var constructedParameters = new List<IParameterShape>();
-        constructedParameters.AddRange(builder.Parameters.Select(p => p.Build()));
-
-        // TODO: Make ordering consistent.
-        return new CommandShape(constructedParameters, builder.Description ?? Constants.DefaultDescription);
+        return new CommandShape(builder.Parameters.Select(p => p.Build()).ToArray(), builder.Description ?? Constants.DefaultDescription);
     }
 
     /// <summary>
