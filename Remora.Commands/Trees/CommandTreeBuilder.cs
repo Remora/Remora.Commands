@@ -51,6 +51,20 @@ public class CommandTreeBuilder
     private readonly List<Type> _registeredModuleTypes = new();
     private readonly List<OneOf<CommandBuilder, GroupBuilder>> _registeredBuilders = new();
 
+    private static readonly MethodInfo GetServiceMethodInfo = GetMethodInfo<Func<IServiceProvider, Type, object?>>((p,   t) => p.GetService(t));
+    private static readonly MethodInfo SetCancellationTokenMethodInfo = GetMethodInfo<Action<CommandGroup, CancellationToken>>((g, c) => g.SetCancellationToken(c));
+
+    /// <summary>
+    /// Gets a <see cref="MethodInfo"/> of the given type.
+    /// </summary>
+    /// <param name="expression">The expression to retrive the method info from.</param>
+    /// <typeparam name="T">The delegate type.</typeparam>
+    /// <returns>The <see cref="MethodInfo"/> of the called method.</returns>
+    private static MethodInfo GetMethodInfo<T>(Expression<T> expression)
+    {
+        return ((MethodCallExpression)expression.Body).Method;
+    }
+
     /// <summary>
     /// Registers a module type with the builder.
     /// </summary>
@@ -83,7 +97,6 @@ public class CommandTreeBuilder
 
         rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
 
-        // TODO?: Merge built groups?
         var builtCommands = _registeredBuilders.Select(rb => rb.Match(cb => cb.Build(rootNode), gb => (IChildNode)gb.Build(rootNode)));
         rootChildren.AddRange(builtCommands);
 
@@ -283,13 +296,8 @@ public class CommandTreeBuilder
     {
         // Get the object from the container
         var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
-        var getRequiredService = typeof(IServiceProvider).GetMethod
-        (
-            nameof(IServiceProvider.GetService),
-            BindingFlags.Public | BindingFlags.Instance
-        );
 
-        var instance = Expression.Call(serviceProvider, getRequiredService!, Expression.Constant(method.DeclaringType));
+        var instance = Expression.Call(serviceProvider, GetServiceMethodInfo, Expression.Constant(method.DeclaringType));
 
         var parameters = Expression.Parameter(typeof(object?[]), "parameters");
 
@@ -311,11 +319,9 @@ public class CommandTreeBuilder
 
         var ct = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
 
-        var setCancellationToken = typeof(CommandGroup).GetMethod(nameof(CommandGroup.SetCancellationToken), BindingFlags.NonPublic | BindingFlags.Instance);
-
         var block = Expression.Block
         (
-            Expression.Call(castedInstance, setCancellationToken!, ct),
+            Expression.Call(castedInstance, SetCancellationTokenMethodInfo, ct),
             call
         );
 

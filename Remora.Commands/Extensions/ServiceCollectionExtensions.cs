@@ -24,6 +24,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -41,22 +42,6 @@ namespace Remora.Commands.Extensions;
 [PublicAPI]
 public static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Gets the <see cref="MethodInfo"/> for <see cref="IServiceProvider.GetService"/>.
-    /// </summary>
-    internal static readonly MethodInfo GetServiceMethodInfo = GetMethodInfo<Func<IServiceProvider, Type, object?>>((p, t) => p.GetService(t));
-
-    /// <summary>
-    /// Gets a <see cref="MethodInfo"/> of the given type.
-    /// </summary>
-    /// <param name="expression">The expression to retrive the method info from.</param>
-    /// <typeparam name="T">The delegate type.</typeparam>
-    /// <returns>The <see cref="MethodInfo"/> of the called method.</returns>
-    internal static MethodInfo GetMethodInfo<T>(Expression<T> expression)
-    {
-        return ((MethodCallExpression)expression.Body).Method;
-    }
-
     /// <summary>
     /// Adds a named command tree to the service collection.
     /// </summary>
