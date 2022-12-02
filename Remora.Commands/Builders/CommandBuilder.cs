@@ -86,8 +86,8 @@ public class CommandBuilder
     /// Initializes a new instance of the <see cref="CommandBuilder"/> class.
     /// </summary>
     /// <param name="treeBuilder">The registration builder.</param>
-    public CommandBuilder(TreeRegistrationBuilder treeBuilder)
-    : this()
+    public CommandBuilder(TreeRegistrationBuilder treeBuilder) 
+        : this()
     {
         _treeBuilder = treeBuilder;
     }

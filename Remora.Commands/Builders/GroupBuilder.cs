@@ -80,7 +80,7 @@ public class GroupBuilder
     /// </summary>
     /// <param name="treeBuilder">The registration builder.</param>
     public GroupBuilder(TreeRegistrationBuilder treeBuilder)
-    : this()
+        : this()
     {
         _treeBuilder = treeBuilder;
     }

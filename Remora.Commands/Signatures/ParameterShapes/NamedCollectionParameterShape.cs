@@ -161,7 +161,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         int index,
         string description
     )
-    : base(shortName, longName, parameterName, parameterType, isOptional, defaultValue, attributes, conditions, index, description)
+        : base(shortName, longName, parameterName, parameterType, isOptional, defaultValue, attributes, conditions, index, description)
     {
         this.Min = min;
         this.Max = max;

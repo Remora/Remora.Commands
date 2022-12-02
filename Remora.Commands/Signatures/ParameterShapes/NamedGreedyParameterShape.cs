@@ -109,7 +109,7 @@ public class NamedGreedyParameterShape : IParameterShape
         int index,
         string? description = null
     )
-    : this(parameter, index)
+        : this(parameter, index)
     {
         this.ShortName = shortName;
         this.LongName = longName;
@@ -130,7 +130,7 @@ public class NamedGreedyParameterShape : IParameterShape
         int index,
         string? description = null
     )
-    : this(parameter, index)
+        : this(parameter, index)
     {
         this.LongName = longName;
         this.Description = description ?? Constants.DefaultDescription;
@@ -150,7 +150,7 @@ public class NamedGreedyParameterShape : IParameterShape
         int index,
         string? description = null
     )
-    : this(parameter, index)
+        : this(parameter, index)
     {
         this.ShortName = shortName;
         this.Description = description ?? Constants.DefaultDescription;

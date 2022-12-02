@@ -109,7 +109,7 @@ public class SwitchParameterShape : IParameterShape
         int index,
         string? description = null
     )
-    : this(parameter, index)
+        : this(parameter, index)
     {
         this.ShortName = shortName;
         this.LongName = longName;
@@ -124,7 +124,7 @@ public class SwitchParameterShape : IParameterShape
     /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public SwitchParameterShape(ParameterInfo parameter, char shortName, int index, string? description = null)
-    : this(parameter, index)
+        : this(parameter, index)
     {
         this.ShortName = shortName;
         this.Description = description ?? Constants.DefaultDescription;
@@ -144,7 +144,7 @@ public class SwitchParameterShape : IParameterShape
         int index,
         string? description = null
     )
-    : this(parameter, index)
+        : this(parameter, index)
     {
         this.LongName = longName;
         this.Description = description ?? Constants.DefaultDescription;

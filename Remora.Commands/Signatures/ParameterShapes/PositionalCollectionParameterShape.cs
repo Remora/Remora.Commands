@@ -125,8 +125,8 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
         int index,
         string? description = null
     )
-    : base
-      (
+        : base
+        (
          parameterName,
          parameterType,
          isOptional,
@@ -135,7 +135,7 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
          conditions,
          index,
          description ?? Constants.DefaultDescription
-      )
+        )
     {
         this.Min = min;
         this.Max = max;
