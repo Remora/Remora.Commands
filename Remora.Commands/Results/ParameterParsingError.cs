@@ -32,4 +32,4 @@ namespace Remora.Commands.Results;
 /// <param name="Parameter">The parameter that failed to parse.</param>
 [PublicAPI]
 public record ParameterParsingError(BoundParameterShape Parameter) :
-    ResultError($"Failed to parse the value of '{Parameter.ParameterShape.HintName}'.");
+    ResultError($"Failed to parse the value of \"{Parameter.ParameterShape.HintName}\".");
