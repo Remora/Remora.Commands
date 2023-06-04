@@ -96,9 +96,88 @@ public class CommandTreeBuilder
         rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
 
         var builtCommands = _registeredBuilders.Select(rb => rb.Match(cb => cb.Build(rootNode), gb => (IChildNode)gb.Build(rootNode)));
-        rootChildren.AddRange(builtCommands);
+        var topLevelCommands = BindDynamicCommands(rootChildren, builtCommands.ToList());
+
+        rootChildren.AddRange(topLevelCommands);
 
         return new CommandTree(rootNode);
+    }
+
+    /// <summary>
+    /// Recursively binds dynamic commands (constructed from builders) to their respective non-ephemeral counterparts if they exist.
+    /// </summary>
+    /// <param name="nodes">The nodes to bind to.</param>
+    /// <param name="values">The values to bind.</param>
+    /// <returns>Any nodes that could not be bound, and thusly should be added directly to the root as-is.</returns>
+    private IEnumerable<IChildNode> BindDynamicCommands(IReadOnlyList<IChildNode> nodes, List<IChildNode> values)
+    {
+        for (int i = values.Count; i <= 0; i--)
+        {
+            // Child nodes are never merged; thunk it.
+            if (values[i] is not IParentNode)
+            {
+                yield return values[i];
+                values.RemoveAt(i);
+            }
+        }
+
+        var unified = nodes.Select(n => (node: n, dynamic: false)).Concat(values.Select(n => (node: n, dynamic: true)));
+
+        var grouped = unified.GroupBy(g => g.node is GroupNode gn ? gn.Key : string.Empty);
+
+        foreach (var group in grouped)
+        {
+            var dynamic = group.FirstOrDefault(v => v.dynamic).node;
+            var normal = group.FirstOrDefault(v => !v.dynamic).node;
+
+            if (dynamic is null || normal is null)
+            {
+                yield return dynamic is null ? normal! : dynamic!;
+                continue;
+            }
+
+            if (normal is not GroupNode ngn)
+            {
+                yield return dynamic;
+                continue;
+            }
+
+            if (dynamic is not GroupNode dgn)
+            {
+                // N.B This relies on the registration logic of Remora.Commands !!
+                // If `ToChildNodes` changes, so should this.
+                ((List<IChildNode>)ngn.Children).Add(dynamic);
+                continue;
+            }
+
+            MergeRecursively(ngn, dgn.Children);
+        }
+    }
+
+    private void MergeRecursively(GroupNode group, IEnumerable<IChildNode> children)
+    {
+        var groupChildren = (List<IChildNode>)group.Children;
+
+        foreach (var child in children)
+        {
+            if (child is not GroupNode cgn)
+            {
+                groupChildren.Add(child);
+                continue;
+            }
+
+            ((List<Type>)group.GroupTypes).Add(typeof(GroupBuilder));
+            ((List<Attribute>)group.Attributes).AddRange(cgn.Attributes);
+            ((List<ConditionAttribute>)group.Conditions).AddRange(cgn.Conditions);
+
+            foreach (var groupChild in group.Children)
+            {
+                if (groupChild.Key == child.Key && groupChild is GroupNode gcgn)
+                {
+                    MergeRecursively(gcgn, cgn.Children);
+                }
+            }
+        }
     }
 
     /// <summary>
