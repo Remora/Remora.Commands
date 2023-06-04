@@ -24,7 +24,9 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Services;
+using Remora.Commands.Tests.Data.DummyModules;
 using Remora.Commands.Trees;
+using Remora.Commands.Trees.Nodes;
 using Xunit;
 
 namespace Remora.Commands.Tests.Trees;
@@ -50,8 +52,31 @@ public static partial class CommandTreeBuilderTests
             var tree = provider.GetRequiredService<CommandTree>();
 
             var command = tree.Root.Children.FirstOrDefault();
-            Assert.Equal(tree.Root.Children.Count, 1);
-            Assert.Equal(command!.Key, "command");
+            Assert.Equal(1, tree.Root.Children.Count);
+            Assert.Equal("command", command!.Key);
+        }
+
+        /// <summary>
+        /// Asserts that the builder merges a group into its constituent sibling correctly.
+        /// </summary>
+        [Fact]
+        public void MergesSimpleGroupCorrectly()
+        {
+            var services = new ServiceCollection().AddCommands();
+
+            services.AddCommandTree()
+                    .WithCommandGroup<NamedGroupWithAdditionalCommands>()
+                    .CreateCommandGroup().WithName("a").AddCommand().WithName("h").WithInvocation((_, _, _) => default);
+
+            var provider = services.BuildServiceProvider();
+            var tree = provider.GetRequiredService<CommandTree>();
+
+            var group = tree.Root.Children.FirstOrDefault() as GroupNode;
+
+            Assert.Equal(1, tree.Root.Children.Count);
+            Assert.Equal("a", group!.Key);
+
+            Assert.Equal(4, group.Children.Count);
         }
     }
 }
