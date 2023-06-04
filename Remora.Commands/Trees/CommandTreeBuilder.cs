@@ -290,7 +290,13 @@ public class CommandTreeBuilder
         }
     }
 
-    private static CommandInvocation CreateDelegate(MethodInfo method, Type[] argumentTypes)
+    /// <summary>
+    /// Creates a command invocation delegate from the supplied parameters.
+    /// </summary>
+    /// <param name="method">The method that will be invoked.</param>
+    /// <param name="argumentTypes">The parameter types of the arguments.</param>
+    /// <returns>The created command invocation.</returns>
+    internal static CommandInvocation CreateDelegate(MethodInfo method, Type[] argumentTypes)
     {
         // Get the object from the container
         var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");

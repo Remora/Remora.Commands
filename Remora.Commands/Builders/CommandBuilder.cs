@@ -34,6 +34,7 @@ using Remora.Commands.Conditions;
 using Remora.Commands.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Signatures;
+using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
@@ -210,6 +211,9 @@ public class CommandBuilder
         }
 
         var parameters = info.GetParameters();
+        var parameterTypes = parameters.Select(p => p.ParameterType).ToArray();
+
+        builder.WithInvocation(CommandTreeBuilder.CreateDelegate(info, parameterTypes));
 
         foreach (var parameter in parameters)
         {
