@@ -150,5 +150,8 @@
       <Compile Update="Services\CommandServiceTests.Raw.Siblings.cs">
         <DependentUpon>CommandServiceTests.Raw.cs</DependentUpon>
       </Compile>
+      <Compile Update="Trees\CommandTreeBuilderTests.Builders.cs">
+        <DependentUpon>CommandTreeBuilderTests.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
