@@ -111,6 +111,11 @@ public class CommandTreeBuilder
     /// <returns>Any nodes that could not be bound, and thusly should be added directly to the root as-is.</returns>
     private IEnumerable<IChildNode> BindDynamicCommands(IReadOnlyList<IChildNode> nodes, List<IChildNode> values)
     {
+        if (!values.Any())
+        {
+            yield break;
+        }
+
         for (int i = values.Count; i <= 0; i--)
         {
             // Child nodes are never merged; thunk it.
