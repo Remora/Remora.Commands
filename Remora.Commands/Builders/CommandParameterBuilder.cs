@@ -61,6 +61,7 @@ public class CommandParameterBuilder
         _builder = builder;
         _attributes = new();
         _conditions = new();
+        builder.Parameters.Add(this);
 
         _parameterType = type;
     }
