@@ -76,13 +76,13 @@ public class PositionalGreedyParameterShape : IParameterShape
     {
         parameter.GetAttributesAndConditions(out var attributes, out var conditions);
 
-        this._parameterName = parameter.Name;
+        _parameterName = parameter.Name;
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
         this.Attributes = attributes;
         this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
-        this._isOptional = parameter.IsOptional;
+        _isOptional = parameter.IsOptional;
         this.ParameterIndex = index;
         this.Description = description ?? Constants.DefaultDescription;
     }
@@ -110,9 +110,9 @@ public class PositionalGreedyParameterShape : IParameterShape
         string description
     )
     {
-        this._parameterName = parameterName;
+        _parameterName = parameterName;
         this.ParameterType = parameterType;
-        this._isOptional = isOptional;
+        _isOptional = isOptional;
         this.DefaultValue = defaultValue;
         this.IsNullable = parameterType.IsNullable();
         this.Attributes = attributes;
@@ -167,7 +167,7 @@ public class PositionalGreedyParameterShape : IParameterShape
         // we'll use the actual parameter name as a hint to match against.
         var (name, value) = namedValue;
 
-        if (!name.Equals(this._parameterName, searchOptions.KeyComparison))
+        if (!name.Equals(_parameterName, searchOptions.KeyComparison))
         {
             return false;
         }
@@ -182,5 +182,5 @@ public class PositionalGreedyParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this._isOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => _isOptional;
 }

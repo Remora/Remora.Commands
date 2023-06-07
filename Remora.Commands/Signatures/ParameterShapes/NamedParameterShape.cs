@@ -38,6 +38,8 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class NamedParameterShape : IParameterShape
 {
+    private readonly string? _parameterName;
+
     /// <summary>
     /// Gets the short name of the parameter, if any. At least one of <see cref="ShortName"/> and
     /// <see cref="LongName"/> must be set.
@@ -68,7 +70,7 @@ public class NamedParameterShape : IParameterShape
                 return this.ShortName.ToString() ?? throw new InvalidOperationException();
             }
 
-            return this._parameterName ?? throw new InvalidOperationException();
+            return _parameterName ?? throw new InvalidOperationException();
         }
     }
 
@@ -94,8 +96,6 @@ public class NamedParameterShape : IParameterShape
     /// Gets a value indicating whether this parameter is optional.
     /// </summary>
     protected bool IsOptional { get; }
-
-    private readonly string? _parameterName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NamedParameterShape"/> class.
@@ -168,7 +168,7 @@ public class NamedParameterShape : IParameterShape
         this.Attributes = attributes;
         this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
-        this._parameterName = parameter.Name;
+        _parameterName = parameter.Name;
         this.IsOptional = parameter.IsOptional;
         this.ParameterIndex = index;
         this.Description = Constants.DefaultDescription;
@@ -203,7 +203,7 @@ public class NamedParameterShape : IParameterShape
     {
         this.ShortName = shortName;
         this.LongName = longName;
-        this._parameterName = parameterName;
+        _parameterName = parameterName;
         this.ParameterType = parameterType;
         this.IsOptional = isOptional;
         this.IsNullable = parameterType.IsNullable();

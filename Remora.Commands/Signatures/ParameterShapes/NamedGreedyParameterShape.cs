@@ -321,5 +321,5 @@ public class NamedGreedyParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this._isOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => _isOptional;
 }

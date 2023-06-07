@@ -68,7 +68,7 @@ public class SwitchParameterShape : IParameterShape
                 return this.ShortName.ToString() ?? throw new InvalidOperationException();
             }
 
-            return this._parameterName ?? throw new InvalidOperationException();
+            return _parameterName ?? throw new InvalidOperationException();
         }
     }
 
@@ -153,13 +153,13 @@ public class SwitchParameterShape : IParameterShape
     private SwitchParameterShape(ParameterInfo parameter, int index)
     {
         parameter.GetAttributesAndConditions(out var attributes, out var conditions);
-        this._parameterName = parameter.Name;
+        _parameterName = parameter.Name;
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
         this.Attributes = attributes;
         this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
-        this._isOptional = parameter.IsOptional;
+        _isOptional = parameter.IsOptional;
         this.Description = Constants.DefaultDescription;
         this.ParameterIndex = index;
     }
@@ -193,9 +193,9 @@ public class SwitchParameterShape : IParameterShape
     {
         this.ShortName = shortName;
         this.LongName = longName;
-        this._parameterName = parameterName;
+        _parameterName = parameterName;
         this.ParameterType = parameterType;
-        this._isOptional = isOptional;
+        _isOptional = isOptional;
         this.IsNullable = parameterType.IsNullable();
         this.DefaultValue = defaultValue;
         this.Attributes = attributes;
@@ -300,5 +300,5 @@ public class SwitchParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this._isOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => _isOptional;
 }
