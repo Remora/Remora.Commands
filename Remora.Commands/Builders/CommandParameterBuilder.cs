@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
@@ -147,8 +148,7 @@ public class CommandParameterBuilder
     /// Sets the parameter to be a named switch.
     /// </summary>
     /// <param name="defaultValue">The default value of the switch.</param>
-    /// <param name="shortName">The short name (e.g. '-o') of the switch.</param>
-    /// <param name="longName">The long name (e.g. '--option') of the switch.</param>
+    /// <param name="shortOrLongName">Either the short name (e.g. '-o') or the long name (e.g. '--switch') of the switch.</param>
     /// <returns>The builder to chain calls with.</returns>
     /// <remarks>
     /// This method will set a default value for the parameter, which will
@@ -156,15 +156,10 @@ public class CommandParameterBuilder
     /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown if <paramref name="shortName"/>
     /// and <paramref name="longName"/> are both <c>null</c>.</exception>
-    public CommandParameterBuilder IsSwitch(bool defaultValue, char? shortName = null, string? longName = null)
+    public CommandParameterBuilder IsSwitch(bool defaultValue, OneOf<char, string, (char Short, string Long)> shortOrLongName = default)
     {
         _defaultValue = defaultValue;
         _parameterType = typeof(bool);
-
-        if (shortName is null && longName is null)
-        {
-            throw new InvalidOperationException($"Either {nameof(shortName)} or {nameof(longName)} must be specified.");
-        }
 
         var canBeSwitch = !_attributes.Any(r => r is OptionAttribute);
 
@@ -173,11 +168,12 @@ public class CommandParameterBuilder
             throw new InvalidOperationException("A parameter marked as an option cannot be a switch.");
         }
 
-        var attribute = shortName is not null
-            ? longName is not null
-                ? new SwitchAttribute(shortName.Value, longName)
-                : new SwitchAttribute(shortName.Value)
-            : new SwitchAttribute(longName!);
+        var attribute = shortOrLongName.Match
+        (
+            shortName => new SwitchAttribute(shortName),
+            longName => new SwitchAttribute(longName),
+            shortAndLongName => new SwitchAttribute(shortAndLongName.Short, shortAndLongName.Long)
+        );
 
         _attributes.Add(attribute);
 
@@ -187,18 +183,12 @@ public class CommandParameterBuilder
     /// <summary>
     /// Marks the parameter as being a named option.
     /// </summary>
-    /// <param name="shortName">The short name (e.g. '-o') of the option.</param>
-    /// <param name="longName">The long name (e.g. '--option') of the option.</param>
+    /// <param name="shortOrLongName">Either the short name (e.g. '-o') or the long name (e.g. '--option') of the option.</param>
     /// <returns>The builder to chain calls with.</returns>
     /// <exception cref="InvalidOperationException">Thrown if <paramref name="shortName"/>
     /// and <paramref name="longName"/> are both <c>null</c>.</exception>
-    public CommandParameterBuilder IsOption(char? shortName = null, string? longName = null)
+    public CommandParameterBuilder IsOption(OneOf<char, string, (char Short, string Long)> shortOrLongName = default)
     {
-        if (shortName is null && longName is null)
-        {
-            throw new InvalidOperationException($"Either {nameof(shortName)} or {nameof(longName)} must be specified.");
-        }
-
         var canBeOption = !_attributes.Any(r => r is SwitchAttribute);
 
         if (!canBeOption)
@@ -206,11 +196,12 @@ public class CommandParameterBuilder
             throw new InvalidOperationException("A parameter marked as an option cannot be a switch.");
         }
 
-        var attribute = shortName is not null
-            ? longName is not null
-                ? new OptionAttribute(shortName.Value, longName)
-                : new OptionAttribute(shortName.Value)
-            : new OptionAttribute(longName!);
+        var attribute = shortOrLongName.Match
+        (
+            shortName => new OptionAttribute(shortName),
+            longName => new OptionAttribute(longName),
+            shortAndLongName => new OptionAttribute(shortAndLongName.Short, shortAndLongName.Long)
+        );
 
         _attributes.Add(attribute);
 
