@@ -165,7 +165,8 @@ public class CommandBuilder
     }
 
     /// <summary>
-    /// Applies a function in which the command is invoked by.
+    /// Sets the delegate that represents the command.
+    /// This delegate may do additional work prior to the actual invocation of the command (such as resolving dependencies).
     /// </summary>
     /// <param name="invokeFunc">The function to invoke the command, or the command itself.</param>
     /// <remarks>This method MUST be called before <see cref="Build"/>.</remarks>
