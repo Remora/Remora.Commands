@@ -52,7 +52,7 @@ public class GroupBuilder
     /// <summary>
     /// Gets the children of the group.
     /// </summary>
-    internal List<OneOf<CommandBuilder, GroupBuilder>> Children { get; private init; }
+    internal List<OneOf<CommandBuilder, GroupBuilder>> Children { get; }
 
     /// <summary>
     /// Gets the name of the group.
