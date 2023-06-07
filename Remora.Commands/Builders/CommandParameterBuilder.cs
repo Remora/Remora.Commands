@@ -309,18 +309,18 @@ public class CommandParameterBuilder
 
         IParameterShape newNamedParameter = new NamedCollectionParameterShape
         (
-         optionAttribute.ShortName,
-         optionAttribute.LongName,
-         rangeAttribute?.GetMin(),
-         rangeAttribute?.GetMax(),
-         builder._name,
-         builder._parameterType!,
-         builder._isOptional,
-         builder._defaultValue,
-         builder._attributes,
-         builder._conditions,
-         builder._index,
-         description
+            optionAttribute.ShortName,
+            optionAttribute.LongName,
+            rangeAttribute?.GetMin(),
+            rangeAttribute?.GetMax(),
+            builder._name,
+            builder._parameterType!,
+            builder._isOptional,
+            builder._defaultValue,
+            builder._attributes,
+            builder._conditions,
+            builder._index,
+            description
         );
 
         return newNamedParameter;
@@ -346,16 +346,16 @@ public class CommandParameterBuilder
 
         IParameterShape newNamedParameter = new SwitchParameterShape
         (
-         optionAttribute.ShortName,
-         optionAttribute.LongName,
-         builder._name,
-         builder._parameterType,
-         builder._isOptional,
-         builder._defaultValue,
-         builder._attributes,
-         builder._conditions,
-         builder._index,
-         description
+            optionAttribute.ShortName,
+            optionAttribute.LongName,
+            builder._name,
+            builder._parameterType,
+            builder._isOptional,
+            builder._defaultValue,
+            builder._attributes,
+            builder._conditions,
+            builder._index,
+            description
         );
 
         return newNamedParameter;
@@ -371,16 +371,16 @@ public class CommandParameterBuilder
 
         IParameterShape newNamedParameter = new NamedParameterShape
         (
-         optionAttribute.ShortName,
-         optionAttribute.LongName,
-         builder._name,
-         builder._parameterType!,
-         builder._isOptional,
-         builder._defaultValue,
-         builder._attributes,
-         builder._conditions,
-         builder._index,
-         description
+            optionAttribute.ShortName,
+            optionAttribute.LongName,
+            builder._name,
+            builder._parameterType!,
+            builder._isOptional,
+            builder._defaultValue,
+            builder._attributes,
+            builder._conditions,
+            builder._index,
+            description
         );
 
         return newNamedParameter;
@@ -396,15 +396,15 @@ public class CommandParameterBuilder
 
         IParameterShape newNamedParameter = new NamedGreedyParameterShape
         (
-         optionAttribute.ShortName,
-         optionAttribute.LongName,
-         builder._name,
-         builder._parameterType!,
-         builder._isOptional,
-         builder._defaultValue,
-         builder._attributes,
-         builder._conditions,
-         description
+            optionAttribute.ShortName,
+            optionAttribute.LongName,
+            builder._name,
+            builder._parameterType!,
+            builder._isOptional,
+            builder._defaultValue,
+            builder._attributes,
+            builder._conditions,
+            description
         );
 
         return newNamedParameter;
@@ -427,25 +427,25 @@ public class CommandParameterBuilder
             newPositionalParameter = greedyAttribute is null
                 ? new PositionalParameterShape
                   (
-                    builder._name,
-                    builder._parameterType!,
-                    builder._isOptional,
-                    builder._defaultValue,
-                    builder._attributes,
-                    builder._conditions,
-                    builder._index,
-                    description
+                      builder._name,
+                      builder._parameterType!,
+                      builder._isOptional,
+                      builder._defaultValue,
+                      builder._attributes,
+                      builder._conditions,
+                      builder._index,
+                      description
                   )
                 : new PositionalGreedyParameterShape
                   (
-                    builder._name,
-                    builder._parameterType!,
-                    builder._isOptional,
-                    builder._defaultValue,
-                    builder._attributes,
-                    builder._conditions,
-                    builder._index,
-                    description
+                      builder._name,
+                      builder._parameterType!,
+                      builder._isOptional,
+                      builder._defaultValue,
+                      builder._attributes,
+                      builder._conditions,
+                      builder._index,
+                      description
                   );
         }
         else
