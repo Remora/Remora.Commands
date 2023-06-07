@@ -104,7 +104,7 @@ public class CommandTreeBuilder
     }
 
     /// <summary>
-    /// Recursively binds dynamic commands (constructed from builders) to their respective non-ephemeral counterparts if they exist.
+    /// Recursively binds dynamic commands (constructed from builders) to their compile-time type counterparts if they exist.
     /// </summary>
     /// <param name="nodes">The nodes to bind to.</param>
     /// <param name="values">The values to bind.</param>
