@@ -29,6 +29,7 @@ using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
 using Remora.Commands.DependencyInjection;
@@ -258,11 +259,11 @@ public class CommandBuilder
                     throw new InvalidOperationException("Switches must have a default value.");
                 }
 
-                parameterBuilder.IsSwitch((bool)parameter.DefaultValue!, sa.ShortName, sa.LongName);
+                parameterBuilder.IsSwitch((bool)parameter.DefaultValue!, GetAttriubteValue(sa.ShortName, sa.LongName));
             }
             else if (switchOrOptionAttribute is OptionAttribute oa)
             {
-                parameterBuilder.IsOption(oa.ShortName, oa.LongName);
+                parameterBuilder.IsOption(GetAttriubteValue(oa.ShortName, oa.LongName));
             }
 
             var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
@@ -289,6 +290,17 @@ public class CommandBuilder
         builder._conditions.AddRange(methodConditions);
 
         return builder;
+
+        OneOf<char, string, (char, string)> GetAttriubteValue(char? shortName, string? longName)
+        {
+            return (shortName, longName) switch
+            {
+                (null, null) => throw new InvalidOperationException("Switches and options must have a name."),
+                (null, string ln) => ln,
+                (char sn, null) => sn,
+                (char sn, string ln) => (sn, ln),
+            };
+        }
     }
 
     /// <summary>
