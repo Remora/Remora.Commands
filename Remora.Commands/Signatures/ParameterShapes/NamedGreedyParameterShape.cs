@@ -38,6 +38,9 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class NamedGreedyParameterShape : IParameterShape
 {
+    private readonly bool _isOptional;
+    private readonly string? _parameterName;
+
     /// <summary>
     /// Gets the short name of the parameter, if any. At least one of <see cref="ShortName"/> and
     /// <see cref="LongName"/> must be set.
@@ -68,7 +71,7 @@ public class NamedGreedyParameterShape : IParameterShape
                 return this.ShortName.ToString() ?? throw new InvalidOperationException();
             }
 
-            return this._parameterName ?? throw new InvalidOperationException();
+            return _parameterName ?? throw new InvalidOperationException();
         }
     }
 
@@ -89,9 +92,6 @@ public class NamedGreedyParameterShape : IParameterShape
 
     /// <inheritdoc/>
     public int ParameterIndex { get; }
-
-    private readonly bool _isOptional;
-    private readonly string? _parameterName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NamedGreedyParameterShape"/> class.
@@ -165,9 +165,9 @@ public class NamedGreedyParameterShape : IParameterShape
         this.Attributes = attributes;
         this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
-        this._parameterName = parameter.Name;
+        _parameterName = parameter.Name;
         this.ParameterIndex = index;
-        this._isOptional = parameter.IsOptional;
+        _isOptional = parameter.IsOptional;
         this.Description = Constants.DefaultDescription;
     }
 
@@ -198,9 +198,9 @@ public class NamedGreedyParameterShape : IParameterShape
     {
         this.ShortName = shortName;
         this.LongName = longName;
-        this._parameterName = parameterName;
+        _parameterName = parameterName;
         this.ParameterType = parameterType;
-        this._isOptional = isOptional;
+        _isOptional = isOptional;
         this.IsNullable = parameterType.IsNullable();
         this.DefaultValue = defaultValue;
         this.Attributes = attributes;
