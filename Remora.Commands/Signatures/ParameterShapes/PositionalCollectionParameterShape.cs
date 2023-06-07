@@ -55,7 +55,7 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
         {
             if (this.IsOptional)
             {
-                return null;
+                return base.DefaultValue;
             }
             else if (this.Min is null or 0)
             {
