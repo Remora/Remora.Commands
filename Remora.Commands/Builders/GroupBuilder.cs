@@ -67,12 +67,12 @@ public class GroupBuilder
     /// <param name="parent">The parent this group belongs to, if any.</param>
     public GroupBuilder(GroupBuilder? parent = null)
     {
-        Name = string.Empty;
+        this.Name = string.Empty;
         _parent = parent;
         _groupAliases = new List<string>();
         _groupAttributes = new List<Attribute>();
         _groupConditions = new List<ConditionAttribute>();
-        Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
+        this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public class GroupBuilder
     public GroupBuilder AddGroup()
     {
         var builder = new GroupBuilder(this);
-        Children.Add(builder);
+        this.Children.Add(builder);
 
         return builder;
     }
@@ -254,8 +254,8 @@ public class GroupBuilder
             {
                 throw new InvalidOperationException
                 (
-                 $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
-                 $"containing a type that implements {typeof(IResult)}."
+                    $"Methods marked as commands must return a {typeof(Task<>)} or {typeof(ValueTask<>)}, " +
+                    $"containing a type that implements {typeof(IResult)}."
                 );
             }
 
@@ -288,14 +288,14 @@ public class GroupBuilder
 
         var node = new GroupNode
         (
-         Type.EmptyTypes,
-         children,
-         parent,
-         Name,
-         _groupAliases,
-         _groupAttributes,
-         _groupConditions,
-         _description
+            Type.EmptyTypes,
+            children,
+            parent,
+            Name,
+            _groupAliases,
+            _groupAttributes,
+            _groupConditions,
+            _description
         );
 
         foreach (var child in Children)
