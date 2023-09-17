@@ -291,7 +291,7 @@ public class CommandBuilder
 
         return builder;
 
-        OneOf<char, string, (char, string)> GetAttriubteValue(char? shortName, string? longName)
+        OneOf<char, string, (char shortName, string longName)> GetAttributeValue(char? shortName, string? longName)
         {
             return (shortName, longName) switch
             {
