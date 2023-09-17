@@ -263,7 +263,7 @@ public class CommandBuilder
             }
             else if (switchOrOptionAttribute is OptionAttribute oa)
             {
-                parameterBuilder.IsOption(GetAttriubteValue(oa.ShortName, oa.LongName));
+                parameterBuilder.IsOption(GetAttributeValue(oa.ShortName, oa.LongName));
             }
 
             var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
