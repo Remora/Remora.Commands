@@ -259,7 +259,7 @@ public class CommandBuilder
                     throw new InvalidOperationException("Switches must have a default value.");
                 }
 
-                parameterBuilder.IsSwitch((bool)parameter.DefaultValue!, GetAttriubteValue(sa.ShortName, sa.LongName));
+                parameterBuilder.IsSwitch((bool)parameter.DefaultValue!, GetAttributeValue(sa.ShortName, sa.LongName));
             }
             else if (switchOrOptionAttribute is OptionAttribute oa)
             {
