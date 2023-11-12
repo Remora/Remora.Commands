@@ -201,14 +201,13 @@ public class CommandNode : IChildNode
         var boundParameters = new List<BoundParameterShape>();
         while (parametersToCheck.Count > 0)
         {
+            // Because the current enumerator might be invalid or ended, we'll fix up the key-value pair here
+            var current = enumerator.MoveNext()
+                ? enumerator.Current
+                : KeyValuePair.Create(string.Empty, (IReadOnlyList<string>)Array.Empty<string>());
             var matchedParameters = new List<IParameterShape>();
             foreach (var parameterToCheck in parametersToCheck)
             {
-                // Because the current enumerator might be invalid or ended, we'll fix up the key-value pair here
-                var current = enumerator.MoveNext()
-                    ? enumerator.Current
-                    : KeyValuePair.Create(string.Empty, (IReadOnlyList<string>)Array.Empty<string>());
-
                 if (!parameterToCheck.Matches(current, out var isFatal, searchOptions))
                 {
                     if (isFatal)
