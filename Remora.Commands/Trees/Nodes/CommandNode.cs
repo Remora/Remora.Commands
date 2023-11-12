@@ -201,18 +201,13 @@ public class CommandNode : IChildNode
         var boundParameters = new List<BoundParameterShape>();
         while (parametersToCheck.Count > 0)
         {
-            // The return value of MoveNext is ignored, because empty collections are allowed
-            _ = enumerator.MoveNext();
-
             var matchedParameters = new List<IParameterShape>();
             foreach (var parameterToCheck in parametersToCheck)
             {
                 // Because the current enumerator might be invalid or ended, we'll fix up the key-value pair here
-                var current = enumerator.Current;
-                if (current.Equals(default(KeyValuePair<string, IReadOnlyList<string>>)))
-                {
-                    current = new KeyValuePair<string, IReadOnlyList<string>>(string.Empty, Array.Empty<string>());
-                }
+                var current = enumerator.MoveNext()
+                    ? enumerator.Current
+                    : KeyValuePair.Create(string.Empty, (IReadOnlyList<string>)Array.Empty<string>());
 
                 if (!parameterToCheck.Matches(current, out var isFatal, searchOptions))
                 {
