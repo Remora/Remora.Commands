@@ -1,11 +1,10 @@
-<Project Sdk="Remora.Tests.Sdk/2.0.2">
+<Project Sdk="Remora.Tests.Sdk/2.0.6">
     <ItemGroup>
       <ProjectReference Include="..\..\Remora.Commands\Remora.Commands.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-      <PackageReference Update="Remora.Results.Analyzers" Version="1.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     </ItemGroup>
 
     <ItemGroup>

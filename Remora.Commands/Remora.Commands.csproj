@@ -1,11 +1,11 @@
-<Project Sdk="Remora.Sdk/2.0.1">
+<Project Sdk="Remora.Sdk/2.1.2">
 
     <PropertyGroup>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup>
-        <VersionPrefix>10.0.3</VersionPrefix>
+        <VersionPrefix>10.0.4</VersionPrefix>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
             Upgrade Remora.Sdk.
@@ -14,13 +14,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
-      <PackageReference Include="Nullability.Source" Version="2.0.4">
+      <PackageReference Include="Microsoft.Extensions.Options"/>
+      <PackageReference Include="Nullability.Source">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Remora.Results" Version="7.2.3" />
-      <PackageReference Update="Remora.Results.Analyzers" Version="1.0.0" />
+      <PackageReference Include="Remora.Results"/>
     </ItemGroup>
-
 </Project>
