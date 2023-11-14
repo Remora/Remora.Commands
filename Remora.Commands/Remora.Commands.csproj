@@ -10,6 +10,7 @@
         <PackageReleaseNotes>
             Upgrade Remora.Sdk.
             Upgrade nuget packages.
+            Fix an issue with parameter enumeration that could cause a crash in some instances.
         </PackageReleaseNotes>
     </PropertyGroup>
 
