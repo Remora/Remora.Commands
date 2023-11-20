@@ -1,16 +1,15 @@
-<Project Sdk="Remora.Sdk/2.1.2">
+<Project Sdk="Remora.Sdk">
 
     <PropertyGroup>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup>
-        <VersionPrefix>10.0.4</VersionPrefix>
+        <VersionPrefix>10.0.5</VersionPrefix>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
             Upgrade Remora.Sdk.
             Upgrade nuget packages.
-            Fix an issue with parameter enumeration that could cause a crash in some instances.
         </PackageReleaseNotes>
     </PropertyGroup>
 

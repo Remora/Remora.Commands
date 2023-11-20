@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "metadata", "metadata", "{57
 		LICENSE = LICENSE
 		README.md = README.md
 		.editorconfig = .editorconfig
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{89047DCF-DA22-4F6E-8F2A-90AE3E4C82A2}"

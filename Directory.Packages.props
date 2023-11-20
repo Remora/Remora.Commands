@@ -1,9 +1,9 @@
 <Project>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="7.0.1" />
-    <PackageVersion Include="Nullability.Source" Version="2.0.4" />
-    <PackageVersion Include="Remora.Results" Version="7.4.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageVersion Include="Remora.Results.Analyzers" Version="1.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    <PackageVersion Include="Nullability.Source" Version="2.3.0" />
+    <PackageVersion Include="Remora.Results" Version="7.4.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageVersion Include="Remora.Results.Analyzers" Version="1.0.2" />
   </ItemGroup>
 </Project>
