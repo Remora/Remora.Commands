@@ -217,7 +217,7 @@ create parsers that fetch entities from a database, that look things up online,
 that integrate with the rest of your application seamlessly... the possibilities
 are endless!
 
-By default, Remora.Commands provides builtin parsers for the following types:
+By default, Remora.Commands provides built-in parsers for the following types:
   * `string`
   * `char`
   * `bool`
@@ -233,7 +233,11 @@ By default, Remora.Commands provides builtin parsers for the following types:
   * `double`
   * `decimal`
   * `BigInteger`
+  * `TimeSpan`
+  * `DateTime`
   * `DateTimeOffset`
+
+Remora.Commands can also parse any enum without the need for a custom parser!
 
 ## Multiple trees
 If your application requires different sets of commands for different contexts, 
