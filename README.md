@@ -176,9 +176,9 @@ Commands themselves can be overloaded using normal C# syntax, and the various
 argument syntax variants (that is, positional, named, switches, and collections)
 can easily be mixed and matched.
 
-Even the types recognized and parsed by Remora.Commands can be extended using 
+The list of types recognized and parsed by Remora.Commands can be extended using 
 `AbstractTypeParser<TType>` - if you can turn a string into an instance of your
-type, Remora.Commands can parse it.
+type, Remora.Commands will be able to parse it.
 
 ```cs
 public class MyParser : AbstractTypeParser<MyType>
@@ -192,11 +192,11 @@ public class MyParser : AbstractTypeParser<MyType>
         return new ValueTask<Result<MyType>>
         (
             !MyType.TryParse(value, out var result)
-            ? Result<short>.FromError
+            ? Result<MyType>.FromError
               (
                   $"Failed to parse \"{value}\" as an instance of MyType."
               )
-            : Result<short>.FromSuccess(result)
+            : Result<MyType>.FromSuccess(result)
         );
     }
 }
