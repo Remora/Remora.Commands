@@ -30,7 +30,6 @@ using Remora.Commands.Conditions;
 using Remora.Commands.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
-using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
@@ -39,27 +38,14 @@ namespace Remora.Commands.Builders;
 /// <summary>
 /// A builder class for creating <see cref="GroupNode"/>s.
 /// </summary>
-public class GroupBuilder
+public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
 {
-    private readonly GroupBuilder? _parent;
-    private readonly TreeRegistrationBuilder? _treeBuilder;
-    private readonly List<string> _groupAliases;
-    private readonly List<Attribute> _groupAttributes;
-    private readonly List<ConditionAttribute> _groupConditions;
-
-    private Type? _groupType;
+    private List<Type?> _groupTypes;
 
     /// <summary>
     /// Gets the children of the group.
     /// </summary>
     internal List<OneOf<CommandBuilder, GroupBuilder>> Children { get; }
-
-    /// <summary>
-    /// Gets the name of the group.
-    /// </summary>
-    internal string Name { get; private set; }
-
-    private string? _description;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GroupBuilder"/> class.
@@ -68,11 +54,8 @@ public class GroupBuilder
     public GroupBuilder(GroupBuilder? parent = null)
     {
         this.Name = string.Empty;
-        _parent = parent;
-        _groupAliases = new List<string>();
-        _groupAttributes = new List<Attribute>();
-        _groupConditions = new List<ConditionAttribute>();
         this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
+        this._groupTypes = new List<Type?>();
     }
 
     /// <summary>
@@ -80,9 +63,11 @@ public class GroupBuilder
     /// </summary>
     /// <param name="treeBuilder">The registration builder.</param>
     public GroupBuilder(TreeRegistrationBuilder treeBuilder)
-        : this()
+        : base(treeBuilder)
     {
-        _treeBuilder = treeBuilder;
+        this.Name = string.Empty;
+        this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
+        this._groupTypes = new List<Type?>();
     }
 
     /// <summary>
@@ -92,7 +77,7 @@ public class GroupBuilder
     /// <returns>The current builder to chain calls with.</returns>
     public GroupBuilder WithName(string name)
     {
-        Name = name;
+        this.Name = name;
         return this;
     }
 
@@ -103,29 +88,7 @@ public class GroupBuilder
     /// <returns>The current builder to chain calls with.</returns>
     public GroupBuilder WithDescription(string description)
     {
-        _description = description;
-        return this;
-    }
-
-    /// <summary>
-    /// Adds an alias to the group.
-    /// </summary>
-    /// <param name="alias">The alias to add.</param>
-    /// <returns>The current builder to chain calls with.</returns>
-    public GroupBuilder AddAlias(string alias)
-    {
-        _groupAliases.Add(alias);
-        return this;
-    }
-
-    /// <summary>
-    /// Adds multiple aliases to the group.
-    /// </summary>
-    /// <param name="aliases">The aliases to add.</param>
-    /// <returns>The current builder to chain calls with.</returns>
-    public GroupBuilder AddAliases(IEnumerable<string> aliases)
-    {
-        _groupAliases.AddRange(aliases);
+        this.Description = description;
         return this;
     }
 
@@ -141,7 +104,7 @@ public class GroupBuilder
             throw new InvalidOperationException("Conditions should be added via AddCondition.");
         }
 
-        _groupAttributes.Add(attribute);
+        Attributes.Add(attribute);
         return this;
     }
 
@@ -152,7 +115,7 @@ public class GroupBuilder
     /// <returns>The current builder to chain calls with.</returns>
     public GroupBuilder AddCondition(ConditionAttribute condition)
     {
-        _groupConditions.Add(condition);
+        Conditions.Add(condition);
         return this;
     }
 
@@ -185,12 +148,12 @@ public class GroupBuilder
     /// <remarks>This method should only be called if the builder was instantiated from a call to <see cref="AddGroup"/>.</remarks>
     public GroupBuilder Complete()
     {
-        if (_parent is null)
+        if (Parent is null)
         {
             throw new InvalidOperationException("Cannot complete a group that has no parent.");
         }
 
-        return _parent;
+        return Parent;
     }
 
     /// <summary>
@@ -201,12 +164,12 @@ public class GroupBuilder
     /// <remarks>This method should only be called if the builder was instnatiated from a call to <see cref="TreeRegistrationBuilder.CreateCommandGroup"/>.</remarks>
     public TreeRegistrationBuilder Finish()
     {
-        if (_treeBuilder is null)
+        if (TreeBuilder is null)
         {
             throw new InvalidOperationException("Cannot complete a group that has no parent.");
         }
 
-        return _treeBuilder;
+        return TreeBuilder;
     }
 
     /// <summary>
@@ -221,7 +184,7 @@ public class GroupBuilder
     {
         var builder = new GroupBuilder(parent);
 
-        builder._groupType = moduleType;
+        builder._groupTypes = new List<Type?> { moduleType };
 
         var groupAttribute = moduleType.GetCustomAttribute<GroupAttribute>()!;
 
@@ -238,8 +201,8 @@ public class GroupBuilder
 
         moduleType.GetAttributesAndConditions(out var attributes, out var conditions);
 
-        builder._groupAttributes.AddRange(attributes);
-        builder._groupConditions.AddRange(conditions);
+        builder.Attributes.AddRange(attributes);
+        builder.Conditions.AddRange(conditions);
 
         foreach (var childMethod in moduleType.GetMethods())
         {
@@ -291,11 +254,11 @@ public class GroupBuilder
             Type.EmptyTypes,
             children,
             parent,
-            Name,
-            _groupAliases,
-            _groupAttributes,
-            _groupConditions,
-            _description
+            this.Name,
+            this.Aliases,
+            this.Attributes,
+            this.Conditions,
+            this.Description
         );
 
         foreach (var child in Children)
