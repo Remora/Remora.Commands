@@ -176,9 +176,9 @@ Commands themselves can be overloaded using normal C# syntax, and the various
 argument syntax variants (that is, positional, named, switches, and collections)
 can easily be mixed and matched.
 
-Even the types recognized and parsed by Remora.Commands can be extended using 
+The list of types recognized and parsed by Remora.Commands can be extended using 
 `AbstractTypeParser<TType>` - if you can turn a string into an instance of your
-type, Remora.Commands can parse it.
+type, Remora.Commands will be able to parse it.
 
 ```cs
 public class MyParser : AbstractTypeParser<MyType>
@@ -192,11 +192,11 @@ public class MyParser : AbstractTypeParser<MyType>
         return new ValueTask<Result<MyType>>
         (
             !MyType.TryParse(value, out var result)
-            ? Result<short>.FromError
+            ? Result<MyType>.FromError
               (
                   $"Failed to parse \"{value}\" as an instance of MyType."
               )
-            : Result<short>.FromSuccess(result)
+            : Result<MyType>.FromSuccess(result)
         );
     }
 }
@@ -217,7 +217,7 @@ create parsers that fetch entities from a database, that look things up online,
 that integrate with the rest of your application seamlessly... the possibilities
 are endless!
 
-By default, Remora.Commands provides builtin parsers for the following types:
+By default, Remora.Commands provides built-in parsers for the following types:
   * `string`
   * `char`
   * `bool`
@@ -233,7 +233,11 @@ By default, Remora.Commands provides builtin parsers for the following types:
   * `double`
   * `decimal`
   * `BigInteger`
+  * `TimeSpan`
+  * `DateTime`
   * `DateTimeOffset`
+
+Remora.Commands can also parse any enum without the need for a custom parser!
 
 ## Multiple trees
 If your application requires different sets of commands for different contexts, 
