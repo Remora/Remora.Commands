@@ -38,6 +38,9 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class SwitchParameterShape : IParameterShape
 {
+    private readonly bool _isOptional;
+    private readonly string? _parameterName;
+
     /// <summary>
     /// Gets the short name of the parameter, if any. At least one of <see cref="ShortName"/> and
     /// <see cref="LongName"/> must be set.
@@ -86,9 +89,6 @@ public class SwitchParameterShape : IParameterShape
 
     /// <inheritdoc/>
     public bool IsNullable { get; }
-
-    private readonly bool _isOptional;
-    private readonly string? _parameterName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SwitchParameterShape"/> class.
@@ -144,14 +144,14 @@ public class SwitchParameterShape : IParameterShape
 
     private SwitchParameterShape(ParameterInfo parameter)
     {
-        parameter.GetAttributesAndConditions(out var attributes, out var conditions);
+        _isOptional = parameter.IsOptional;
         _parameterName = parameter.Name;
+        parameter.GetAttributesAndConditions(out var attributes, out var conditions);
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
         this.Attributes = attributes;
         this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
-        _isOptional = parameter.IsOptional;
         this.Description = Constants.DefaultDescription;
     }
 
@@ -180,11 +180,11 @@ public class SwitchParameterShape : IParameterShape
         string description
     )
     {
+        _isOptional = isOptional;
+        _parameterName = parameterName;
         this.ShortName = shortName;
         this.LongName = longName;
-        _parameterName = parameterName;
         this.ParameterType = parameterType;
-        _isOptional = isOptional;
         this.IsNullable = parameterType.IsNullable();
         this.DefaultValue = defaultValue;
         this.Attributes = attributes;

@@ -73,12 +73,12 @@ public class PositionalGreedyParameterShape : IParameterShape
         parameter.GetAttributesAndConditions(out var attributes, out var conditions);
 
         _parameterName = parameter.Name;
+        _isOptional = parameter.IsOptional;
         this.DefaultValue = parameter.DefaultValue;
         this.ParameterType = parameter.ParameterType;
         this.Attributes = attributes;
         this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
-        _isOptional = parameter.IsOptional;
         this.Description = description ?? Constants.DefaultDescription;
     }
 
@@ -103,9 +103,9 @@ public class PositionalGreedyParameterShape : IParameterShape
         string description
     )
     {
+        _isOptional = isOptional;
         _parameterName = parameterName;
         this.ParameterType = parameterType;
-        _isOptional = isOptional;
         this.DefaultValue = defaultValue;
         this.IsNullable = parameterType.IsNullable();
         this.Attributes = attributes;

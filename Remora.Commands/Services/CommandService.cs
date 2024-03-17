@@ -659,7 +659,7 @@ public class CommandService
     {
         var materializedParameters = new List<object?>();
 
-        // Dictionary<ParameterInfo, BoundParameterShape> // parsed, un-typed parameters
+        // parsed, un-typed parameters
         var boundParameters = boundCommandNode.BoundParameters.ToDictionary(bp => bp.ParameterShape);
 
         // for each parameter defined on the command itself
