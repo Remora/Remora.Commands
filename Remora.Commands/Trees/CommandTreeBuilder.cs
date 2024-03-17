@@ -386,7 +386,7 @@ public class CommandTreeBuilder
             (
                 parent,
                 commandAttribute.Name,
-                CreateDelegate(method, method.GetParameters().Select(p => p.ParameterType).ToArray()),
+                CreateDelegate(method),
                 CommandShape.FromMethod(method),
                 commandAttribute.Aliases,
                 attributes,
@@ -399,9 +399,8 @@ public class CommandTreeBuilder
     /// Creates a command invocation delegate from the supplied parameters.
     /// </summary>
     /// <param name="method">The method that will be invoked.</param>
-    /// <param name="argumentTypes">The parameter types of the arguments.</param>
     /// <returns>The created command invocation.</returns>
-    internal static CommandInvocation CreateDelegate(MethodInfo method, Type[] argumentTypes)
+    internal static CommandInvocation CreateDelegate(MethodInfo method)
     {
         // Get the object from the container
         var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
@@ -410,12 +409,19 @@ public class CommandTreeBuilder
 
         var parameters = Expression.Parameter(typeof(object?[]), "parameters");
 
+        var methodParameters = method.GetParameters();
+        var orderedArgumentTypes = methodParameters.Select((t, n) => (t, n))
+                                                .OrderBy(tn => tn.t.GetCustomAttribute<OptionAttribute>() is null)
+                                                .Select((t, nn) => (t.t, nn))
+                                                .ToArray();
+
         // Create the arguments
-        var arguments = new Expression[argumentTypes.Length];
-        for (var i = 0; i < argumentTypes.Length; i++)
+        var arguments = new Expression[orderedArgumentTypes.Length];
+        for (var i = 0; i < orderedArgumentTypes.Length; i++)
         {
-            var argumentType = argumentTypes[i];
-            var argument = Expression.ArrayIndex(parameters, Expression.Constant(i));
+            var argumentType = methodParameters[i].ParameterType;
+            var argumentIndex = orderedArgumentTypes.First(tn => tn.t == methodParameters[i]).nn;
+            var argument = Expression.ArrayIndex(parameters, Expression.Constant(argumentIndex));
             arguments[i] = Expression.Convert(argument, argumentType);
         }
 

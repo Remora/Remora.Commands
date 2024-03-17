@@ -116,9 +116,7 @@ public class CommandBuilder : AbstractCommandBuilder<CommandBuilder>
         }
 
         var parameters = info.GetParameters();
-        var parameterTypes = parameters.Select(p => p.ParameterType).ToArray();
-
-        builder.WithInvocation(CommandTreeBuilder.CreateDelegate(info, parameterTypes));
+        builder.WithInvocation(CommandTreeBuilder.CreateDelegate(info));
 
         foreach (var parameter in parameters)
         {
