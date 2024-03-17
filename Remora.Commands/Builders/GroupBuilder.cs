@@ -52,6 +52,7 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
     /// </summary>
     /// <param name="parent">The parent this group belongs to, if any.</param>
     public GroupBuilder(GroupBuilder? parent = null)
+        : base(parent)
     {
         this.Name = string.Empty;
         this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
@@ -68,55 +69,6 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
         this.Name = string.Empty;
         this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
         this._groupTypes = new List<Type?>();
-    }
-
-    /// <summary>
-    /// Sets the name of the group.
-    /// </summary>
-    /// <param name="name">The name of the group.</param>
-    /// <returns>The current builder to chain calls with.</returns>
-    public GroupBuilder WithName(string name)
-    {
-        this.Name = name;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the description of the group.
-    /// </summary>
-    /// <param name="description">The description of the group.</param>
-    /// <returns>The current builder to chain calls with.</returns>
-    public GroupBuilder WithDescription(string description)
-    {
-        this.Description = description;
-        return this;
-    }
-
-    /// <summary>
-    /// Adds an attribute to the group. Conditions should be added via <see cref="AddCondition"/>.
-    /// </summary>
-    /// <param name="attribute">The attribute to add.</param>
-    /// <returns>The current builder to chain calls with.</returns>
-    public GroupBuilder AddAttribute(Attribute attribute)
-    {
-        if (attribute is ConditionAttribute)
-        {
-            throw new InvalidOperationException("Conditions should be added via AddCondition.");
-        }
-
-        Attributes.Add(attribute);
-        return this;
-    }
-
-    /// <summary>
-    /// Adds a condition to the group.
-    /// </summary>
-    /// <param name="condition">The condition to add.</param>
-    /// <returns>The current builder to chain calls with.</returns>
-    public GroupBuilder AddCondition(ConditionAttribute condition)
-    {
-        Conditions.Add(condition);
-        return this;
     }
 
     /// <summary>
