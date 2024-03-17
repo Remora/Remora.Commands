@@ -151,8 +151,7 @@ public class CommandParameterBuilder
     /// This method will set a default value for the parameter, which will
     /// implicitly make it optional.
     /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown if <paramref name="shortName"/>
-    /// and <paramref name="longName"/> are both <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if both tuple values in <paramref name="shortOrLongName"/> are <c>null</c>.</exception>
     public CommandParameterBuilder IsSwitch(bool defaultValue, OneOf<char, string, (char Short, string Long)> shortOrLongName = default)
     {
         _defaultValue = defaultValue;

@@ -194,7 +194,7 @@ public class CommandBuilder : AbstractCommandBuilder<CommandBuilder>
 
         return builder;
 
-        OneOf<char, string, (char shortName, string longName)> GetAttributeValue(char? shortName, string? longName)
+        OneOf<char, string, (char ShortName, string LongName)> GetAttributeValue(char? shortName, string? longName)
         {
             return (shortName, longName) switch
             {
