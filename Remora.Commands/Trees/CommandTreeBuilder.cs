@@ -110,6 +110,10 @@ public class CommandTreeBuilder
     {
         if (!values.Any())
         {
+            foreach (var node in nodes)
+            {
+                yield return node;
+            }
             yield break;
         }
 
@@ -163,26 +167,39 @@ public class CommandTreeBuilder
             description
         );
 
-        foreach (var child in children)
+        var mutableChildren = children.SelectMany(n => n is GroupNode gn ? gn.Children : new[] { n }).ToList();
+
+        for (var i = children.Count - 1; i >= 0; i--)
         {
+            var child = children[i];
+
             if (child is not GroupNode cgn)
             {
                 childNodes.Add(child);
+                mutableChildren.RemoveAt(i);
                 continue;
             }
 
-            // Parity with ToChildNodes; if the group's name is empty
-            // Nest it directly under the parent.
-            if (string.IsNullOrWhiteSpace(cgn.Key))
+            // Parity with ToChildNodes; if the group's name is empty, or
+            // shouldn't be merged, just nest it under the parent.
+            if (string.IsNullOrWhiteSpace(cgn.Key) || name != child.Key)
             {
                 childNodes.AddRange(cgn.Children);
-                continue;
+                mutableChildren.RemoveAt(i);
             }
+        }
 
-            // Otherwise, merge, recursively.
-            if (name == child.Key)
+        var groups = mutableChildren.GroupBy(g => g.Key);
+
+        foreach (var subgroup in groups)
+        {
+            if (subgroup.Count() is 1)
             {
-                childNodes.Add(MergeRecursively(cgn.Children, group));
+                childNodes.Add(subgroup.Single());
+            }
+            else
+            {
+                childNodes.Add(MergeRecursively(subgroup.ToArray(), group));
             }
         }
 
