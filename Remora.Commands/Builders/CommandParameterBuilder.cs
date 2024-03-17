@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
@@ -183,8 +182,7 @@ public class CommandParameterBuilder
     /// </summary>
     /// <param name="shortOrLongName">Either the short name (e.g. '-o') or the long name (e.g. '--option') of the option.</param>
     /// <returns>The builder to chain calls with.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if <paramref name="shortName"/>
-    /// and <paramref name="longName"/> are both <c>null</c>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if both values for <paramref name="shortOrLongName"/> are null..</exception>
     public CommandParameterBuilder IsOption(OneOf<char, string, (char Short, string Long)> shortOrLongName = default)
     {
         var canBeOption = !_attributes.Any(r => r is SwitchAttribute);
@@ -264,46 +262,44 @@ public class CommandParameterBuilder
         }
 
         return optionAttribute is null
-                   ? CreatePositionalParameterShape(rangeAttribute, this)
-                   : CreateNamedParameterShape(optionAttribute, rangeAttribute, this);
+                   ? CreatePositionalParameterShape(rangeAttribute)
+                   : CreateNamedParameterShape(optionAttribute, rangeAttribute);
     }
 
-    private static IParameterShape CreateNamedParameterShape
+    private IParameterShape CreateNamedParameterShape
     (
         OptionAttribute optionAttribute,
-        RangeAttribute? rangeAttribute,
-        CommandParameterBuilder builder
+        RangeAttribute? rangeAttribute
     )
     {
-        var isCollection = builder._parameterType!.IsSupportedCollection();
+        var isCollection = _parameterType!.IsSupportedCollection();
 
         IParameterShape newNamedParameter;
         if (optionAttribute is SwitchAttribute)
         {
-            newNamedParameter = CreateNamedSwitchParameterShape(optionAttribute, builder);
+            newNamedParameter = CreateNamedSwitchParameterShape(optionAttribute);
         }
         else if (!isCollection)
         {
-            newNamedParameter = builder._isGreedy
-                ? CreateNamedSingleValueParameterShape(optionAttribute, builder)
-                : CreateGreedyNamedSingleValueParameterShape(optionAttribute, builder);
+            newNamedParameter = _isGreedy
+                ? CreateNamedSingleValueParameterShape(optionAttribute)
+                : CreateGreedyNamedSingleValueParameterShape(optionAttribute);
         }
         else
         {
-            newNamedParameter = CreateNamedCollectionParameterShape(optionAttribute, rangeAttribute, builder);
+            newNamedParameter = CreateNamedCollectionParameterShape(optionAttribute, rangeAttribute);
         }
 
         return newNamedParameter;
     }
 
-    private static IParameterShape CreateNamedCollectionParameterShape
+    private IParameterShape CreateNamedCollectionParameterShape
     (
         OptionAttribute optionAttribute,
-        RangeAttribute? rangeAttribute,
-        CommandParameterBuilder builder
+        RangeAttribute? rangeAttribute
     )
     {
-        var description = builder._description ?? Constants.DefaultDescription;
+        var description = _description ?? Constants.DefaultDescription;
 
         IParameterShape newNamedParameter = new NamedCollectionParameterShape
         (
@@ -311,133 +307,129 @@ public class CommandParameterBuilder
             optionAttribute.LongName,
             rangeAttribute?.GetMin(),
             rangeAttribute?.GetMax(),
-            builder._name,
-            builder._parameterType!,
-            builder._isOptional,
-            builder._defaultValue,
-            builder._attributes,
-            builder._conditions,
+            _name,
+            _parameterType!,
+            _isOptional,
+            _defaultValue,
+            _attributes,
+            _conditions,
             description
         );
 
         return newNamedParameter;
     }
 
-    private static IParameterShape CreateNamedSwitchParameterShape
+    private IParameterShape CreateNamedSwitchParameterShape
     (
-        OptionAttribute optionAttribute,
-        CommandParameterBuilder builder
+        OptionAttribute optionAttribute
     )
     {
-        if (!builder._isOptional)
+        if (!_isOptional)
         {
             throw new InvalidOperationException($"Switches must have a default value.");
         }
 
-        if (builder._parameterType != typeof(bool))
+        if (_parameterType != typeof(bool))
         {
             throw new InvalidOperationException("Switches must be booleans.");
         }
 
-        var description = builder._description ?? Constants.DefaultDescription;
+        var description = _description ?? Constants.DefaultDescription;
 
         IParameterShape newNamedParameter = new SwitchParameterShape
         (
             optionAttribute.ShortName,
             optionAttribute.LongName,
-            builder._name,
-            builder._parameterType,
-            builder._isOptional,
-            builder._defaultValue,
-            builder._attributes,
-            builder._conditions,
+            _name,
+            _parameterType,
+            _isOptional,
+            _defaultValue,
+            _attributes,
+            _conditions,
             description
         );
 
         return newNamedParameter;
     }
 
-    private static IParameterShape CreateNamedSingleValueParameterShape
+    private IParameterShape CreateNamedSingleValueParameterShape
     (
-        OptionAttribute optionAttribute,
-        CommandParameterBuilder builder
+        OptionAttribute optionAttribute
     )
     {
-        var description = builder._description ?? Constants.DefaultDescription;
+        var description = _description ?? Constants.DefaultDescription;
 
         IParameterShape newNamedParameter = new NamedParameterShape
         (
             optionAttribute.ShortName,
             optionAttribute.LongName,
-            builder._name,
-            builder._parameterType!,
-            builder._isOptional,
-            builder._defaultValue,
-            builder._attributes,
-            builder._conditions,
+            _name,
+            _parameterType!,
+            _isOptional,
+            _defaultValue,
+            _attributes,
+            _conditions,
             description
         );
 
         return newNamedParameter;
     }
 
-    private static IParameterShape CreateGreedyNamedSingleValueParameterShape
+    private IParameterShape CreateGreedyNamedSingleValueParameterShape
     (
-        OptionAttribute optionAttribute,
-        CommandParameterBuilder builder
+        OptionAttribute optionAttribute
     )
     {
-        var description = builder._description ?? Constants.DefaultDescription;
+        var description = _description ?? Constants.DefaultDescription;
 
         IParameterShape newNamedParameter = new NamedGreedyParameterShape
         (
             optionAttribute.ShortName,
             optionAttribute.LongName,
-            builder._name,
-            builder._parameterType!,
-            builder._isOptional,
-            builder._defaultValue,
-            builder._attributes,
-            builder._conditions,
+            _name,
+            _parameterType!,
+            _isOptional,
+            _defaultValue,
+            _attributes,
+            _conditions,
             description
         );
 
         return newNamedParameter;
     }
 
-    private static IParameterShape CreatePositionalParameterShape
+    private IParameterShape CreatePositionalParameterShape
     (
-        RangeAttribute? rangeAttribute,
-        CommandParameterBuilder builder
+        RangeAttribute? rangeAttribute
     )
     {
-        var description = builder._description ?? Constants.DefaultDescription;
-        var isCollection = builder._parameterType!.IsSupportedCollection();
+        var description = _description ?? Constants.DefaultDescription;
+        var isCollection = _parameterType!.IsSupportedCollection();
 
         IParameterShape newPositionalParameter;
         if (!isCollection)
         {
-            var greedyAttribute = builder._attributes.OfType<GreedyAttribute>().SingleOrDefault();
+            var greedyAttribute = _attributes.OfType<GreedyAttribute>().SingleOrDefault();
 
             newPositionalParameter = greedyAttribute is null
                 ? new PositionalParameterShape
                   (
-                      builder._name,
-                      builder._parameterType!,
-                      builder._isOptional,
-                      builder._defaultValue,
-                      builder._attributes,
-                      builder._conditions,
+                      _name,
+                      _parameterType!,
+                      _isOptional,
+                      _defaultValue,
+                      _attributes,
+                      _conditions,
                       description
                   )
                 : new PositionalGreedyParameterShape
                   (
-                      builder._name,
-                      builder._parameterType!,
-                      builder._isOptional,
-                      builder._defaultValue,
-                      builder._attributes,
-                      builder._conditions,
+                      _name,
+                      _parameterType!,
+                      _isOptional,
+                      _defaultValue,
+                      _attributes,
+                      _conditions,
                       description
                   );
         }
@@ -447,12 +439,12 @@ public class CommandParameterBuilder
             (
                 rangeAttribute?.GetMin(),
                 rangeAttribute?.GetMax(),
-                builder._name,
-                builder._parameterType!,
-                builder._isOptional,
-                builder._defaultValue,
-                builder._attributes,
-                builder._conditions,
+                _name,
+                _parameterType!,
+                _isOptional,
+                _defaultValue,
+                _attributes,
+                _conditions,
                 description
             );
         }
