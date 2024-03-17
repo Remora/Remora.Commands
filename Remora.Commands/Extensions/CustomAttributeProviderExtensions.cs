@@ -25,6 +25,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 
 namespace Remora.Commands.Extensions;
 
@@ -53,6 +54,18 @@ public static class CustomAttributeProviderExtensions
         where TAttribute : Attribute
     {
         return attributeProvider.GetCustomAttributes(typeof(TAttribute), inherit).FirstOrDefault() as TAttribute;
+    }
+
+    /// <summary>
+    /// Gets the conditions and attributes of the given attribute provider.
+    /// </summary>
+    /// <param name="attributeProvider">The attribute provider.</param>
+    /// <param name="attributes">The attributes extracted from the provider, excluding conditions.</param>
+    /// <param name="conditions">The conditions extracted from the provider.</param>
+    public static void GetAttributesAndConditions(this ICustomAttributeProvider attributeProvider, out Attribute[] attributes, out ConditionAttribute[] conditions)
+    {
+        attributes = attributeProvider.GetCustomAttributes(true).Where(att => att is not ConditionAttribute).Cast<Attribute>().ToArray();
+        conditions = attributeProvider.GetCustomAttributes(typeof(ConditionAttribute), true).Cast<ConditionAttribute>().ToArray();
     }
 
     /// <summary>
