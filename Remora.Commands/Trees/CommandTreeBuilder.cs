@@ -22,14 +22,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.Builders;
@@ -93,10 +91,8 @@ public class CommandTreeBuilder
         var rootChildren = new List<IChildNode>();
         var rootNode = new RootNode(rootChildren);
 
-        rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
-
         var builtCommands = _registeredBuilders.Select(rb => rb.Match(cb => cb.Build(rootNode), gb => (IChildNode)gb.Build(rootNode)));
-        var topLevelCommands = BindDynamicCommands(rootChildren, builtCommands.ToList());
+        var topLevelCommands = BindDynamicCommands(ToChildNodes(_registeredModuleTypes, rootNode).ToArray(), builtCommands.ToList(), rootNode);
 
         rootChildren.AddRange(topLevelCommands);
 
@@ -108,81 +104,89 @@ public class CommandTreeBuilder
     /// </summary>
     /// <param name="nodes">The nodes to bind to.</param>
     /// <param name="values">The values to bind.</param>
+    /// <param name="root">The root node to bind groups and commands to.</param>
     /// <returns>Any nodes that could not be bound, and thusly should be added directly to the root as-is.</returns>
-    private IEnumerable<IChildNode> BindDynamicCommands(IReadOnlyList<IChildNode> nodes, List<IChildNode> values)
+    private IEnumerable<IChildNode> BindDynamicCommands(IReadOnlyList<IChildNode> nodes, List<IChildNode> values, IParentNode root)
     {
         if (!values.Any())
         {
             yield break;
         }
 
-        for (int i = values.Count; i <= 0; i--)
+        for (int i = values.Count - 1; i >= 0; i--)
         {
-            // Child nodes are never merged; thunk it.
-            if (values[i] is not IParentNode)
+            var current = values[i];
+
+            // Return top-level commands (non-group nodes) as-is.
+            if (current is IParentNode)
             {
-                yield return values[i];
-                values.RemoveAt(i);
+                continue;
             }
+
+            values.RemoveAt(i);
+            yield return current;
         }
 
-        var unified = nodes.Select(n => (node: n, dynamic: false)).Concat(values.Select(n => (node: n, dynamic: true)));
-
-        var grouped = unified.GroupBy(g => g.node is GroupNode gn ? gn.Key : string.Empty);
-
-        foreach (var group in grouped)
+        if (values.Count is 0)
         {
-            var dynamic = group.FirstOrDefault(v => v.dynamic).node;
-            var normal = group.FirstOrDefault(v => !v.dynamic).node;
+            yield break;
+        }
 
-            if (dynamic is null || normal is null)
-            {
-                yield return dynamic is null ? normal! : dynamic!;
-                continue;
-            }
+        var groups = nodes.OfType<GroupNode>()
+                           .Concat(values.Cast<GroupNode>())
+                           .GroupBy(g => g.Key)
+                           .Select(g => MergeRecursively(g.ToArray(), root));
 
-            if (normal is not GroupNode ngn)
-            {
-                yield return dynamic;
-                continue;
-            }
-
-            if (dynamic is not GroupNode dgn)
-            {
-                // N.B This relies on the registration logic of Remora.Commands !!
-                // If `ToChildNodes` changes, so should this.
-                ((List<IChildNode>)ngn.Children).Add(dynamic);
-                continue;
-            }
-
-            MergeRecursively(ngn, dgn.Children);
+        foreach (var group in groups)
+        {
+            yield return group;
         }
     }
 
-    private void MergeRecursively(GroupNode group, IEnumerable<IChildNode> children)
+    private GroupNode MergeRecursively(IReadOnlyList<IChildNode> children, IParentNode parent)
     {
-        var groupChildren = (List<IChildNode>)group.Children;
+        var childNodes = new List<IChildNode>();
+        var groupNodesFromChildren = children.OfType<GroupNode>().ToArray();
+
+        var name = groupNodesFromChildren.Select(g => g.Key).FirstOrDefault(n => !string.IsNullOrWhiteSpace(n)) ?? string.Empty;
+        var description = groupNodesFromChildren.Select(g => g.Description).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d)) ?? Constants.DefaultDescription;
+
+        var group = new GroupNode
+        (
+            groupNodesFromChildren.SelectMany(t => t.GroupTypes).ToArray(),
+            childNodes,
+            parent,
+            name,
+            groupNodesFromChildren.SelectMany(g => g.Aliases).ToArray(),
+            groupNodesFromChildren.SelectMany(g => g.Attributes).ToArray(),
+            groupNodesFromChildren.SelectMany(g => g.Conditions).ToArray(),
+            description
+        );
 
         foreach (var child in children)
         {
             if (child is not GroupNode cgn)
             {
-                groupChildren.Add(child);
+                childNodes.Add(child);
                 continue;
             }
 
-            ((List<Type>)group.GroupTypes).Add(typeof(GroupBuilder));
-            ((List<Attribute>)group.Attributes).AddRange(cgn.Attributes);
-            ((List<ConditionAttribute>)group.Conditions).AddRange(cgn.Conditions);
-
-            foreach (var groupChild in group.Children)
+            // Parity with ToChildNodes; if the group's name is empty
+            // Nest it directly under the parent.
+            if (string.IsNullOrWhiteSpace(cgn.Key))
             {
-                if (groupChild.Key == child.Key && groupChild is GroupNode gcgn)
-                {
-                    MergeRecursively(gcgn, cgn.Children);
-                }
+                childNodes.AddRange(cgn.Children);
+                continue;
+            }
+
+            // Otherwise, merge, recursively.
+            if (name == child.Key)
+            {
+                childNodes.Add(MergeRecursively(cgn.Children, group));
             }
         }
+
+        return group;
     }
 
     /// <summary>
