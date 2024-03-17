@@ -107,10 +107,10 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// </summary>
     /// <param name="name">The name of the builder.</param>
     /// <returns>The current builder to chain calls with.</returns>
-    public AbstractCommandBuilder<TSelf> WithName(string name)
+    public TSelf WithName(string name)
     {
         Name = name;
-        return this;
+        return (TSelf)this;
     }
 
     /// <summary>
@@ -118,10 +118,10 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// </summary>
     /// <param name="description">The description of the builder.</param>
     /// <returns>The current builder to chain calls with.</returns>
-    public AbstractCommandBuilder<TSelf> WithDescription(string description)
+    public TSelf WithDescription(string description)
     {
         Description = description;
-        return this;
+        return (TSelf)this;
     }
 
     /// <summary>
@@ -129,10 +129,10 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// </summary>
     /// <param name="alias">The alias to add.</param>
     /// <returns>The current builder to chain calls with.</returns>
-    public AbstractCommandBuilder<TSelf> AddAlias(string alias)
+    public TSelf AddAlias(string alias)
     {
         Aliases.Add(alias);
-        return this;
+        return (TSelf)this;
     }
 
     /// <summary>
@@ -140,10 +140,10 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// </summary>
     /// <param name="aliases">The aliases to add.</param>
     /// <returns>The current builder to chain calls with.</returns>
-    public AbstractCommandBuilder<TSelf> AddAliases(IEnumerable<string> aliases)
+    public TSelf AddAliases(IEnumerable<string> aliases)
     {
         Aliases.AddRange(aliases);
-        return this;
+        return (TSelf)this;
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// </summary>
     /// <param name="attribute">The attribute to add.</param>
     /// <returns>The current builder to chain calls with.</returns>
-    public AbstractCommandBuilder<TSelf> AddAttribute(Attribute attribute)
+    public TSelf AddAttribute(Attribute attribute)
     {
         if (attribute is ConditionAttribute)
         {
@@ -159,7 +159,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
         }
 
         Attributes.Add(attribute);
-        return this;
+        return (TSelf)this;
     }
 
     /// <summary>
@@ -167,9 +167,9 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// </summary>
     /// <param name="condition">The condition to add.</param>
     /// <returns>The current builder to chain calls with.</returns>
-    public AbstractCommandBuilder<TSelf> AddCondition(ConditionAttribute condition)
+    public TSelf AddCondition(ConditionAttribute condition)
     {
         Conditions.Add(condition);
-        return this;
+        return (TSelf)this;
     }
 }
