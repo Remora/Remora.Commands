@@ -164,12 +164,14 @@ public class MultiTreeTests
     [Fact]
     public void AddingCommandGroupToServiceCollectionAddsItToDefaultTree()
     {
+        #pragma warning disable CS0618 // Type or member is obsolete
+
         var services = new ServiceCollection()
             .AddCommands()
-            #pragma warning disable CS0618
             .AddCommandGroup<NamedGroupWithCommands>()
-            #pragma warning restore CS0618
             .BuildServiceProvider(true);
+
+        #pragma warning restore CS0618 // Type or member is obsolete
 
         var accessor = services.GetRequiredService<CommandTreeAccessor>();
         accessor.TryGetNamedTree(null, out var tree);
