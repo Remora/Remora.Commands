@@ -37,7 +37,6 @@ namespace Remora.Commands.Builders;
 /// </summary>
 public class CommandParameterBuilder
 {
-    private readonly int _index;
     private readonly CommandBuilder _builder;
     private readonly List<Attribute> _attributes;
     private readonly List<ConditionAttribute> _conditions;
@@ -57,7 +56,6 @@ public class CommandParameterBuilder
     /// <remarks>If <paramref name="type"/> is null, <see cref="WithType"/> MUST be called before <see cref="Finish"/>.</remarks>
     public CommandParameterBuilder(CommandBuilder builder, Type? type)
     {
-        _index = builder.Parameters.Count;
         _name = string.Empty;
         _builder = builder;
         _attributes = new();
@@ -319,7 +317,6 @@ public class CommandParameterBuilder
             builder._defaultValue,
             builder._attributes,
             builder._conditions,
-            builder._index,
             description
         );
 
@@ -354,7 +351,6 @@ public class CommandParameterBuilder
             builder._defaultValue,
             builder._attributes,
             builder._conditions,
-            builder._index,
             description
         );
 
@@ -379,7 +375,6 @@ public class CommandParameterBuilder
             builder._defaultValue,
             builder._attributes,
             builder._conditions,
-            builder._index,
             description
         );
 
@@ -433,7 +428,6 @@ public class CommandParameterBuilder
                       builder._defaultValue,
                       builder._attributes,
                       builder._conditions,
-                      builder._index,
                       description
                   )
                 : new PositionalGreedyParameterShape
@@ -444,7 +438,6 @@ public class CommandParameterBuilder
                       builder._defaultValue,
                       builder._attributes,
                       builder._conditions,
-                      builder._index,
                       description
                   );
         }
@@ -460,7 +453,6 @@ public class CommandParameterBuilder
                 builder._defaultValue,
                 builder._attributes,
                 builder._conditions,
-                builder._index,
                 description
             );
         }

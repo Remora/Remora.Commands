@@ -87,9 +87,6 @@ public class SwitchParameterShape : IParameterShape
     /// <inheritdoc/>
     public bool IsNullable { get; }
 
-    /// <inheritdoc/>
-    public int ParameterIndex { get; }
-
     private readonly bool _isOptional;
     private readonly string? _parameterName;
 
@@ -99,17 +96,15 @@ public class SwitchParameterShape : IParameterShape
     /// <param name="parameter">The underlying parameter.</param>
     /// <param name="shortName">The short name.</param>
     /// <param name="longName">The long name.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public SwitchParameterShape
     (
         ParameterInfo parameter,
         char shortName,
         string longName,
-        int index,
         string? description = null
     )
-        : this(parameter, index)
+        : this(parameter)
     {
         this.ShortName = shortName;
         this.LongName = longName;
@@ -121,10 +116,9 @@ public class SwitchParameterShape : IParameterShape
     /// </summary>
     /// <param name="parameter">The underlying parameter.</param>
     /// <param name="shortName">The short name.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
-    public SwitchParameterShape(ParameterInfo parameter, char shortName, int index, string? description = null)
-        : this(parameter, index)
+    public SwitchParameterShape(ParameterInfo parameter, char shortName, string? description = null)
+        : this(parameter)
     {
         this.ShortName = shortName;
         this.Description = description ?? Constants.DefaultDescription;
@@ -135,22 +129,20 @@ public class SwitchParameterShape : IParameterShape
     /// </summary>
     /// <param name="parameter">The underlying parameter.</param>
     /// <param name="longName">The long name.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public SwitchParameterShape
     (
         ParameterInfo parameter,
         string longName,
-        int index,
         string? description = null
     )
-        : this(parameter, index)
+        : this(parameter)
     {
         this.LongName = longName;
         this.Description = description ?? Constants.DefaultDescription;
     }
 
-    private SwitchParameterShape(ParameterInfo parameter, int index)
+    private SwitchParameterShape(ParameterInfo parameter)
     {
         parameter.GetAttributesAndConditions(out var attributes, out var conditions);
         _parameterName = parameter.Name;
@@ -161,7 +153,6 @@ public class SwitchParameterShape : IParameterShape
         this.IsNullable = parameter.AllowsNull();
         _isOptional = parameter.IsOptional;
         this.Description = Constants.DefaultDescription;
-        this.ParameterIndex = index;
     }
 
     /// <summary>
@@ -175,7 +166,6 @@ public class SwitchParameterShape : IParameterShape
     /// <param name="defaultValue">The default value of the parameter, if any.</param>
     /// <param name="attributes">The attributes of the parameter.</param>
     /// <param name="conditions">The conditions of the parameter.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the paremeter.</param>
     public SwitchParameterShape
     (
@@ -187,7 +177,6 @@ public class SwitchParameterShape : IParameterShape
         object? defaultValue,
         IReadOnlyList<Attribute> attributes,
         IReadOnlyList<ConditionAttribute> conditions,
-        int index,
         string description
     )
     {
@@ -201,7 +190,6 @@ public class SwitchParameterShape : IParameterShape
         this.Attributes = attributes;
         this.Conditions = conditions;
         this.Description = description;
-        this.ParameterIndex = index;
     }
 
     /// <inheritdoc/>

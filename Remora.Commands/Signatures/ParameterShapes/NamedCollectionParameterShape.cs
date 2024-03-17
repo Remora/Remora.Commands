@@ -79,7 +79,6 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     /// <param name="longName">The long name.</param>
     /// <param name="min">The minimum number of items in the collection.</param>
     /// <param name="max">The maximum number of items in the collection.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public NamedCollectionParameterShape
     (
@@ -88,10 +87,9 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         string longName,
         ulong? min,
         ulong? max,
-        int index,
         string? description = null
     )
-        : base(parameter, shortName, longName, index, description)
+        : base(parameter, shortName, longName, description)
     {
         this.Min = min;
         this.Max = max;
@@ -109,7 +107,6 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     /// <param name="shortName">The short name.</param>
     /// <param name="min">The minimum number of items in the collection.</param>
     /// <param name="max">The maximum number of items in the collection.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public NamedCollectionParameterShape
     (
@@ -117,10 +114,9 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         char shortName,
         ulong? min,
         ulong? max,
-        int index,
         string? description = null
     )
-        : base(parameter, shortName, index, description)
+        : base(parameter, shortName, description)
     {
         this.Min = min;
         this.Max = max;
@@ -144,7 +140,6 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     /// <param name="defaultValue">The default value of the parameter, if any.</param>
     /// <param name="attributes">The attributes of the parameter.</param>
     /// <param name="conditions">The conditions of the parameter.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the paremeter.</param>
     public NamedCollectionParameterShape
     (
@@ -158,10 +153,9 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         object? defaultValue,
         IReadOnlyList<Attribute> attributes,
         IReadOnlyList<ConditionAttribute> conditions,
-        int index,
         string description
     )
-        : base(shortName, longName, parameterName, parameterType, isOptional, defaultValue, attributes, conditions, index, description)
+        : base(shortName, longName, parameterName, parameterType, isOptional, defaultValue, attributes, conditions, description)
     {
         this.Min = min;
         this.Max = max;
@@ -179,7 +173,6 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     /// <param name="longName">The long name.</param>
     /// <param name="min">The minimum number of items in the collection.</param>
     /// <param name="max">The maximum number of items in the collection.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public NamedCollectionParameterShape
     (
@@ -187,10 +180,9 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         string longName,
         ulong? min,
         ulong? max,
-        int index,
         string? description = null
     )
-        : base(parameter, longName, index, description)
+        : base(parameter, longName, description)
     {
         this.Min = min;
         this.Max = max;

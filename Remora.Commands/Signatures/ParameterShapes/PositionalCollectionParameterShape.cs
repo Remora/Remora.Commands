@@ -78,17 +78,15 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
     /// <param name="parameter">The underlying parameter.</param>
     /// <param name="min">The minimum number of elements.</param>
     /// <param name="max">The maximum number of elements.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
     public PositionalCollectionParameterShape
     (
         ParameterInfo parameter,
         ulong? min,
         ulong? max,
-        int index,
         string? description = null
     )
-        : base(parameter, index, description)
+        : base(parameter, description)
     {
         this.Min = min;
         this.Max = max;
@@ -110,7 +108,6 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
     /// <param name="defaultValue">The default value of the parameter, if any.</param>
     /// <param name="attributes">The attributes of the parameter.</param>
     /// <param name="conditions">The conditions of the parameter.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the paremeter.</param>
     public PositionalCollectionParameterShape
     (
@@ -122,7 +119,6 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
         object? defaultValue,
         IReadOnlyList<Attribute> attributes,
         IReadOnlyList<ConditionAttribute> conditions,
-        int index,
         string? description = null
     )
         : base
@@ -133,7 +129,6 @@ public class PositionalCollectionParameterShape : PositionalParameterShape, ICol
          defaultValue,
          attributes,
          conditions,
-         index,
          description ?? Constants.DefaultDescription
         )
     {

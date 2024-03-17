@@ -60,9 +60,6 @@ public class PositionalGreedyParameterShape : IParameterShape
     /// <inheritdoc/>
     public bool IsNullable { get; }
 
-    /// <inheritdoc/>
-    public int ParameterIndex { get; }
-
     private readonly bool _isOptional;
     private readonly string? _parameterName;
 
@@ -70,9 +67,8 @@ public class PositionalGreedyParameterShape : IParameterShape
     /// Initializes a new instance of the <see cref="PositionalGreedyParameterShape"/> class.
     /// </summary>
     /// <param name="parameter">The underlying parameter.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the parameter.</param>
-    public PositionalGreedyParameterShape(ParameterInfo parameter, int index, string? description = null)
+    public PositionalGreedyParameterShape(ParameterInfo parameter, string? description = null)
     {
         parameter.GetAttributesAndConditions(out var attributes, out var conditions);
 
@@ -83,7 +79,6 @@ public class PositionalGreedyParameterShape : IParameterShape
         this.Conditions = conditions;
         this.IsNullable = parameter.AllowsNull();
         _isOptional = parameter.IsOptional;
-        this.ParameterIndex = index;
         this.Description = description ?? Constants.DefaultDescription;
     }
 
@@ -96,7 +91,6 @@ public class PositionalGreedyParameterShape : IParameterShape
     /// <param name="defaultValue">The default value of the parameter, if any.</param>
     /// <param name="attributes">The attributes of the parameter.</param>
     /// <param name="conditions">The conditions of the parameter.</param>
-    /// <param name="index">The index of the parameter.</param>
     /// <param name="description">The description of the paremeter.</param>
     public PositionalGreedyParameterShape
     (
@@ -106,7 +100,6 @@ public class PositionalGreedyParameterShape : IParameterShape
         object? defaultValue,
         IReadOnlyList<Attribute> attributes,
         IReadOnlyList<ConditionAttribute> conditions,
-        int index,
         string description
     )
     {
@@ -117,7 +110,6 @@ public class PositionalGreedyParameterShape : IParameterShape
         this.IsNullable = parameterType.IsNullable();
         this.Attributes = attributes;
         this.Conditions = conditions;
-        this.ParameterIndex = index;
         this.Description = description;
     }
 
