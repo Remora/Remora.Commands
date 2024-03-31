@@ -23,14 +23,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
-using Remora.Commands.Groups;
 using Remora.Commands.Results;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;

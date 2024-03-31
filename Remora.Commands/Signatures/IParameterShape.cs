@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using JetBrains.Annotations;
 using Remora.Commands.Conditions;
 using Remora.Commands.Tokenization;

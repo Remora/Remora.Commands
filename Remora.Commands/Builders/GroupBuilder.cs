@@ -26,7 +26,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using OneOf;
 using Remora.Commands.Attributes;
-using Remora.Commands.Conditions;
 using Remora.Commands.DependencyInjection;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
