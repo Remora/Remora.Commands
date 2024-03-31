@@ -265,11 +265,7 @@ public class CommandParameterBuilder
                    : CreateNamedParameterShape(optionAttribute, rangeAttribute);
     }
 
-    private IParameterShape CreateNamedParameterShape
-    (
-        OptionAttribute optionAttribute,
-        RangeAttribute? rangeAttribute
-    )
+    private IParameterShape CreateNamedParameterShape(OptionAttribute optionAttribute, RangeAttribute? rangeAttribute)
     {
         var isCollection = _parameterType!.IsSupportedCollection();
 
@@ -318,10 +314,7 @@ public class CommandParameterBuilder
         return newNamedParameter;
     }
 
-    private IParameterShape CreateNamedSwitchParameterShape
-    (
-        OptionAttribute optionAttribute
-    )
+    private IParameterShape CreateNamedSwitchParameterShape(OptionAttribute optionAttribute)
     {
         if (!_isOptional)
         {
@@ -374,10 +367,7 @@ public class CommandParameterBuilder
         return newNamedParameter;
     }
 
-    private IParameterShape CreateGreedyNamedSingleValueParameterShape
-    (
-        OptionAttribute optionAttribute
-    )
+    private IParameterShape CreateGreedyNamedSingleValueParameterShape(OptionAttribute optionAttribute)
     {
         var description = _description ?? Constants.DefaultDescription;
 
@@ -397,10 +387,7 @@ public class CommandParameterBuilder
         return newNamedParameter;
     }
 
-    private IParameterShape CreatePositionalParameterShape
-    (
-        RangeAttribute? rangeAttribute
-    )
+    private IParameterShape CreatePositionalParameterShape(RangeAttribute? rangeAttribute)
     {
         var description = _description ?? Constants.DefaultDescription;
         var isCollection = _parameterType!.IsSupportedCollection();
