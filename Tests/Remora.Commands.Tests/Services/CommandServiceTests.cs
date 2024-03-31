@@ -27,6 +27,4 @@ namespace Remora.Commands.Tests.Services;
 /// <summary>
 /// Tests the <see cref="CommandService"/> class.
 /// </summary>
-public static partial class CommandServiceTests
-{
-}
+public static partial class CommandServiceTests;

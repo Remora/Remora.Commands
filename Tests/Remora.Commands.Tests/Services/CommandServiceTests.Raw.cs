@@ -27,7 +27,5 @@ public static partial class CommandServiceTests
     /// <summary>
     /// Tests functionality of raw parsing-based operations.
     /// </summary>
-    public static partial class Raw
-    {
-    }
+    public static partial class Raw;
 }

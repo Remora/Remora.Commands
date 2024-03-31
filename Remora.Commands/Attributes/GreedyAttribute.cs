@@ -31,6 +31,4 @@ namespace Remora.Commands.Attributes;
 /// </summary>
 [PublicAPI]
 [AttributeUsage(AttributeTargets.Parameter)]
-public class GreedyAttribute : Attribute
-{
-}
+public class GreedyAttribute : Attribute;

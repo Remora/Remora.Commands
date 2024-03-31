@@ -74,6 +74,4 @@ public interface ICondition<in TAttribute> : ICondition
 /// Marker interface for conditions.
 /// </summary>
 [PublicAPI]
-public interface ICondition
-{
-}
+public interface ICondition;

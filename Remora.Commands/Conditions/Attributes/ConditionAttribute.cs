@@ -29,6 +29,4 @@ namespace Remora.Commands.Conditions;
 /// Acts as a base class for conditional data attributes.
 /// </summary>
 [PublicAPI]
-public abstract class ConditionAttribute : Attribute
-{
-}
+public abstract class ConditionAttribute : Attribute;

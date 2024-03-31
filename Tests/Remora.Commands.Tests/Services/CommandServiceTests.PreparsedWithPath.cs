@@ -27,7 +27,5 @@ public static partial class CommandServiceTests
     /// <summary>
     /// Tests functionality of preparsed operations, where the command path is also preparsed.
     /// </summary>
-    public static partial class PreparsedWithPath
-    {
-    }
+    public static partial class PreparsedWithPath;
 }

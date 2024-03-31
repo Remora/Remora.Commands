@@ -27,6 +27,4 @@ namespace Remora.Commands.Tests.Trees;
 /// <summary>
 /// Tests the <see cref="CommandTreeBuilder"/> class.
 /// </summary>
-public static partial class CommandTreeBuilderTests
-{
-}
+public static partial class CommandTreeBuilderTests;

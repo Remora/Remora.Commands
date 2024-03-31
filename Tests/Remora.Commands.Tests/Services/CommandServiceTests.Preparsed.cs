@@ -27,7 +27,5 @@ public static partial class CommandServiceTests
     /// <summary>
     /// Tests functionality of preparsed operations.
     /// </summary>
-    public static partial class Preparsed
-    {
-    }
+    public static partial class Preparsed;
 }
