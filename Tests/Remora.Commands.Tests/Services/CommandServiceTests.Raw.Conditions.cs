@@ -95,7 +95,7 @@ public static partial class CommandServiceTests
 
                 Assert.False(executionResult.IsSuccess);
                 Assert.IsType<ConditionNotSatisfiedError>(executionResult.Error);
-                Assert.Null(((ConditionNotSatisfiedError)executionResult.Error!).Node);
+                Assert.IsType<CommandNode>(((ConditionNotSatisfiedError)executionResult.Error!).Node);
             }
 
             /// <summary>
@@ -581,7 +581,7 @@ public static partial class CommandServiceTests
 
                 Assert.False(executionResult.IsSuccess);
                 Assert.IsType<ConditionNotSatisfiedError>(executionResult.Error);
-                Assert.Null(((ConditionNotSatisfiedError)executionResult.Error!).Node);
+                Assert.IsType<CommandNode>(((ConditionNotSatisfiedError)executionResult.Error!).Node);
             }
 
             /// <summary>
@@ -612,7 +612,7 @@ public static partial class CommandServiceTests
 
                 Assert.False(executionResult.IsSuccess);
                 Assert.IsType<ConditionNotSatisfiedError>(executionResult.Error);
-                Assert.Null(((ConditionNotSatisfiedError)executionResult.Error!).Node);
+                Assert.IsType<GroupNode>(((ConditionNotSatisfiedError)executionResult.Error!).Node);
             }
         }
     }

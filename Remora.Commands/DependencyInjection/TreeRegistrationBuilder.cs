@@ -24,6 +24,7 @@ using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Remora.Commands.Builders;
 using Remora.Commands.Groups;
 using Remora.Commands.Trees;
 
@@ -105,6 +106,40 @@ public class TreeRegistrationBuilder
         AddGroupsScoped(commandGroup);
 
         return this;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="GroupBuilder"/> to add to the command tree.
+    /// </summary>
+    /// <returns>The created builder.</returns>
+    public GroupBuilder CreateCommandGroup()
+    {
+        var builder = new GroupBuilder(this);
+
+        _serviceCollection.Configure<CommandTreeBuilder>
+        (
+            _treeName,
+            b => b.RegisterNodeBuilder(builder)
+        );
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="GroupBuilder"/> to add to the command tree.
+    /// </summary>
+    /// <returns>The created builder.</returns>
+    public CommandBuilder CreateCommand()
+    {
+        var builder = new CommandBuilder(this);
+
+        _serviceCollection.Configure<CommandTreeBuilder>
+        (
+            _treeName,
+            b => b.RegisterNodeBuilder(builder)
+        );
+
+        return builder;
     }
 
     /// <summary>
