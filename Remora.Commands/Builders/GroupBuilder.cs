@@ -56,7 +56,7 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
     {
         this.Name = string.Empty;
         this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
-        this._groupTypes = new List<Type?>();
+        _groupTypes = new List<Type?>();
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
     {
         this.Name = string.Empty;
         this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
-        this._groupTypes = new List<Type?>();
+        _groupTypes = new List<Type?>();
     }
 
     /// <summary>
@@ -100,12 +100,12 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
     /// <remarks>This method should only be called if the builder was instantiated from a call to <see cref="AddGroup"/>.</remarks>
     public GroupBuilder Complete()
     {
-        if (Parent is null)
+        if (this.Parent is null)
         {
             throw new InvalidOperationException("Cannot complete a group that has no parent.");
         }
 
-        return Parent;
+        return this.Parent;
     }
 
     /// <summary>
@@ -116,12 +116,12 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
     /// <remarks>This method should only be called if the builder was instnatiated from a call to <see cref="TreeRegistrationBuilder.CreateCommandGroup"/>.</remarks>
     public TreeRegistrationBuilder Finish()
     {
-        if (TreeBuilder is null)
+        if (this.TreeBuilder is null)
         {
             throw new InvalidOperationException("Cannot complete a group that has no parent.");
         }
 
-        return TreeBuilder;
+        return this.TreeBuilder;
     }
 
     /// <summary>
@@ -213,7 +213,7 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
             this.Description
         );
 
-        foreach (var child in Children)
+        foreach (var child in this.Children)
         {
             children.Add(child.Match<IChildNode>
             (

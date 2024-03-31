@@ -221,7 +221,7 @@ public class CommandBuilder : AbstractCommandBuilder<CommandBuilder>
         return new CommandNode
         (
             parent,
-            Name,
+            this.Name,
             invoke,
             shape,
             this.Aliases,
@@ -238,6 +238,6 @@ public class CommandBuilder : AbstractCommandBuilder<CommandBuilder>
     /// <returns>The parent builder.</returns>
     public GroupBuilder Finish()
     {
-        return Parent ?? throw new InvalidOperationException("The command builder was not attatched to a group.");
+        return this.Parent ?? throw new InvalidOperationException("The command builder was not attatched to a group.");
     }
 }

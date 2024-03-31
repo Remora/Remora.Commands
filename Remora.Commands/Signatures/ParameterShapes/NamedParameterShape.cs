@@ -307,5 +307,5 @@ public class NamedParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => IsOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.IsOptional;
 }

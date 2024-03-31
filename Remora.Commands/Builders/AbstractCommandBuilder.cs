@@ -75,7 +75,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     protected AbstractCommandBuilder(TreeRegistrationBuilder treeBuilder)
         : this()
     {
-        TreeBuilder = treeBuilder;
+        this.TreeBuilder = treeBuilder;
     }
 
     /// <summary>
@@ -84,11 +84,11 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// <param name="parent">The parent of the builder.</param>
     protected AbstractCommandBuilder(GroupBuilder? parent = null)
     {
-        Name = string.Empty;
-        Aliases = new();
-        Attributes = new();
-        Conditions = new();
-        Parent = parent;
+        this.Name = string.Empty;
+        this.Aliases = new();
+        this.Attributes = new();
+        this.Conditions = new();
+        this.Parent = parent;
     }
 
     /// <summary>
@@ -96,10 +96,10 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// </summary>
     private AbstractCommandBuilder()
     {
-        Aliases = new();
-        Attributes = new();
-        Conditions = new();
-        Name = string.Empty;
+        this.Aliases = new();
+        this.Attributes = new();
+        this.Conditions = new();
+        this.Name = string.Empty;
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// <returns>The current builder to chain calls with.</returns>
     public TSelf WithName(string name)
     {
-        Name = name;
+        this.Name = name;
         return (TSelf)this;
     }
 
@@ -120,7 +120,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// <returns>The current builder to chain calls with.</returns>
     public TSelf WithDescription(string description)
     {
-        Description = description;
+        this.Description = description;
         return (TSelf)this;
     }
 
@@ -131,7 +131,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// <returns>The current builder to chain calls with.</returns>
     public TSelf AddAlias(string alias)
     {
-        Aliases.Add(alias);
+        this.Aliases.Add(alias);
         return (TSelf)this;
     }
 
@@ -142,7 +142,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// <returns>The current builder to chain calls with.</returns>
     public TSelf AddAliases(IEnumerable<string> aliases)
     {
-        Aliases.AddRange(aliases);
+        this.Aliases.AddRange(aliases);
         return (TSelf)this;
     }
 
@@ -158,7 +158,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
             throw new InvalidOperationException("Conditions must be added via AddCondition.");
         }
 
-        Attributes.Add(attribute);
+        this.Attributes.Add(attribute);
         return (TSelf)this;
     }
 
@@ -169,7 +169,7 @@ public abstract class AbstractCommandBuilder<TSelf> where TSelf : AbstractComman
     /// <returns>The current builder to chain calls with.</returns>
     public TSelf AddCondition(ConditionAttribute condition)
     {
-        Conditions.Add(condition);
+        this.Conditions.Add(condition);
         return (TSelf)this;
     }
 }

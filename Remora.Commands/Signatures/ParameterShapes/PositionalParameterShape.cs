@@ -43,7 +43,7 @@ public class PositionalParameterShape : IParameterShape
     public virtual object? DefaultValue { get; }
 
     /// <inheritdoc/>
-    public string HintName => ParameterName ?? throw new InvalidOperationException();
+    public string HintName => this.ParameterName ?? throw new InvalidOperationException();
 
     /// <inheritdoc/>
     public string Description { get; }
