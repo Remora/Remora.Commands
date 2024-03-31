@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OneOf;
 using Remora.Commands.Attributes;
@@ -45,7 +46,7 @@ public class CommandParameterBuilder
     private bool _isOptional;
     private string? _description;
     private object? _defaultValue;
-    private Type? _parameterType;
+    private Type _parameterType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandParameterBuilder"/> class.
@@ -53,7 +54,7 @@ public class CommandParameterBuilder
     /// <param name="builder">The command this parameter belongs to.</param>
     /// <param name="type">The optional type of the parameter.</param>
     /// <remarks>If <paramref name="type"/> is null, <see cref="WithType"/> MUST be called before <see cref="Finish"/>.</remarks>
-    public CommandParameterBuilder(CommandBuilder builder, Type? type)
+    public CommandParameterBuilder(CommandBuilder builder, Type type)
     {
         _name = string.Empty;
         _builder = builder;
@@ -96,8 +97,13 @@ public class CommandParameterBuilder
     /// passed.
     /// </remarks>
     /// <returns>The builder to chain calls with.</returns>
-    public CommandParameterBuilder WithDefaultValue<T>(T? value)
+    public CommandParameterBuilder WithDefaultValue<T>([MaybeNull] T value)
     {
+        if (typeof(T).IsValueType && !typeof(T).IsNullableStruct() && value is null)
+        {
+            throw new InvalidOperationException("Non-nullable value types must have a non-null default value.");
+        }
+
         if (value is not null && _parameterType is { } parameterType && !parameterType.IsInstanceOfType(value))
         {
             throw new ArgumentException
@@ -267,7 +273,7 @@ public class CommandParameterBuilder
 
     private IParameterShape CreateNamedParameterShape(OptionAttribute optionAttribute, RangeAttribute? rangeAttribute)
     {
-        var isCollection = _parameterType!.IsSupportedCollection();
+        var isCollection = _parameterType.IsSupportedCollection();
 
         IParameterShape newNamedParameter;
         if (optionAttribute is SwitchAttribute)
@@ -303,7 +309,7 @@ public class CommandParameterBuilder
             rangeAttribute?.GetMin(),
             rangeAttribute?.GetMax(),
             _name,
-            _parameterType!,
+            _parameterType,
             _isOptional,
             _defaultValue,
             _attributes,
@@ -318,7 +324,7 @@ public class CommandParameterBuilder
     {
         if (!_isOptional)
         {
-            throw new InvalidOperationException($"Switches must have a default value.");
+            throw new InvalidOperationException("Switches must have a default value.");
         }
 
         if (_parameterType != typeof(bool))
@@ -356,7 +362,7 @@ public class CommandParameterBuilder
             optionAttribute.ShortName,
             optionAttribute.LongName,
             _name,
-            _parameterType!,
+            _parameterType,
             _isOptional,
             _defaultValue,
             _attributes,
@@ -376,7 +382,7 @@ public class CommandParameterBuilder
             optionAttribute.ShortName,
             optionAttribute.LongName,
             _name,
-            _parameterType!,
+            _parameterType,
             _isOptional,
             _defaultValue,
             _attributes,
@@ -390,7 +396,7 @@ public class CommandParameterBuilder
     private IParameterShape CreatePositionalParameterShape(RangeAttribute? rangeAttribute)
     {
         var description = _description ?? Constants.DefaultDescription;
-        var isCollection = _parameterType!.IsSupportedCollection();
+        var isCollection = _parameterType.IsSupportedCollection();
 
         IParameterShape newPositionalParameter;
         if (!isCollection)
@@ -401,7 +407,7 @@ public class CommandParameterBuilder
                 ? new PositionalParameterShape
                   (
                       _name,
-                      _parameterType!,
+                      _parameterType,
                       _isOptional,
                       _defaultValue,
                       _attributes,
@@ -411,7 +417,7 @@ public class CommandParameterBuilder
                 : new PositionalGreedyParameterShape
                   (
                       _name,
-                      _parameterType!,
+                      _parameterType,
                       _isOptional,
                       _defaultValue,
                       _attributes,
@@ -426,7 +432,7 @@ public class CommandParameterBuilder
                 rangeAttribute?.GetMin(),
                 rangeAttribute?.GetMax(),
                 _name,
-                _parameterType!,
+                _parameterType,
                 _isOptional,
                 _defaultValue,
                 _attributes,

@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using OneOf;
 using Remora.Commands.Attributes;
@@ -85,7 +86,7 @@ public class CommandBuilder : AbstractCommandBuilder<CommandBuilder>
     /// </summary>
     /// <param name="type">The optional type of the parameter.</param>
     /// <returns>The parameter builder to build the parameter with.</returns>
-    public CommandParameterBuilder AddParameter(Type? type = null)
+    public CommandParameterBuilder AddParameter(Type type)
     {
         var parameterBuilder = new CommandParameterBuilder(this, type);
         this.Parameters.Add(parameterBuilder);
