@@ -52,7 +52,7 @@ public static partial class CommandTreeBuilderTests
             var tree = provider.GetRequiredService<CommandTree>();
 
             var command = tree.Root.Children.FirstOrDefault();
-            Assert.Equal(1, tree.Root.Children.Count);
+            Assert.Single(tree.Root.Children);
             Assert.Equal("command", command!.Key);
         }
 
@@ -73,7 +73,7 @@ public static partial class CommandTreeBuilderTests
 
             var group = tree.Root.Children.FirstOrDefault() as GroupNode;
 
-            Assert.Equal(1, tree.Root.Children.Count);
+            Assert.Single(tree.Root.Children);
             Assert.Equal("a", group!.Key);
 
             Assert.Equal(4, group.Children.Count);
