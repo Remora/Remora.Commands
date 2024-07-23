@@ -357,7 +357,8 @@ public class CommandService
                 var invocationResult = method.Invoke(groupInstance, parameters);
                 var unwrapTask = (Task<IResult>)(unwrapMethod.Invoke
                 (
-                    null, new[] { invocationResult }
+                    null,
+                    new[] { invocationResult }
                 ) ?? throw new InvalidOperationException());
 
                 result = await unwrapTask;
