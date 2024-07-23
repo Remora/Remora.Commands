@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <VersionPrefix>10.0.5</VersionPrefix>
+        <VersionPrefix>10.0.6</VersionPrefix>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
             Upgrade Remora.Sdk.
