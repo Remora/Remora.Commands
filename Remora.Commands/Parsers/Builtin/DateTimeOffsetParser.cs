@@ -41,7 +41,7 @@ public class DateTimeOffsetParser : AbstractTypeParser<DateTimeOffset>
     {
         return new ValueTask<Result<DateTimeOffset>>
         (
-            !DateTimeOffset.TryParse(value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result)
+            !DateTimeOffset.TryParse(value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal, out var result)
                 ? new ParsingError<DateTimeOffset>(value)
                 : result
         );
