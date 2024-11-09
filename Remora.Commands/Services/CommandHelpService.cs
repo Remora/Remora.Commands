@@ -211,7 +211,7 @@ namespace Remora.Commands.Services
         }
 
         /// <inheritdoc />
-        public Result<IGroupInfo> GetGroupInfo(Type commandGroupType, bool buildChildGroups = false)
+        public Result<IGroupInfo> GetGroupInfo(Type commandGroupType, bool buildChildGroups = true)
         {
             var keys = WalkKeys(commandGroupType);
             if (!keys.Any())
