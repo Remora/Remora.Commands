@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Autocomplete\OptionType\" />
       <Folder Include="Autocomplete\Providers\" />
     </ItemGroup>
 </Project>
