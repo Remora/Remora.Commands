@@ -20,6 +20,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Collections.Generic;
+using System.Globalization;
 using JetBrains.Annotations;
 
 namespace Remora.Commands.Autocomplete;
@@ -27,17 +29,23 @@ namespace Remora.Commands.Autocomplete;
 /// <summary>
 /// Represents a choice available to a user.
 /// </summary>
+/// <typeparam name="T">The underlying type of the choice.</typeparam>
 [PublicAPI]
-public interface ICommandOptionChoice
+public interface ICommandOptionChoice<out T>
 {
     /// <summary>
-    /// Gets the name of the choice.
+    /// Gets the culture-agnostic name of the choice.
     /// </summary>
     /// <remarks>This can be up to 100 characters.</remarks>
-    string Name { get; }
+    string Name { get; } // e.g. "True"
 
     /// <summary>
-    /// Gets the display value of the choice.
+    /// Gets the underlying value of the choice.
     /// </summary>
-    string Value { get; }
+    T Value { get; } // e.g. true
+
+    /// <summary>
+    /// Gets a collection of display names based on the provided culture.
+    /// </summary>
+    IReadOnlyDictionary<CultureInfo, string>? LocalizedDisplayNames { get; } // e.g. { "en-US": "true" }
 }

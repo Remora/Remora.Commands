@@ -21,13 +21,20 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FuzzySharp;
+using Humanizer;
 using JetBrains.Annotations;
-using Remora.Commands.Extensions;
+using Remora.Commands.Attributes;
+using Remora.Commands.Autocomplete.Factories;
 using Remora.Commands.Localization;
 
 namespace Remora.Commands.Autocomplete.Providers;
@@ -37,24 +44,29 @@ namespace Remora.Commands.Autocomplete.Providers;
 /// </summary>
 /// <typeparam name="TEnum">The type of the enum to provide suggestions for.</typeparam>
 [PublicAPI]
-public sealed class EnumAutocompleteProvider<TEnum>(ILocalizationProvider localizationProvider) : IAutocompleteProvider<TEnum>
+public sealed class EnumAutocompleteProvider<TEnum>
+(
+    ILocalizationProvider localizationProvider,
+    ICommandOptionChoiceFactory<TEnum> factory
+) : IAutocompleteProvider<TEnum>
     where TEnum : struct, Enum
 {
     /// <inheritdoc />
-    public ValueTask<IReadOnlyList<ICommandOptionChoice>> GetSuggestionsAsync<TCommandDataOption>
+    public ValueTask<IReadOnlyList<TCommandOptionChoice>> GetSuggestionsAsync<TCommandOptionChoice, TCommandDataOption>
     (
         IReadOnlyList<TCommandDataOption> options,
         string userInput,
         CancellationToken ct = default
     )
-        where TCommandDataOption : ICommandDataOption
+        where TCommandOptionChoice : class, ICommandOptionChoice<TEnum>
+        where TCommandDataOption : class, ICommandDataOption<TEnum>
     {
-        var choices = EnumExtensions.GetEnumChoices<TEnum>
+        IReadOnlyList<TCommandOptionChoice> choices = EnumHelper<TCommandOptionChoice>.GetEnumChoices
         (
             localizationProvider,
-            (name, value) => new CommandOptionChoice(name, value)
+            factory
         );
-        return new ValueTask<IReadOnlyList<ICommandOptionChoice>>
+        return new ValueTask<IReadOnlyList<TCommandOptionChoice>>
         (
             choices.OrderByDescending(choice => Fuzz.Ratio(userInput, choice.Name))
                 .Take(25)
@@ -62,11 +74,119 @@ public sealed class EnumAutocompleteProvider<TEnum>(ILocalizationProvider locali
         );
     }
 
-    // TEMP: Just an experiment
-    private sealed class CommandOptionChoice(string name, string value) : ICommandOptionChoice
+    /// <summary>
+    /// Provides helper methods for enum types.
+    /// </summary>
+    private static class EnumHelper<TCommandOptionChoice>
+        where TCommandOptionChoice : class, ICommandOptionChoice<TEnum>
     {
-        public string Name { get; } = name;
+        private const int _maxChoiceNameLength = 100;
+        private const int _maxChoiceValueLength = 100;
 
-        public string Value { get; } = value;
+        private static readonly ConcurrentDictionary<Type, IReadOnlyList<TCommandOptionChoice>> _choiceCache = new();
+
+        private sealed class OptionChoiceContext
+        (
+            ILocalizationProvider localizationProvider,
+            ICommandOptionChoiceFactory<TEnum> factory
+        )
+        {
+            public ILocalizationProvider LocalizationProvider { get; } = localizationProvider;
+
+            public ICommandOptionChoiceFactory<TEnum> Factory { get; } = factory;
+        }
+
+        /// <summary>
+        /// Gets the Discord choices that the given enumeration is composed of.
+        /// </summary>
+        /// <remarks>
+        /// This method is relatively expensive on the first call, after which the results will be cached. This method is
+        /// thread-safe.
+        /// </remarks>
+        /// <param name="localizationProvider">The localization provider.</param>
+        /// <param name="commandOptionChoiceFactory">A factory for creating an instance of <see cref="TCommandOptionChoice"/>.</param>
+        /// <returns>The choices.</returns>
+        public static IReadOnlyList<TCommandOptionChoice> GetEnumChoices
+        (
+            ILocalizationProvider localizationProvider,
+            ICommandOptionChoiceFactory<TEnum> commandOptionChoiceFactory
+        )
+        {
+            Type enumType = typeof(TEnum);
+            return _choiceCache.GetOrAdd
+            (
+                enumType,
+                CreateOptions,
+                new OptionChoiceContext(localizationProvider, commandOptionChoiceFactory)
+            );
+        }
+
+        private static IReadOnlyList<TCommandOptionChoice> CreateOptions(Type enumType, OptionChoiceContext context)
+        {
+            TEnum[] values = GetEnumValues();
+            List<TCommandOptionChoice> choices = [];
+
+            foreach (TEnum value in values)
+            {
+                string enumName = Enum.GetName(enumType, value) ?? throw new InvalidOperationException();
+                MemberInfo member = enumType.GetMember(enumName).Single();
+
+                if (member.GetCustomAttribute<ExcludeFromChoicesAttribute>() is not null)
+                {
+                    continue;
+                }
+
+                string displayString = GetDisplayString(enumName, member);
+                IReadOnlyDictionary<CultureInfo, string> localizedDisplayNames =
+                    context.LocalizationProvider.GetTranslations(displayString);
+                foreach ((CultureInfo locale, string localizedDisplayName) in localizedDisplayNames)
+                {
+                    if (localizedDisplayName.Length > _maxChoiceNameLength)
+                    {
+                        throw new ArgumentOutOfRangeException
+                        (
+                            nameof(enumType),
+                            $"The localized display name for the locale {locale} of the enumeration member {enumType.Name}::{enumName} is too long (max {_maxChoiceNameLength})."
+                        );
+                    }
+                }
+
+                if (enumName.Length <= _maxChoiceValueLength)
+                {
+                    choices.Add
+                    (
+                        context.Factory.Create<TCommandOptionChoice>
+                        (
+                            displayString,
+                            value,
+                            localizedDisplayNames.Count > 0 ? localizedDisplayNames : default
+                        )
+                    );
+                }
+            }
+            return choices;
+        }
+
+        private static string GetDisplayString(string enumName, MemberInfo enumMember)
+        {
+            var descriptionAttribute = enumMember.GetCustomAttribute<DescriptionAttribute>();
+            if (descriptionAttribute is not null)
+            {
+                return descriptionAttribute.Description;
+            }
+
+            var displayAttribute = enumMember.GetCustomAttribute<DisplayAttribute>();
+
+            return displayAttribute?.Description
+                   ?? displayAttribute?.Name
+                   ?? enumName.Humanize().Transform(To.TitleCase);
+        }
+
+        private static TEnum[] GetEnumValues()
+#if NET6_0_OR_GREATER
+        => Enum.GetValues<TEnum>();
+#else
+        => (TEnum[])Enum.GetValues(typeof(TEnum));
+#endif
     }
 }

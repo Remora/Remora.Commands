@@ -22,15 +22,15 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using OneOf;
 
 namespace Remora.Commands.Autocomplete;
 
 /// <summary>
 /// Represents a named option and its value.
 /// </summary>
+/// <typeparam name="T">The underlying value type of the option.</typeparam>
 [PublicAPI]
-public interface ICommandDataOption
+public interface ICommandDataOption<out T>
 {
     /// <summary>
     /// Gets the name of the parameter.
@@ -45,12 +45,12 @@ public interface ICommandDataOption
     /// <summary>
     /// Gets underlying value of the data option.
     /// </summary>
-    OneOf<string, bool, int, long, ulong, double, decimal> Value { get; }
+    T Value { get; }
 
     /// <summary>
     /// Gets the options supplied to the subcommand or subgroup.
     /// </summary>
-    IReadOnlyList<ICommandDataOption> Options { get; }
+    IReadOnlyList<ICommandDataOption<T>> Options { get; }
 
     /// <summary>
     /// Gets a value indicating whether the option is currently focused.
