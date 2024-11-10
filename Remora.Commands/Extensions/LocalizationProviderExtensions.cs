@@ -1,5 +1,5 @@
 //
-//  ICommandDataOption.cs
+//  LocalizationProviderExtensions.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -21,39 +21,26 @@
 //
 
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
-using OneOf;
+using Remora.Commands.Localization;
 
-namespace Remora.Commands.Autocomplete;
+namespace Remora.Commands.Extensions;
 
 /// <summary>
-/// Represents a named option and its value.
+/// Defines extension methods for the <see cref="ILocalizationProvider"/> interface.
 /// </summary>
 [PublicAPI]
-public interface ICommandDataOption
+public static class LocalizationProviderExtensions
 {
     /// <summary>
-    /// Gets the name of the parameter.
+    /// Gets a mapping of all available localized values for the given input.
     /// </summary>
-    string Name { get; }
-
-    /// <summary>
-    /// Gets the type of this option.
-    /// </summary>
-    OptionType OptionType { get; }
-
-    /// <summary>
-    /// Gets underlying value of the data option.
-    /// </summary>
-    OneOf<string, bool, int, long, ulong, double, decimal> Value { get; }
-
-    /// <summary>
-    /// Gets the options supplied to the subcommand or subgroup.
-    /// </summary>
-    IReadOnlyList<ICommandDataOption> Options { get; }
-
-    /// <summary>
-    /// Gets a value indicating whether the option is currently focused.
-    /// </summary>
-    bool? IsFocused { get; }
+    /// <param name="provider">The localization provider.</param>
+    /// <param name="value">The input value.</param>
+    /// <returns>The available localized strings, mapped to the names of their locales.</returns>
+    public static IReadOnlyDictionary<string, string> GetStrings(this ILocalizationProvider provider, string value)
+    {
+        return provider.GetTranslations(value).ToDictionary(kvp => kvp.Key.Name, kvp => kvp.Value);
+    }
 }

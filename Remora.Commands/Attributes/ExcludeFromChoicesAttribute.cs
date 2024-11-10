@@ -1,5 +1,5 @@
 //
-//  ICommandOptionChoice.cs
+//  ExcludeFromChoicesAttribute.cs
 //
 //  Author:
 //       Jarl Gullberg <jarl.gullberg@gmail.com>
@@ -20,24 +20,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using JetBrains.Annotations;
 
-namespace Remora.Commands.Autocomplete;
+namespace Remora.Commands.Attributes;
 
 /// <summary>
-/// Represents a choice available to a user.
+/// Marks an enumeration member as being excluded from command autocomplete options.
 /// </summary>
 [PublicAPI]
-public interface ICommandOptionChoice
-{
-    /// <summary>
-    /// Gets the name of the choice.
-    /// </summary>
-    /// <remarks>This can be up to 100 characters.</remarks>
-    string Name { get; }
-
-    /// <summary>
-    /// Gets the display value of the choice.
-    /// </summary>
-    string Value { get; }
-}
+[AttributeUsage(AttributeTargets.Field)]
+public class ExcludeFromChoicesAttribute : Attribute;

@@ -35,7 +35,7 @@ namespace Remora.Commands.Autocomplete;
 /// </summary>
 /// <typeparam name="T">The type the provider suggests autocompletion for.</typeparam>
 [PublicAPI]
-public interface IAutocompleteProvider<in T>
+public interface IAutocompleteProvider<T>
 {
     /// <summary>
     /// Gets the type the provider suggests autocompletion for.
@@ -50,18 +50,16 @@ public interface IAutocompleteProvider<in T>
     /// <summary>
     /// Gets a set of autocomplete suggestions based on provided user input.
     /// </summary>
-    /// <typeparam name="TCommandOptionChoice">The underlying <see cref="ICommandOptionChoice{T}"/>.</typeparam>
-    /// <typeparam name="TCommandDataOption">The underlying <see cref="ICommandDataOption{T}"/>.</typeparam>
+    /// <typeparam name="TCommandDataOption">The underlying <see cref="ICommandDataOption"/>.</typeparam>
     /// <param name="options">The other options in the command being invoked.</param>
     /// <param name="userInput">The user's current input.</param>
     /// <param name="ct">The cancellation token for this operation.</param>
     /// <returns>The suggested options.</returns>
-    ValueTask<IReadOnlyList<TCommandOptionChoice>> GetSuggestionsAsync<TCommandOptionChoice, TCommandDataOption>
+    ValueTask<IReadOnlyList<ICommandOptionChoice>> GetSuggestionsAsync<TCommandDataOption>
     (
         IReadOnlyList<TCommandDataOption> options,
         string userInput,
         CancellationToken ct = default
     )
-        where TCommandOptionChoice : ICommandOptionChoice<T>
-        where TCommandDataOption : ICommandDataOption<T>;
+        where TCommandDataOption : ICommandDataOption;
 }

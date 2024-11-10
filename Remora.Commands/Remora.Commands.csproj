@@ -15,16 +15,13 @@
 
     <ItemGroup>
       <PackageReference Include="FuzzySharp" />
+      <PackageReference Include="Humanizer.Core" />
       <PackageReference Include="Microsoft.Extensions.Options"/>
       <PackageReference Include="Nullability.Source">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="OneOf" />
       <PackageReference Include="Remora.Results"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Autocomplete\OptionType\" />
-      <Folder Include="Autocomplete\Providers\" />
     </ItemGroup>
 </Project>
