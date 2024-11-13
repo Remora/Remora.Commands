@@ -49,7 +49,7 @@ public sealed class EnumAutocompleteProvider<TEnum>
     ILocalizationProvider localizationProvider,
     ICommandOptionChoiceFactory<TEnum> factory
 ) : IAutocompleteProvider<TEnum>
-    where TEnum : struct, Enum
+    where TEnum : unmanaged, Enum
 {
     /// <inheritdoc />
     public ValueTask<IReadOnlyList<TCommandOptionChoice>> GetSuggestionsAsync<TCommandOptionChoice, TCommandDataOption>

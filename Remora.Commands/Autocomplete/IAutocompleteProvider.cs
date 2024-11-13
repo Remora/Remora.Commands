@@ -36,6 +36,7 @@ namespace Remora.Commands.Autocomplete;
 /// <typeparam name="T">The type the provider suggests autocompletion for.</typeparam>
 [PublicAPI]
 public interface IAutocompleteProvider<in T>
+    where T : unmanaged
 {
     /// <summary>
     /// Gets the type the provider suggests autocompletion for.

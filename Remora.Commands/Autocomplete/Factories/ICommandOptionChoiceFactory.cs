@@ -30,6 +30,7 @@ namespace Remora.Commands.Autocomplete.Factories;
 /// </summary>
 /// <typeparam name="TUnderlyingType">The underlying type of the <see cref="ICommandOptionChoice{T}"/>.</typeparam>
 public interface ICommandOptionChoiceFactory<in TUnderlyingType>
+    where TUnderlyingType : unmanaged
 {
     /// <summary>
     /// Creates a new instance of the <see cref="TCommandOptionChoice"/> class.

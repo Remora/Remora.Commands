@@ -31,6 +31,7 @@ namespace Remora.Commands.Autocomplete;
 /// <typeparam name="T">The underlying value type of the option.</typeparam>
 [PublicAPI]
 public interface ICommandDataOption<out T>
+    where T : unmanaged
 {
     /// <summary>
     /// Gets the name of the parameter.

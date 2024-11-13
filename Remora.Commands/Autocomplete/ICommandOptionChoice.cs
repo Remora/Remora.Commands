@@ -32,6 +32,7 @@ namespace Remora.Commands.Autocomplete;
 /// <typeparam name="T">The underlying type of the choice.</typeparam>
 [PublicAPI]
 public interface ICommandOptionChoice<out T>
+    where T : unmanaged
 {
     /// <summary>
     /// Gets the culture-agnostic name of the choice.
