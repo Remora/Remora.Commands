@@ -36,7 +36,7 @@ jobs:
         uses: JetBrains/ReSharper-InspectCode@v0.8
         with:
           tool-version: 2024.3.0
-          solution: Remora.Discord.sln
+          solution: Remora.Commands.sln
           build: false
           no-build: true
 
