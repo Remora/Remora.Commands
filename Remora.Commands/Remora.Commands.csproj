@@ -5,11 +5,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <VersionPrefix>10.0.6</VersionPrefix>
+        <VersionPrefix>11.0.0</VersionPrefix>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Upgrade Remora.Sdk.
-            Upgrade nuget packages.
+            Update target frameworks.
+            Implement support for building of commands at runtime.
         </PackageReleaseNotes>
     </PropertyGroup>
 
