@@ -1,10 +1,10 @@
 <Project>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.2" />
     <PackageVersion Include="Nullability.Source" Version="2.3.0" />
-    <PackageVersion Include="Remora.Results" Version="7.4.1" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageVersion Include="Remora.Results.Analyzers" Version="1.0.2" />
+    <PackageVersion Include="Remora.Results" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+    <PackageVersion Include="Remora.Results.Analyzers" Version="1.0.3" />
     <PackageVersion Include="OneOf" Version="3.0.223" />
   </ItemGroup>
 </Project>
