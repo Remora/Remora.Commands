@@ -55,6 +55,12 @@ internal static class TypeExtensions
             return false;
         }
 
+        // treat empty strings as having no name
+        if (string.IsNullOrWhiteSpace(groupNameAttribute.Name))
+        {
+            return false;
+        }
+
         groupName = groupNameAttribute.Name;
         return true;
     }

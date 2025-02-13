@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.ComponentModel;
 using System.Linq;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tests.Data.DummyModules;
@@ -374,6 +375,27 @@ public static partial class CommandTreeBuilderTests
             Assert.Equal("b", command2.Key);
             Assert.Equal("c", command3.Key);
             Assert.Equal("d", command4.Key);
+        }
+
+        /// <summary>
+        /// Tests whether a <see cref="NamedGroupWithCommands"/> can be correctly parsed into a tree.
+        /// </summary>
+        [Fact]
+        public void CopiesAttributesFromUnnamedGroupToCommandsCorrectly()
+        {
+            var builder = new CommandTreeBuilder();
+            builder.RegisterModule<UnnamedGroupWithAttributes>();
+
+            var tree = builder.Build();
+            var root = tree.Root;
+
+            Assert.Single(root.Children);
+            Assert.IsType<CommandNode>(root.Children[0]);
+
+            var command1 = (CommandNode)root.Children[0];
+
+            Assert.Equal("a", command1.Key);
+            Assert.Single(command1.Attributes, a => a is DescriptionAttribute);
         }
 
         /// <summary>
