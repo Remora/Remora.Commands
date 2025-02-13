@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
@@ -51,12 +52,11 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     {
         get
         {
-            if (this.Parameter.IsOptional)
+            if (this.IsOptional)
             {
-                return this.Parameter.DefaultValue;
+                return base.DefaultValue;
             }
-
-            if (this.Min is null or 0)
+            else if (this.Min is null or 0)
             {
                 return _emptyCollection;
             }
@@ -94,7 +94,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         this.Min = min;
         this.Max = max;
 
-        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+        var elementType = parameter.ParameterType.GetCollectionElementType();
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
@@ -121,7 +121,46 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         this.Min = min;
         this.Max = max;
 
-        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+        var elementType = parameter.ParameterType.GetCollectionElementType();
+
+        var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
+        _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NamedCollectionParameterShape"/> class.
+    /// </summary>
+    /// <param name="shortName">The short name.</param>
+    /// <param name="longName">The long name.</param>
+    /// <param name="min">The minimum number of items in the collection.</param>
+    /// <param name="max">The maximum number of items in the collection.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <param name="parameterType">The type of the parameter.</param>
+    /// <param name="isOptional">Whether the parameter is optional.</param>
+    /// <param name="defaultValue">The default value of the parameter, if any.</param>
+    /// <param name="attributes">The attributes of the parameter.</param>
+    /// <param name="conditions">The conditions of the parameter.</param>
+    /// <param name="description">The description of the paremeter.</param>
+    public NamedCollectionParameterShape
+    (
+        char? shortName,
+        string? longName,
+        ulong? min,
+        ulong? max,
+        string parameterName,
+        Type parameterType,
+        bool isOptional,
+        object? defaultValue,
+        IReadOnlyList<Attribute> attributes,
+        IReadOnlyList<ConditionAttribute> conditions,
+        string description
+    )
+        : base(shortName, longName, parameterName, parameterType, isOptional, defaultValue, attributes, conditions, description)
+    {
+        this.Min = min;
+        this.Max = max;
+
+        var elementType = parameterType.GetCollectionElementType();
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
@@ -148,7 +187,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
         this.Min = min;
         this.Max = max;
 
-        var elementType = this.Parameter.ParameterType.GetCollectionElementType();
+        var elementType = parameter.ParameterType.GetCollectionElementType();
 
         var emptyArrayMethod = _emptyArrayMethod.MakeGenericMethod(elementType);
         _emptyCollection = emptyArrayMethod.Invoke(null, null)!;
@@ -287,7 +326,7 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
     /// <inheritdoc/>
     public override bool IsOmissible(TreeSearchOptions? searchOptions = null)
     {
-        if (this.Parameter.IsOptional)
+        if (this.IsOptional)
         {
             return true;
         }

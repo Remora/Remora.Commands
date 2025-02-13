@@ -24,6 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
+using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 using static Remora.Commands.Tokenization.TokenType;
@@ -36,17 +38,29 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class PositionalGreedyParameterShape : IParameterShape
 {
-    /// <inheritdoc />
-    public ParameterInfo Parameter { get; }
+    /// <inheritdoc/>
+    public virtual object? DefaultValue { get; }
 
     /// <inheritdoc/>
-    public virtual object? DefaultValue => this.Parameter.DefaultValue;
-
-    /// <inheritdoc/>
-    public string HintName => this.Parameter.Name ?? throw new InvalidOperationException();
+    public string HintName => _parameterName ?? throw new InvalidOperationException();
 
     /// <inheritdoc/>
     public string Description { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
+
+    /// <inheritdoc/>
+    public Type ParameterType { get; }
+
+    /// <inheritdoc/>
+    public bool IsNullable { get; }
+
+    private readonly bool _isOptional;
+    private readonly string? _parameterName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PositionalGreedyParameterShape"/> class.
@@ -55,8 +69,47 @@ public class PositionalGreedyParameterShape : IParameterShape
     /// <param name="description">The description of the parameter.</param>
     public PositionalGreedyParameterShape(ParameterInfo parameter, string? description = null)
     {
-        this.Parameter = parameter;
+        parameter.GetAttributesAndConditions(out var attributes, out var conditions);
+
+        _parameterName = parameter.Name;
+        _isOptional = parameter.IsOptional;
+        this.DefaultValue = parameter.DefaultValue;
+        this.ParameterType = parameter.ParameterType;
+        this.Attributes = attributes;
+        this.Conditions = conditions;
+        this.IsNullable = parameter.AllowsNull();
         this.Description = description ?? Constants.DefaultDescription;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PositionalGreedyParameterShape"/> class.
+    /// </summary>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <param name="parameterType">The type of the parameter.</param>
+    /// <param name="isOptional">Whether the parameter is optional.</param>
+    /// <param name="defaultValue">The default value of the parameter, if any.</param>
+    /// <param name="attributes">The attributes of the parameter.</param>
+    /// <param name="conditions">The conditions of the parameter.</param>
+    /// <param name="description">The description of the paremeter.</param>
+    public PositionalGreedyParameterShape
+    (
+        string parameterName,
+        Type parameterType,
+        bool isOptional,
+        object? defaultValue,
+        IReadOnlyList<Attribute> attributes,
+        IReadOnlyList<ConditionAttribute> conditions,
+        string description
+    )
+    {
+        _isOptional = isOptional;
+        _parameterName = parameterName;
+        this.ParameterType = parameterType;
+        this.DefaultValue = defaultValue;
+        this.IsNullable = parameterType.IsNullable();
+        this.Attributes = attributes;
+        this.Conditions = conditions;
+        this.Description = description;
     }
 
     /// <inheritdoc />
@@ -105,7 +158,7 @@ public class PositionalGreedyParameterShape : IParameterShape
         // we'll use the actual parameter name as a hint to match against.
         var (name, value) = namedValue;
 
-        if (!name.Equals(this.Parameter.Name, searchOptions.KeyComparison))
+        if (!name.Equals(_parameterName, searchOptions.KeyComparison))
         {
             return false;
         }
@@ -120,5 +173,5 @@ public class PositionalGreedyParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.Parameter.IsOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => _isOptional;
 }

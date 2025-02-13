@@ -24,6 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
+using Remora.Commands.Extensions;
 using Remora.Commands.Tokenization;
 using Remora.Commands.Trees;
 
@@ -35,6 +37,9 @@ namespace Remora.Commands.Signatures;
 [PublicAPI]
 public class NamedGreedyParameterShape : IParameterShape
 {
+    private readonly bool _isOptional;
+    private readonly string? _parameterName;
+
     /// <summary>
     /// Gets the short name of the parameter, if any. At least one of <see cref="ShortName"/> and
     /// <see cref="LongName"/> must be set.
@@ -47,11 +52,8 @@ public class NamedGreedyParameterShape : IParameterShape
     /// </summary>
     public string? LongName { get; }
 
-    /// <inheritdoc />
-    public ParameterInfo Parameter { get; }
-
     /// <inheritdoc/>
-    public virtual object? DefaultValue => this.Parameter.DefaultValue;
+    public virtual object? DefaultValue { get; }
 
     /// <inheritdoc/>
     public string HintName
@@ -68,13 +70,25 @@ public class NamedGreedyParameterShape : IParameterShape
                 return this.ShortName.ToString() ?? throw new InvalidOperationException();
             }
 
-            return this.Parameter.Name ?? throw new InvalidOperationException();
+            return _parameterName ?? throw new InvalidOperationException();
         }
     }
 
     /// <inheritdoc/>
     public string Description { get; }
 
+    /// <inheritdoc/>
+    public IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <inheritdoc/>
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
+
+    /// <inheritdoc/>
+    public Type ParameterType { get; }
+
+    /// <inheritdoc/>
+    public bool IsNullable { get; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="NamedGreedyParameterShape"/> class.
     /// </summary>
@@ -89,8 +103,8 @@ public class NamedGreedyParameterShape : IParameterShape
         string longName,
         string? description = null
     )
+        : this(parameter)
     {
-        this.Parameter = parameter;
         this.ShortName = shortName;
         this.LongName = longName;
         this.Description = description ?? Constants.DefaultDescription;
@@ -108,8 +122,8 @@ public class NamedGreedyParameterShape : IParameterShape
         string longName,
         string? description = null
     )
+        : this(parameter)
     {
-        this.Parameter = parameter;
         this.LongName = longName;
         this.Description = description ?? Constants.DefaultDescription;
     }
@@ -126,10 +140,61 @@ public class NamedGreedyParameterShape : IParameterShape
         char shortName,
         string? description = null
     )
+        : this(parameter)
     {
-        this.Parameter = parameter;
         this.ShortName = shortName;
         this.Description = description ?? Constants.DefaultDescription;
+    }
+
+    private NamedGreedyParameterShape(ParameterInfo parameter)
+    {
+        parameter.GetAttributesAndConditions(out var attributes, out var conditions);
+
+        this.DefaultValue = parameter.DefaultValue;
+        this.ParameterType = parameter.ParameterType;
+        this.Attributes = attributes;
+        this.Conditions = conditions;
+        this.IsNullable = parameter.AllowsNull();
+        _parameterName = parameter.Name;
+        _isOptional = parameter.IsOptional;
+        this.Description = Constants.DefaultDescription;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NamedGreedyParameterShape"/> class.
+    /// </summary>
+    /// <param name="shortName">The short name.</param>
+    /// <param name="longName">The long name.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <param name="parameterType">The type of the parameter.</param>
+    /// <param name="isOptional">Whether the parameter is optional.</param>
+    /// <param name="defaultValue">The default value of the parameter, if any.</param>
+    /// <param name="attributes">The attributes of the parameter.</param>
+    /// <param name="conditions">The conditions of the parameter.</param>
+    /// <param name="description">The description of the paremeter.</param>
+    public NamedGreedyParameterShape
+    (
+        char? shortName,
+        string? longName,
+        string parameterName,
+        Type parameterType,
+        bool isOptional,
+        object? defaultValue,
+        IReadOnlyList<Attribute> attributes,
+        IReadOnlyList<ConditionAttribute> conditions,
+        string description
+    )
+    {
+        this.ShortName = shortName;
+        this.LongName = longName;
+        _parameterName = parameterName;
+        this.ParameterType = parameterType;
+        _isOptional = isOptional;
+        this.IsNullable = parameterType.IsNullable();
+        this.DefaultValue = defaultValue;
+        this.Attributes = attributes;
+        this.Conditions = conditions;
+        this.Description = description;
     }
 
     /// <inheritdoc/>
@@ -245,5 +310,5 @@ public class NamedGreedyParameterShape : IParameterShape
     }
 
     /// <inheritdoc/>
-    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => this.Parameter.IsOptional;
+    public virtual bool IsOmissible(TreeSearchOptions? searchOptions = null) => _isOptional;
 }

@@ -24,12 +24,24 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Remora.Commands.Conditions;
 using Remora.Commands.Signatures;
 using Remora.Commands.Tokenization;
+using Remora.Results;
 
 namespace Remora.Commands.Trees.Nodes;
+
+/// <summary>
+/// Represents a delegate that executes a command.
+/// </summary>
+/// <param name="services">The service provider.</param>
+/// <param name="parameters">The parameters to be passed to the command.</param>
+/// <param name="cancellationToken">The cancellation token.</param>
+/// <returns>The result of executing the command.</returns>
+public delegate ValueTask<IResult> CommandInvocation(IServiceProvider services, object?[] parameters, CancellationToken cancellationToken);
 
 /// <summary>
 /// Represents a command in a command group.
@@ -38,14 +50,9 @@ namespace Remora.Commands.Trees.Nodes;
 public class CommandNode : IChildNode
 {
     /// <summary>
-    /// Gets the module type that the command is in.
+    /// Gets the delegate that represents the command, or invokes it.
     /// </summary>
-    public Type GroupType { get; }
-
-    /// <summary>
-    /// Gets the method that the command invokes.
-    /// </summary>
-    public MethodInfo CommandMethod { get; }
+    public CommandInvocation Invoke { get; }
 
     /// <inheritdoc/>
     public IParentNode Parent { get; }
@@ -54,6 +61,16 @@ public class CommandNode : IChildNode
     /// Gets the general shape of the command.
     /// </summary>
     public CommandShape Shape { get; }
+
+    /// <summary>
+    /// Gets the attributes of the command.
+    /// </summary>
+    public IReadOnlyList<Attribute> Attributes { get; }
+
+    /// <summary>
+    /// Gets the conditions of the command.
+    /// </summary>
+    public IReadOnlyList<ConditionAttribute> Conditions { get; }
 
     /// <inheritdoc/>
     /// <remarks>
@@ -69,24 +86,29 @@ public class CommandNode : IChildNode
     /// </summary>
     /// <param name="parent">The parent node.</param>
     /// <param name="key">The key value of the command node.</param>
-    /// <param name="groupType">The module type that the command is in.</param>
-    /// <param name="commandMethod">The method that the command invokes.</param>
+    /// <param name="invoke">The function to invoke the command.</param>
+    /// <param name="shape">The shape of the command.</param>
     /// <param name="aliases">Additional key aliases, if any.</param>
+    /// <param name="attributes">Applied attributes for the command, if any.</param>
+    /// <param name="conditions">Applied conditions for the command, if any.</param>
     public CommandNode
     (
         IParentNode parent,
         string key,
-        Type groupType,
-        MethodInfo commandMethod,
-        IReadOnlyList<string>? aliases = null
+        CommandInvocation invoke,
+        CommandShape shape,
+        IReadOnlyList<string>? aliases = null,
+        IReadOnlyList<Attribute>? attributes = null,
+        IReadOnlyList<ConditionAttribute>? conditions = null
     )
     {
+        this.Invoke = invoke;
         this.Parent = parent;
         this.Key = key;
-        this.GroupType = groupType;
-        this.CommandMethod = commandMethod;
         this.Aliases = aliases ?? Array.Empty<string>();
-        this.Shape = CommandShape.FromMethod(this.CommandMethod);
+        this.Shape = shape;
+        this.Attributes = attributes ?? Array.Empty<Attribute>();
+        this.Conditions = conditions ?? Array.Empty<ConditionAttribute>();
     }
 
     /// <summary>

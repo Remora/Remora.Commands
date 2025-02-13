@@ -23,12 +23,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using OneOf;
 using Remora.Commands.Attributes;
+using Remora.Commands.Builders;
+using Remora.Commands.Conditions;
 using Remora.Commands.Extensions;
 using Remora.Commands.Groups;
+using Remora.Commands.Signatures;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
@@ -41,6 +47,10 @@ namespace Remora.Commands.Trees;
 public class CommandTreeBuilder
 {
     private readonly List<Type> _registeredModuleTypes = new();
+    private readonly List<OneOf<CommandBuilder, GroupBuilder>> _registeredBuilders = new();
+
+    private static readonly MethodInfo GetServiceMethodInfo = typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService), BindingFlags.Instance | BindingFlags.Public)!;
+    private static readonly MethodInfo SetCancellationTokenMethodInfo = typeof(CommandGroup).GetMethod(nameof(CommandGroup.SetCancellationToken), BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     /// <summary>
     /// Registers a module type with the builder.
@@ -64,6 +74,15 @@ public class CommandTreeBuilder
     }
 
     /// <summary>
+    /// Registers a command with the builder.
+    /// </summary>
+    /// <param name="builder">The builder to register.</param>
+    public void RegisterNodeBuilder(OneOf<CommandBuilder, GroupBuilder> builder)
+    {
+        _registeredBuilders.Add(builder);
+    }
+
+    /// <summary>
     /// Builds a command tree from the registered types.
     /// </summary>
     /// <returns>The command tree.</returns>
@@ -71,9 +90,120 @@ public class CommandTreeBuilder
     {
         var rootChildren = new List<IChildNode>();
         var rootNode = new RootNode(rootChildren);
-        rootChildren.AddRange(ToChildNodes(_registeredModuleTypes, rootNode));
+
+        var builtCommands = _registeredBuilders.Select(rb => rb.Match(cb => cb.Build(rootNode), gb => (IChildNode)gb.Build(rootNode)));
+        var topLevelCommands = BindDynamicCommands(ToChildNodes(_registeredModuleTypes, rootNode).ToArray(), builtCommands.ToList(), rootNode);
+
+        rootChildren.AddRange(topLevelCommands);
 
         return new CommandTree(rootNode);
+    }
+
+    /// <summary>
+    /// Recursively binds dynamic commands (constructed from builders) to their compile-time type counterparts if they exist.
+    /// </summary>
+    /// <param name="nodes">The nodes to bind to.</param>
+    /// <param name="values">The values to bind.</param>
+    /// <param name="root">The root node to bind groups and commands to.</param>
+    /// <returns>Any nodes that could not be bound, and thusly should be added directly to the root as-is.</returns>
+    private IEnumerable<IChildNode> BindDynamicCommands(IReadOnlyList<IChildNode> nodes, List<IChildNode> values, IParentNode root)
+    {
+        if (!values.Any())
+        {
+            foreach (var node in nodes)
+            {
+                yield return node;
+            }
+            yield break;
+        }
+
+        for (int i = values.Count - 1; i >= 0; i--)
+        {
+            var current = values[i];
+
+            // Return top-level commands (non-group nodes) as-is.
+            if (current is IParentNode)
+            {
+                continue;
+            }
+
+            values.RemoveAt(i);
+            yield return current;
+        }
+
+        if (values.Count is 0)
+        {
+            yield break;
+        }
+
+        var groups = nodes.OfType<GroupNode>()
+                           .Concat(values.Cast<GroupNode>())
+                           .GroupBy(g => g.Key)
+                           .Select(g => MergeRecursively(g.ToArray(), root));
+
+        foreach (var group in groups)
+        {
+            yield return group;
+        }
+    }
+
+    private GroupNode MergeRecursively(IReadOnlyList<IChildNode> children, IParentNode parent)
+    {
+        var childNodes = new List<IChildNode>();
+        var groupNodesFromChildren = children.OfType<GroupNode>().ToArray();
+
+        var name = groupNodesFromChildren.Select(g => g.Key).FirstOrDefault(n => !string.IsNullOrWhiteSpace(n)) ?? string.Empty;
+        var description = groupNodesFromChildren.Select(g => g.Description).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d)) ?? Constants.DefaultDescription;
+
+        var group = new GroupNode
+        (
+            groupNodesFromChildren.SelectMany(t => t.GroupTypes).ToArray(),
+            childNodes,
+            parent,
+            name,
+            groupNodesFromChildren.SelectMany(g => g.Aliases).ToArray(),
+            groupNodesFromChildren.SelectMany(g => g.Attributes).ToArray(),
+            groupNodesFromChildren.SelectMany(g => g.Conditions).ToArray(),
+            description
+        );
+
+        var mutableChildren = children.SelectMany(n => n is GroupNode gn ? gn.Children : new[] { n }).ToList();
+
+        for (var i = children.Count - 1; i >= 0; i--)
+        {
+            var child = children[i];
+
+            if (child is not GroupNode cgn)
+            {
+                childNodes.Add(child);
+                mutableChildren.RemoveAt(i);
+                continue;
+            }
+
+            // Parity with ToChildNodes; if the group's name is empty, or
+            // shouldn't be merged, just nest it under the parent.
+            if (string.IsNullOrWhiteSpace(cgn.Key) || name != child.Key)
+            {
+                childNodes.AddRange(cgn.Children);
+                mutableChildren.RemoveAt(i);
+            }
+        }
+
+        var groups = mutableChildren.GroupBy(g => g.Key);
+
+        foreach (var subgroup in groups)
+        {
+            if (subgroup.Count() is 1)
+            {
+                childNodes.Add(subgroup.Single());
+            }
+            else
+            {
+                childNodes.Add(MergeRecursively(subgroup.ToArray(), group));
+            }
+        }
+
+        return group;
     }
 
     /// <summary>
@@ -131,7 +261,19 @@ public class CommandTreeBuilder
 
                 description ??= Constants.DefaultDescription;
 
-                var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, description);
+                var attributes = group.SelectMany(t => t.GetCustomAttributes(true).Cast<Attribute>().Where(att => att is not ConditionAttribute)).ToArray();
+                var conditions = group.SelectMany(t => t.GetCustomAttributes<ConditionAttribute>()).ToArray();
+
+                if (group.First().DeclaringType is { } parentType && !parentType.TryGetGroupName(out _))
+                {
+                    // If the group is being hoisted, take the attributes of the parent type(s).
+                    ExtractExtraAttributes(parentType, out var extraAttributes, out var extraConditions);
+
+                    attributes = extraAttributes.Concat(attributes).ToArray();
+                    conditions = extraConditions.Concat(conditions).ToArray();
+                }
+
+                var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, attributes, conditions, description);
 
                 foreach (var groupType in group)
                 {
@@ -165,6 +307,43 @@ public class CommandTreeBuilder
     }
 
     /// <summary>
+    /// Extracts attributes and conditions from the given type and its parent types.
+    /// </summary>
+    /// <param name="parentType">The type to begin extracting attributes from.</param>
+    /// <param name="attributes">The extracted attributes, in descending order.</param>
+    /// <param name="conditions">The extracted conditions, in descending order.</param>
+    private static void ExtractExtraAttributes(Type parentType, out IEnumerable<Attribute> attributes, out IEnumerable<ConditionAttribute> conditions)
+    {
+        var parentGroupType = parentType;
+
+        var extraAttributes = new List<Attribute>();
+        var extraConditions = new List<ConditionAttribute>();
+
+        attributes = extraAttributes;
+        conditions = extraConditions;
+
+        do
+        {
+            if (parentGroupType.TryGetGroupName(out _))
+            {
+                break;
+            }
+
+            parentGroupType.GetAttributesAndConditions(out var parentAttributes, out var parentConditions);
+
+            extraAttributes.AddRange(parentAttributes.Reverse());
+            extraConditions.AddRange(parentConditions.Reverse());
+        }
+        while ((parentGroupType = parentGroupType!.DeclaringType) is not null);
+
+        // These are inserted in reverse order as we traverse up the
+        // inheritance tree, so re-reversing the list gives us all attributes
+        // in the correct order, *decescending* down the tree, effectively.
+        extraAttributes.Reverse();
+        extraConditions.Reverse();
+    }
+
+    /// <summary>
     /// Parses a set of command nodes from the given type.
     /// </summary>
     /// <param name="moduleType">The module type.</param>
@@ -173,6 +352,8 @@ public class CommandTreeBuilder
     private IEnumerable<CommandNode> GetModuleCommands(Type moduleType, IParentNode parent)
     {
         var methods = moduleType.GetMethods();
+        var isInUnnamedGroup = !moduleType.TryGetGroupName(out var gn) || gn == string.Empty;
+
         foreach (var method in methods)
         {
             var commandAttribute = method.GetCustomAttribute<CommandAttribute>();
@@ -190,14 +371,124 @@ public class CommandTreeBuilder
                 );
             }
 
+            method.GetAttributesAndConditions(out var attributes, out var conditions);
+
+            if (isInUnnamedGroup)
+            {
+                // If the group is being hoisted, take the attributes of the parent type(s).
+                ExtractExtraAttributes(moduleType, out var extraAttributes, out var extraConditions);
+
+                attributes = extraAttributes.Concat(attributes).ToArray();
+                conditions = extraConditions.Concat(conditions).ToArray();
+            }
+
             yield return new CommandNode
             (
                 parent,
                 commandAttribute.Name,
-                moduleType,
-                method,
-                commandAttribute.Aliases
+                CreateDelegate(method),
+                CommandShape.FromMethod(method),
+                commandAttribute.Aliases,
+                attributes,
+                conditions
             );
         }
     }
+
+    /// <summary>
+    /// Creates a command invocation delegate from the supplied parameters.
+    /// </summary>
+    /// <param name="method">The method that will be invoked.</param>
+    /// <returns>The created command invocation.</returns>
+    internal static CommandInvocation CreateDelegate(MethodInfo method)
+    {
+        // Get the object from the container
+        var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
+
+        var instance = Expression.Call(serviceProvider, GetServiceMethodInfo, Expression.Constant(method.DeclaringType));
+
+        var parameters = Expression.Parameter(typeof(object?[]), "parameters");
+
+        var methodParameters = method.GetParameters();
+        var orderedArgumentTypes = methodParameters.Select((t, n) => (t, n))
+                                                .OrderBy(tn => tn.t.GetCustomAttribute<OptionAttribute>() is null)
+                                                .Select((t, nn) => (t.t, nn))
+                                                .ToArray();
+
+        // Create the arguments
+        var arguments = new Expression[orderedArgumentTypes.Length];
+        for (var i = 0; i < orderedArgumentTypes.Length; i++)
+        {
+            var argumentType = methodParameters[i].ParameterType;
+            var argumentIndex = orderedArgumentTypes.First(tn => tn.t == methodParameters[i]).nn;
+            var argument = Expression.ArrayIndex(parameters, Expression.Constant(argumentIndex));
+            arguments[i] = Expression.Convert(argument, argumentType);
+        }
+
+        var castedInstance = Expression.Convert(instance, method.DeclaringType!);
+
+        var call = Expression.Call(castedInstance, method, arguments);
+
+        // Convert the result to a ValueTask<IResult>
+        call = CoerceToValueTask(call);
+
+        var ct = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
+
+        var block = Expression.Block
+        (
+            Expression.Call(castedInstance, SetCancellationTokenMethodInfo, ct),
+            call
+        );
+
+        // Compile the expression
+        var lambda = Expression.Lambda<CommandInvocation>(block, serviceProvider, parameters, ct);
+
+        return lambda.Compile();
+    }
+
+    /// <summary>
+    /// Coerces the static result type of an expression to a <see cref="ValueTask{IResult}"/>.
+    /// <list type="bullet">
+    /// <item>If the type is <see cref="ValueTask{T}"/>, returns the expression as-is</item>
+    /// <item>If the type is <see cref="Task{T}"/>, returns an expression wrapping the Task in a <see cref="ValueTask{IResult}"/></item>
+    /// <item>Otherwise, throws <see cref="InvalidOperationException"/></item>
+    /// </list>
+    /// </summary>
+    /// <param name="expression">The input expression.</param>
+    /// <returns>The new expression.</returns>
+    /// <exception cref="InvalidOperationException">If the type of <paramref name="expression"/> is not wrappable.</exception>
+    public static MethodCallExpression CoerceToValueTask(Expression expression)
+    {
+        var expressionType = expression.Type;
+
+        MethodCallExpression invokerExpr;
+        if (expressionType.IsConstructedGenericType && expressionType.GetGenericTypeDefinition() == typeof(ValueTask<>))
+        {
+            invokerExpr = Expression.Call(ToResultValueTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
+        }
+        else if (expressionType.IsConstructedGenericType && expressionType.GetGenericTypeDefinition() == typeof(Task<>))
+        {
+            invokerExpr = Expression.Call(ToResultTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
+        }
+        else
+        {
+            throw new InvalidOperationException($"{nameof(CoerceToValueTask)} expression must be {nameof(Task<IResult>)} or {nameof(ValueTask<IResult>)}");
+        }
+
+        return invokerExpr;
+    }
+
+    private static async ValueTask<IResult> ToResultValueTask<T>(ValueTask<T> task) where T : IResult
+        => await task;
+
+    private static async ValueTask<IResult> ToResultTask<T>(Task<T> task) where T : IResult
+        => await task;
+
+    private static readonly MethodInfo ToResultValueTaskInfo
+        = typeof(CommandTreeBuilder).GetMethod(nameof(ToResultValueTask), BindingFlags.Static | BindingFlags.NonPublic)
+          ?? throw new InvalidOperationException($"Did not find {nameof(ToResultValueTask)}");
+
+    private static readonly MethodInfo ToResultTaskInfo
+        = typeof(CommandTreeBuilder).GetMethod(nameof(ToResultTask), BindingFlags.Static | BindingFlags.NonPublic)
+          ?? throw new InvalidOperationException($"Did not find {nameof(ToResultTask)}");
 }
