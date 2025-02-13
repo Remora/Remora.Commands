@@ -46,11 +46,20 @@ namespace Remora.Commands.Trees;
 [PublicAPI]
 public class CommandTreeBuilder
 {
-    private readonly List<Type> _registeredModuleTypes = new();
-    private readonly List<OneOf<CommandBuilder, GroupBuilder>> _registeredBuilders = new();
+    private readonly List<Type> _registeredModuleTypes = [];
+    private readonly List<OneOf<CommandBuilder, GroupBuilder>> _registeredBuilders = [];
 
-    private static readonly MethodInfo GetServiceMethodInfo = typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService), BindingFlags.Instance | BindingFlags.Public)!;
-    private static readonly MethodInfo SetCancellationTokenMethodInfo = typeof(CommandGroup).GetMethod(nameof(CommandGroup.SetCancellationToken), BindingFlags.Instance | BindingFlags.NonPublic)!;
+    private static readonly MethodInfo _getServiceMethodInfo = typeof(IServiceProvider).GetMethod
+    (
+        nameof(IServiceProvider.GetService),
+        BindingFlags.Instance | BindingFlags.Public
+    )!;
+
+    private static readonly MethodInfo _setCancellationTokenMethodInfo = typeof(CommandGroup).GetMethod
+    (
+        nameof(CommandGroup.SetCancellationToken),
+        BindingFlags.Instance | BindingFlags.NonPublic
+    )!;
 
     /// <summary>
     /// Registers a module type with the builder.
@@ -100,13 +109,19 @@ public class CommandTreeBuilder
     }
 
     /// <summary>
-    /// Recursively binds dynamic commands (constructed from builders) to their compile-time type counterparts if they exist.
+    /// Recursively binds dynamic commands (constructed from builders) to their compile-time type counterparts if they
+    /// exist.
     /// </summary>
     /// <param name="nodes">The nodes to bind to.</param>
     /// <param name="values">The values to bind.</param>
     /// <param name="root">The root node to bind groups and commands to.</param>
     /// <returns>Any nodes that could not be bound, and thusly should be added directly to the root as-is.</returns>
-    private IEnumerable<IChildNode> BindDynamicCommands(IReadOnlyList<IChildNode> nodes, List<IChildNode> values, IParentNode root)
+    private IEnumerable<IChildNode> BindDynamicCommands
+    (
+        IReadOnlyList<IChildNode> nodes,
+        List<IChildNode> values,
+        IParentNode root
+    )
     {
         if (!values.Any())
         {
@@ -117,7 +132,7 @@ public class CommandTreeBuilder
             yield break;
         }
 
-        for (int i = values.Count - 1; i >= 0; i--)
+        for (var i = values.Count - 1; i >= 0; i--)
         {
             var current = values[i];
 
@@ -167,7 +182,7 @@ public class CommandTreeBuilder
             description
         );
 
-        var mutableChildren = children.SelectMany(n => n is GroupNode gn ? gn.Children : new[] { n }).ToList();
+        var mutableChildren = children.SelectMany(n => n is GroupNode gn ? gn.Children : [n]).ToList();
 
         for (var i = children.Count - 1; i >= 0; i--)
         {
@@ -182,11 +197,13 @@ public class CommandTreeBuilder
 
             // Parity with ToChildNodes; if the group's name is empty, or
             // shouldn't be merged, just nest it under the parent.
-            if (string.IsNullOrWhiteSpace(cgn.Key) || name != child.Key)
+            if (!string.IsNullOrWhiteSpace(cgn.Key) && name == child.Key)
             {
-                childNodes.AddRange(cgn.Children);
-                mutableChildren.RemoveAt(i);
+                continue;
             }
+
+            childNodes.AddRange(cgn.Children);
+            mutableChildren.RemoveAt(i);
         }
 
         var groups = mutableChildren.GroupBy(g => g.Key);
@@ -405,7 +422,7 @@ public class CommandTreeBuilder
         // Get the object from the container
         var serviceProvider = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
 
-        var instance = Expression.Call(serviceProvider, GetServiceMethodInfo, Expression.Constant(method.DeclaringType));
+        var instance = Expression.Call(serviceProvider, _getServiceMethodInfo, Expression.Constant(method.DeclaringType));
 
         var parameters = Expression.Parameter(typeof(object?[]), "parameters");
 
@@ -436,7 +453,7 @@ public class CommandTreeBuilder
 
         var block = Expression.Block
         (
-            Expression.Call(castedInstance, SetCancellationTokenMethodInfo, ct),
+            Expression.Call(castedInstance, _setCancellationTokenMethodInfo, ct),
             call
         );
 
@@ -464,11 +481,11 @@ public class CommandTreeBuilder
         MethodCallExpression invokerExpr;
         if (expressionType.IsConstructedGenericType && expressionType.GetGenericTypeDefinition() == typeof(ValueTask<>))
         {
-            invokerExpr = Expression.Call(ToResultValueTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
+            invokerExpr = Expression.Call(_toResultValueTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
         }
         else if (expressionType.IsConstructedGenericType && expressionType.GetGenericTypeDefinition() == typeof(Task<>))
         {
-            invokerExpr = Expression.Call(ToResultTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
+            invokerExpr = Expression.Call(_toResultTaskInfo.MakeGenericMethod(expressionType.GetGenericArguments()[0]), expression);
         }
         else
         {
@@ -484,11 +501,11 @@ public class CommandTreeBuilder
     private static async ValueTask<IResult> ToResultTask<T>(Task<T> task) where T : IResult
         => await task;
 
-    private static readonly MethodInfo ToResultValueTaskInfo
+    private static readonly MethodInfo _toResultValueTaskInfo
         = typeof(CommandTreeBuilder).GetMethod(nameof(ToResultValueTask), BindingFlags.Static | BindingFlags.NonPublic)
           ?? throw new InvalidOperationException($"Did not find {nameof(ToResultValueTask)}");
 
-    private static readonly MethodInfo ToResultTaskInfo
+    private static readonly MethodInfo _toResultTaskInfo
         = typeof(CommandTreeBuilder).GetMethod(nameof(ToResultTask), BindingFlags.Static | BindingFlags.NonPublic)
           ?? throw new InvalidOperationException($"Did not find {nameof(ToResultTask)}");
 }

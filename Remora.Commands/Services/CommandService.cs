@@ -532,7 +532,7 @@ public class CommandService
                 var invocationResult = conditionMethod.Invoke
                                        (
                                            condition,
-                                           new object[] { conditionAttribute, ct }
+                                           [conditionAttribute, ct]
                                        )
                                        ?? throw new InvalidOperationException();
 
@@ -545,7 +545,7 @@ public class CommandService
                         new ConditionNotSatisfiedError
                         (
                             $"The condition \"{condition.GetType().Name}\" was not satisfied.",
-                            (ConditionAttribute)conditionAttribute,
+                            conditionAttribute,
                             Node: node
                         ),
                         result
@@ -615,7 +615,7 @@ public class CommandService
                 var invocationResult = conditionMethod.Invoke
                                        (
                                            condition,
-                                           new[] { conditionAttribute, value, ct }
+                                           [conditionAttribute, value, ct]
                                        )
                                        ?? throw new InvalidOperationException();
 
@@ -628,7 +628,7 @@ public class CommandService
                         new ConditionNotSatisfiedError
                         (
                             $"The condition \"{condition.GetType().Name}\" was not satisfied.",
-                            (ConditionAttribute)conditionAttribute,
+                            conditionAttribute,
                             value,
                             node
                         ),

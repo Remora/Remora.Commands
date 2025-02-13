@@ -67,7 +67,7 @@ public class CommandBuilderTests
             .WithInvocation((_, _, _) => default)
             .WithDescription("A test command.");
 
-        var parameterBuilder = new CommandParameterBuilder(commandBuilder, typeof(string))
+        _ = new CommandParameterBuilder(commandBuilder, typeof(string))
             .WithName("test")
             .WithDescription("A test parameter.");
 
@@ -92,11 +92,11 @@ public class CommandBuilderTests
             .WithInvocation((_, _, _) => default)
             .WithDescription("A test command.");
 
-        var parameterBuilder = new CommandParameterBuilder(commandBuilder, typeof(string))
+        _ = new CommandParameterBuilder(commandBuilder, typeof(string))
             .WithName("test")
             .WithDescription("A test parameter.");
 
-        var parameterBuilder2 = new CommandParameterBuilder(commandBuilder, typeof(int))
+        _ = new CommandParameterBuilder(commandBuilder, typeof(int))
             .WithName("test2")
             .WithDescription("A second test parameter.");
 
@@ -140,7 +140,7 @@ public class CommandBuilderTests
                  (
                      (_, p, _) =>
                      {
-                         p[0] = (object)true;
+                         p[0] = true;
                          return default;
                      }
                  );

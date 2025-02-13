@@ -59,7 +59,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "b" },
+                    ["b"],
                     values,
                     services
                 );
@@ -87,7 +87,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );

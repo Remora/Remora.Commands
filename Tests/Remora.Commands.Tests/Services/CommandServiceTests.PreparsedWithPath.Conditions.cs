@@ -63,7 +63,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a" },
+                    ["a"],
                     values,
                     services
                 );
@@ -93,7 +93,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a" },
+                    ["a"],
                     values,
                     services
                 );
@@ -124,7 +124,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -154,7 +154,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -185,7 +185,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a" },
+                    ["a"],
                     values,
                     services
                 );
@@ -215,7 +215,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a" },
+                    ["a"],
                     values,
                     services
                 );
@@ -246,7 +246,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -276,7 +276,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -306,12 +306,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a" },
+                    ["a"],
                     values,
                     services
                 );
@@ -340,12 +340,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a" },
+                    ["a"],
                     values,
                     services
                 );
@@ -375,12 +375,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -409,12 +409,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -445,7 +445,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -474,7 +474,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b", "c" },
+                    ["a", "b", "c"],
                     values,
                     services
                 );
@@ -503,7 +503,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a" },
+                    ["a"],
                     values,
                     services
                 );
@@ -532,7 +532,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -562,7 +562,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );
@@ -594,7 +594,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b", "c" },
+                    ["a", "b", "c"],
                     values,
                     services
                 );
@@ -626,7 +626,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a" },
+                    ["a"],
                     values,
                     services
                 );
@@ -658,7 +658,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "a", "b" },
+                    ["a", "b"],
                     values,
                     services
                 );

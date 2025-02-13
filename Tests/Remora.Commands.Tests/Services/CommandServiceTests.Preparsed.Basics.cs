@@ -86,7 +86,7 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
@@ -146,7 +146,7 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
@@ -206,7 +206,7 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "booga" } }
+                    { "v", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
@@ -238,7 +238,7 @@ public static partial class CommandServiceTests
 
                 var shortValues = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "booga" } }
+                    { "v", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
@@ -252,7 +252,7 @@ public static partial class CommandServiceTests
 
                 var longValues = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 executionResult = await commandService.TryExecuteAsync

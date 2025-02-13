@@ -56,7 +56,8 @@ public class NamedCollectionParameterShape : NamedParameterShape, ICollectionPar
             {
                 return base.DefaultValue;
             }
-            else if (this.Min is null or 0)
+
+            if (this.Min is null or 0)
             {
                 return _emptyCollection;
             }

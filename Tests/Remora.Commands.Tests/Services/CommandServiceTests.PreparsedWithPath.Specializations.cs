@@ -65,7 +65,7 @@ public static partial class CommandServiceTests
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "switch" },
+                    ["test", "switch"],
                     values,
                     services
                 );
@@ -75,7 +75,7 @@ public static partial class CommandServiceTests
                 values = new Dictionary<string, IReadOnlyList<string>>();
                 executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "switch" },
+                    ["test", "switch"],
                     values,
                     services
                 );
@@ -108,7 +108,7 @@ public static partial class CommandServiceTests
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "switch-short-name" },
+                    ["test", "switch-short-name"],
                     values,
                     services
                 );
@@ -141,7 +141,7 @@ public static partial class CommandServiceTests
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "switch-short-and-long-name" },
+                    ["test", "switch-short-and-long-name"],
                     values,
                     services
                 );
@@ -155,7 +155,7 @@ public static partial class CommandServiceTests
 
                 executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "switch-short-and-long-name" },
+                    ["test", "switch-short-and-long-name"],
                     values,
                     services
                 );
@@ -182,12 +182,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "enable", new[] { "true" } }
+                    { "enable", ["true"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "option" },
+                    ["test", "option"],
                     values,
                     services
                 );
@@ -197,7 +197,7 @@ public static partial class CommandServiceTests
                 values = new Dictionary<string, IReadOnlyList<string>>();
                 executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "option" },
+                    ["test", "option"],
                     values,
                     services
                 );
@@ -224,12 +224,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "e", new[] { "true" } }
+                    { "e", ["true"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "option-short-name" },
+                    ["test", "option-short-name"],
                     values,
                     services
                 );
@@ -257,12 +257,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "e", new[] { "true" } }
+                    { "e", ["true"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "option-short-and-long-name" },
+                    ["test", "option-short-and-long-name"],
                     values,
                     services
                 );
@@ -271,12 +271,12 @@ public static partial class CommandServiceTests
 
                 values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "enable", new[] { "true" } }
+                    { "enable", ["true"] }
                 };
 
                 executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "option-short-and-long-name" },
+                    ["test", "option-short-and-long-name"],
                     values,
                     services
                 );
@@ -303,12 +303,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "0" } }
+                    { "v", ["0"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "nullable-struct" },
+                    ["test", "nullable-struct"],
                     values,
                     services
                 );
@@ -335,12 +335,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "0" } }
+                    { "v", ["0"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "nullable-struct-with-default" },
+                    ["test", "nullable-struct-with-default"],
                     values,
                     services
                 );
@@ -351,7 +351,7 @@ public static partial class CommandServiceTests
 
                 executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "nullable-struct-with-default" },
+                    ["test", "nullable-struct-with-default"],
                     values,
                     services
                 );
@@ -378,12 +378,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "null" } }
+                    { "v", ["null"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "nullable-struct" },
+                    ["test", "nullable-struct"],
                     values,
                     services
                 );
@@ -410,12 +410,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "wooga" } }
+                    { "v", ["wooga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "nullable-reference-type" },
+                    ["test", "nullable-reference-type"],
                     values,
                     services
                 );
@@ -442,12 +442,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "wooga" } }
+                    { "v", ["wooga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "nullable-reference-type-with-default" },
+                    ["test", "nullable-reference-type-with-default"],
                     values,
                     services
                 );
@@ -458,7 +458,7 @@ public static partial class CommandServiceTests
 
                 executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "nullable-reference-type-with-default" },
+                    ["test", "nullable-reference-type-with-default"],
                     values,
                     services
                 );
@@ -485,12 +485,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "null" } }
+                    { "v", ["null"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "nullable-reference-type" },
+                    ["test", "nullable-reference-type"],
                     values,
                     services
                 );

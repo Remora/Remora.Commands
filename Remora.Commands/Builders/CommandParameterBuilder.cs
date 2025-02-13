@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using JetBrains.Annotations;
 using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.Conditions;
@@ -35,6 +36,7 @@ namespace Remora.Commands.Builders;
 /// <summary>
 /// A builder class for command parameters.
 /// </summary>
+[PublicAPI]
 public class CommandParameterBuilder
 {
     private readonly CommandBuilder _builder;
@@ -212,7 +214,15 @@ public class CommandParameterBuilder
     /// <summary>
     /// Adds an attribute to the parameter. Conditions must be added via <see cref="AddCondition"/>.
     /// </summary>
-    /// <param name="attribute">The attriubte to add.</param>
+    /// <typeparam name="TAttribute">The attribute to add.</typeparam>
+    /// <returns>The builder to chain calls with.</returns>
+    public CommandParameterBuilder AddAttribute<TAttribute>() where TAttribute : ConditionAttribute, new() =>
+        AddAttribute(new TAttribute());
+
+    /// <summary>
+    /// Adds an attribute to the parameter. Conditions must be added via <see cref="AddCondition"/>.
+    /// </summary>
+    /// <param name="attribute">The attribute to add.</param>
     /// <returns>The builder to chain calls with.</returns>
     public CommandParameterBuilder AddAttribute(Attribute attribute)
     {
@@ -254,21 +264,23 @@ public class CommandParameterBuilder
         var rangeAttribute = _attributes.OfType<RangeAttribute>().SingleOrDefault();
         var optionAttribute = _attributes.OfType<OptionAttribute>().SingleOrDefault();
 
-        if (optionAttribute is SwitchAttribute)
+        if (optionAttribute is not SwitchAttribute)
         {
-            if (_defaultValue is not bool || _parameterType != typeof(bool))
-            {
-                throw new InvalidOperationException
-                (
-                 $"A switch parameter must be a {typeof(bool)}" +
-                 $" (The parameter \"{_name}\" was marked as ({_parameterType})."
-                );
-            }
+            return optionAttribute is null
+                ? CreatePositionalParameterShape(rangeAttribute)
+                : CreateNamedParameterShape(optionAttribute, rangeAttribute);
         }
 
-        return optionAttribute is null
-                   ? CreatePositionalParameterShape(rangeAttribute)
-                   : CreateNamedParameterShape(optionAttribute, rangeAttribute);
+        if (_defaultValue is not bool || _parameterType != typeof(bool))
+        {
+            throw new InvalidOperationException
+            (
+                $"A switch parameter must be a {typeof(bool)}" +
+                $" (The parameter \"{_name}\" was marked as ({_parameterType})."
+            );
+        }
+
+        return CreateNamedParameterShape(optionAttribute, rangeAttribute);
     }
 
     private IParameterShape CreateNamedParameterShape(OptionAttribute optionAttribute, RangeAttribute? rangeAttribute)

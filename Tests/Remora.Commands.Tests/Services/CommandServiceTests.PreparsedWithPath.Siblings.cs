@@ -60,7 +60,7 @@ public static partial class CommandServiceTests
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "sibling" },
+                    ["sibling"],
                     values,
                     services
                 );
@@ -90,7 +90,7 @@ public static partial class CommandServiceTests
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "sibling", "nested" },
+                    ["sibling", "nested"],
                     values,
                     services
                 );
@@ -118,12 +118,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "0" } }
+                    { "value", ["0"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "parameter-sibling" },
+                    ["parameter-sibling"],
                     values,
                     services
                 );
@@ -151,12 +151,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "0" } }
+                    { "value", ["0"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "parameter-sibling", "nested" },
+                    ["parameter-sibling", "nested"],
                     values,
                     services
                 );
@@ -186,7 +186,7 @@ public static partial class CommandServiceTests
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "sibling", "specific" },
+                    ["sibling", "specific"],
                     values,
                     services
                 );

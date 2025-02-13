@@ -59,7 +59,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "parameterless" },
+                    ["test", "parameterless"],
                     values,
                     services
                 );
@@ -86,12 +86,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "single-positional" },
+                    ["test", "single-positional"],
                     values,
                     services
                 );
@@ -119,7 +119,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "single-optional-positional" },
+                    ["test", "single-optional-positional"],
                     values,
                     services
                 );
@@ -146,12 +146,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "single-named" },
+                    ["test", "single-named"],
                     values,
                     services
                 );
@@ -179,7 +179,7 @@ public static partial class CommandServiceTests
                 var values = new Dictionary<string, IReadOnlyList<string>>();
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "single-optional-named" },
+                    ["test", "single-optional-named"],
                     values,
                     services
                 );
@@ -206,12 +206,12 @@ public static partial class CommandServiceTests
 
                 var values = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "booga" } }
+                    { "v", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "single-named-with-short-name" },
+                    ["test", "single-named-with-short-name"],
                     values,
                     services
                 );
@@ -238,12 +238,12 @@ public static partial class CommandServiceTests
 
                 var shortValues = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "v", new[] { "booga" } }
+                    { "v", ["booga"] }
                 };
 
                 var executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "single-named-with-long-and-short-name" },
+                    ["test", "single-named-with-long-and-short-name"],
                     shortValues,
                     services
                 );
@@ -252,12 +252,12 @@ public static partial class CommandServiceTests
 
                 var longValues = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { "value", new[] { "booga" } }
+                    { "value", ["booga"] }
                 };
 
                 executionResult = await commandService.TryExecuteAsync
                 (
-                    new[] { "test", "single-named-with-long-and-short-name" },
+                    ["test", "single-named-with-long-and-short-name"],
                     longValues,
                     services
                 );

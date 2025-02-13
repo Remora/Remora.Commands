@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.DependencyInjection;
@@ -37,10 +38,9 @@ namespace Remora.Commands.Builders;
 /// <summary>
 /// A builder class for creating <see cref="GroupNode"/>s.
 /// </summary>
+[PublicAPI]
 public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
 {
-    private List<Type?> _groupTypes;
-
     /// <summary>
     /// Gets the children of the group.
     /// </summary>
@@ -55,7 +55,6 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
     {
         this.Name = string.Empty;
         this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
-        _groupTypes = new List<Type?>();
     }
 
     /// <summary>
@@ -67,7 +66,6 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
     {
         this.Name = string.Empty;
         this.Children = new List<OneOf<CommandBuilder, GroupBuilder>>();
-        _groupTypes = new List<Type?>();
     }
 
     /// <summary>
@@ -134,8 +132,6 @@ public class GroupBuilder : AbstractCommandBuilder<GroupBuilder>
     public static GroupBuilder FromType(Type moduleType, GroupBuilder? parent = null)
     {
         var builder = new GroupBuilder(parent);
-
-        builder._groupTypes = new List<Type?> { moduleType };
 
         var groupAttribute = moduleType.GetCustomAttribute<GroupAttribute>()!;
 

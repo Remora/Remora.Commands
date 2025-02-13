@@ -23,8 +23,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using JetBrains.Annotations;
 using OneOf;
 using Remora.Commands.Attributes;
 using Remora.Commands.DependencyInjection;
@@ -38,6 +38,7 @@ namespace Remora.Commands.Builders;
 /// <summary>
 /// A builder for commands, which exposes a fluent API.
 /// </summary>
+[PublicAPI]
 public class CommandBuilder : AbstractCommandBuilder<CommandBuilder>
 {
     private CommandInvocation? _invocation;
@@ -148,23 +149,26 @@ public class CommandBuilder : AbstractCommandBuilder<CommandBuilder>
 
             var switchOrOptionAttribute = parameter.GetCustomAttribute<OptionAttribute>();
 
-            if (switchOrOptionAttribute is SwitchAttribute sa)
+            switch (switchOrOptionAttribute)
             {
-                if (parameter.ParameterType != typeof(bool))
+                case SwitchAttribute when parameter.ParameterType != typeof(bool):
                 {
                     throw new InvalidOperationException("Switches must be of type bool.");
                 }
-
-                if (!parameter.HasDefaultValue)
+                case SwitchAttribute when !parameter.HasDefaultValue:
                 {
                     throw new InvalidOperationException("Switches must have a default value.");
                 }
-
-                parameterBuilder.IsSwitch((bool)parameter.DefaultValue!, GetAttributeValue(sa.ShortName, sa.LongName));
-            }
-            else if (switchOrOptionAttribute is OptionAttribute oa)
-            {
-                parameterBuilder.IsOption(GetAttributeValue(oa.ShortName, oa.LongName));
+                case SwitchAttribute sa:
+                {
+                    parameterBuilder.IsSwitch((bool)parameter.DefaultValue!, GetAttributeValue(sa.ShortName, sa.LongName));
+                    break;
+                }
+                case not null:
+                {
+                    parameterBuilder.IsOption(GetAttributeValue(switchOrOptionAttribute.ShortName, switchOrOptionAttribute.LongName));
+                    break;
+                }
             }
 
             var greedyAttribute = parameter.GetCustomAttribute<GreedyAttribute>();
@@ -197,9 +201,9 @@ public class CommandBuilder : AbstractCommandBuilder<CommandBuilder>
             return (shortName, longName) switch
             {
                 (null, null) => throw new InvalidOperationException("Switches and options must have a name."),
-                (null, string ln) => ln,
-                (char sn, null) => sn,
-                (char sn, string ln) => (sn, ln),
+                (null, { } ln) => ln,
+                ({ } sn, null) => sn,
+                ({ } sn, { } ln) => (sn, ln)
             };
         }
     }

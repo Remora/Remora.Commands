@@ -23,7 +23,6 @@
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Remora.Commands.Extensions;
-using Remora.Commands.Services;
 using Remora.Commands.Tests.Data.DummyModules;
 using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;

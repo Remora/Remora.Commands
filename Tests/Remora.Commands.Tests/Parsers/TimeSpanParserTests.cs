@@ -36,19 +36,18 @@ public class TimeSpanParserTests
     /// <summary>
     /// Gets a set of various test cases.
     /// </summary>
-    public static IEnumerable<object[]> Cases => new[]
-    {
-        new object[] { "0", new Func<TimeSpan>(() => TimeSpan.Zero) },
-        new object[] { "1", new Func<TimeSpan>(() => TimeSpan.FromDays(1)) },
-        new object[] { "1.1:00", new Func<TimeSpan>(() => TimeSpan.FromDays(1) + TimeSpan.FromHours(1)) },
-        new object[] { "1:1:1", new Func<TimeSpan>(() => TimeSpan.FromHours(1) + TimeSpan.FromMinutes(1) + TimeSpan.FromSeconds(1)) },
-        new object[] { "1s", new Func<TimeSpan>(() => TimeSpan.FromSeconds(1)) },
-        new object[] { "1m", new Func<TimeSpan>(() => TimeSpan.FromMinutes(1)) },
-        new object[] { "1h", new Func<TimeSpan>(() => TimeSpan.FromHours(1)) },
-        new object[] { "1d", new Func<TimeSpan>(() => TimeSpan.FromDays(1)) },
-        new object[] { "1w", new Func<TimeSpan>(() => TimeSpan.FromDays(7)) },
-        new object[]
-        {
+    public static IEnumerable<object[]> Cases =>
+    [
+        ["0", new Func<TimeSpan>(() => TimeSpan.Zero)],
+        ["1", new Func<TimeSpan>(() => TimeSpan.FromDays(1))],
+        ["1.1:00", new Func<TimeSpan>(() => TimeSpan.FromDays(1) + TimeSpan.FromHours(1))],
+        ["1:1:1", new Func<TimeSpan>(() => TimeSpan.FromHours(1) + TimeSpan.FromMinutes(1) + TimeSpan.FromSeconds(1))],
+        ["1s", new Func<TimeSpan>(() => TimeSpan.FromSeconds(1))],
+        ["1m", new Func<TimeSpan>(() => TimeSpan.FromMinutes(1))],
+        ["1h", new Func<TimeSpan>(() => TimeSpan.FromHours(1))],
+        ["1d", new Func<TimeSpan>(() => TimeSpan.FromDays(1))],
+        ["1w", new Func<TimeSpan>(() => TimeSpan.FromDays(7))],
+        [
             "1mo",
             new Func<TimeSpan>(() =>
             {
@@ -57,9 +56,8 @@ public class TimeSpanParserTests
 
                 return then - now;
             })
-        },
-        new object[]
-        {
+        ],
+        [
             "1y",
             new Func<TimeSpan>(() =>
             {
@@ -68,9 +66,8 @@ public class TimeSpanParserTests
 
                 return then - now;
             })
-        },
-        new object[]
-        {
+        ],
+        [
             "1mo3d",
             new Func<TimeSpan>(() =>
             {
@@ -79,9 +76,8 @@ public class TimeSpanParserTests
 
                 return then - now + TimeSpan.FromDays(3);
             })
-        },
-        new object[]
-        {
+        ],
+        [
             "1mo1m",
             new Func<TimeSpan>(() =>
             {
@@ -90,8 +86,8 @@ public class TimeSpanParserTests
 
                 return then - now + TimeSpan.FromMinutes(1);
             })
-        }
-    };
+        ]
+    ];
 
     /// <summary>
     /// Tests whether the parser can successfully parse various inputs.
