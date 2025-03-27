@@ -281,6 +281,15 @@ public class CommandTreeBuilder
                 var attributes = group.SelectMany(t => t.GetCustomAttributes(true).Cast<Attribute>().Where(att => att is not ConditionAttribute)).ToArray();
                 var conditions = group.SelectMany(t => t.GetCustomAttributes<ConditionAttribute>()).ToArray();
 
+                if (group.First().DeclaringType is { } parentType && !parentType.TryGetGroupName(out _))
+                {
+                    // If the group is being hoisted, take the attributes of the parent type(s).
+                    ExtractExtraAttributes(parentType, out var extraAttributes, out var extraConditions);
+
+                    attributes = [..attributes, ..extraAttributes];
+                    conditions = [..conditions, ..extraConditions];
+                }
+
                 var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, attributes, conditions, description);
 
                 foreach (var groupType in group)
@@ -315,6 +324,37 @@ public class CommandTreeBuilder
     }
 
     /// <summary>
+    /// Extracts attributes and conditions from the given type and its parent types.
+    /// </summary>
+    /// <param name="parentType">The type to begin extracting attributes from.</param>
+    /// <param name="attributes">The extracted attributes, in descending order.</param>
+    /// <param name="conditions">The extracted conditions, in descending order.</param>
+    private static void ExtractExtraAttributes(Type parentType, out IEnumerable<Attribute> attributes, out IEnumerable<ConditionAttribute> conditions)
+    {
+        var parentGroupType = parentType;
+
+        var extraAttributes = new List<Attribute>();
+        var extraConditions = new List<ConditionAttribute>();
+
+        attributes = extraAttributes;
+        conditions = extraConditions;
+
+        do
+        {
+            if (parentGroupType.TryGetGroupName(out _))
+            {
+                break;
+            }
+
+            parentGroupType.GetAttributesAndConditions(out var parentAttributes, out var parentConditions);
+
+            extraAttributes.AddRange(parentAttributes);
+            extraConditions.AddRange(parentConditions);
+        }
+        while ((parentGroupType = parentGroupType!.DeclaringType) is not null);
+    }
+
+    /// <summary>
     /// Parses a set of command nodes from the given type.
     /// </summary>
     /// <param name="moduleType">The module type.</param>
@@ -323,6 +363,7 @@ public class CommandTreeBuilder
     private IEnumerable<CommandNode> GetModuleCommands(Type moduleType, IParentNode parent)
     {
         var methods = moduleType.GetMethods();
+        var isInUnnamedGroup = !moduleType.TryGetGroupName(out var gn) || gn == string.Empty;
 
         foreach (var method in methods)
         {
@@ -342,6 +383,15 @@ public class CommandTreeBuilder
             }
 
             method.GetAttributesAndConditions(out var attributes, out var conditions);
+
+            if (isInUnnamedGroup)
+            {
+                // If the group is being hoisted, take the attributes of the parent type(s).
+                ExtractExtraAttributes(moduleType, out var extraAttributes, out var extraConditions);
+
+                attributes = [..attributes, ..extraAttributes];
+                conditions = [..conditions, ..extraConditions];
+            }
 
             yield return new CommandNode
             (
