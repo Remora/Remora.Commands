@@ -286,8 +286,8 @@ public class CommandTreeBuilder
                     // If the group is being hoisted, take the attributes of the parent type(s).
                     ExtractExtraAttributes(parentType, out var extraAttributes, out var extraConditions);
 
-                    attributes = extraAttributes.Concat(attributes).ToArray();
-                    conditions = extraConditions.Concat(conditions).ToArray();
+                    attributes = [..attributes, ..extraAttributes];
+                    conditions = [..conditions, ..extraConditions];
                 }
 
                 var groupNode = new GroupNode(group.ToArray(), groupChildren, parent, group.Key, groupAliases, attributes, conditions, description);
@@ -348,16 +348,10 @@ public class CommandTreeBuilder
 
             parentGroupType.GetAttributesAndConditions(out var parentAttributes, out var parentConditions);
 
-            extraAttributes.AddRange(parentAttributes.Reverse());
-            extraConditions.AddRange(parentConditions.Reverse());
+            extraAttributes.AddRange(parentAttributes);
+            extraConditions.AddRange(parentConditions);
         }
         while ((parentGroupType = parentGroupType!.DeclaringType) is not null);
-
-        // These are inserted in reverse order as we traverse up the
-        // inheritance tree, so re-reversing the list gives us all attributes
-        // in the correct order, *decescending* down the tree, effectively.
-        extraAttributes.Reverse();
-        extraConditions.Reverse();
     }
 
     /// <summary>
@@ -395,8 +389,8 @@ public class CommandTreeBuilder
                 // If the group is being hoisted, take the attributes of the parent type(s).
                 ExtractExtraAttributes(moduleType, out var extraAttributes, out var extraConditions);
 
-                attributes = extraAttributes.Concat(attributes).ToArray();
-                conditions = extraConditions.Concat(conditions).ToArray();
+                attributes = [..attributes, ..extraAttributes];
+                conditions = [..conditions, ..extraConditions];
             }
 
             yield return new CommandNode
