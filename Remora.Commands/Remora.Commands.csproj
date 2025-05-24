@@ -5,10 +5,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <VersionPrefix>11.0.1</VersionPrefix>
+        <VersionPrefix>11.0.2</VersionPrefix>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Fix issue with explicitly marked unnamed groups.
+            Fix attribute order for command nodes.
         </PackageReleaseNotes>
     </PropertyGroup>
 
