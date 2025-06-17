@@ -40,7 +40,7 @@ public class TimeSpanParser : AbstractTypeParser<TimeSpan>
 {
     private static readonly Regex _pattern = new
     (
-        "(?<Years>\\d+(?=y))|(?<Months>\\d+(?=mo))|(?<Weeks>\\d+(?=w))|(?<Days>\\d+(?=d))|(?<Hours>\\d+(?=h))|(?<Minutes>\\d+(?=m))|(?<Seconds>\\d+(?=s))",
+        "^-|(?<Years>\\d+y)|(?<Months>\\d+mo)|(?<Weeks>\\d+w)|(?<Days>\\d+d)|(?<Hours>\\d+h)|(?<Minutes>\\d+m)|(?<Seconds>\\d+s)",
         RegexOptions.Compiled
     );
 
@@ -65,6 +65,11 @@ public class TimeSpanParser : AbstractTypeParser<TimeSpan>
             return new ValueTask<Result<TimeSpan>>(new ParsingError<TimeSpan>(value));
         }
 
+        if (value.Length != matches.Sum(x => x.Length))
+        {
+            return new ValueTask<Result<TimeSpan>>(new ParsingError<TimeSpan>(value));
+        }
+
         var timeSpan = TimeSpan.Zero;
         foreach (var match in matches.Cast<Match>())
         {
@@ -74,8 +79,14 @@ public class TimeSpanParser : AbstractTypeParser<TimeSpan>
                 .Skip(1)
                 .Select(g => (g.Name, g.Value));
 
-            foreach (var (key, groupValue) in groups)
+            foreach (var (key, groupRawValue) in groups)
             {
+                var groupValue = groupRawValue[..^1];
+                if (key is "Months")
+                {
+                    groupValue = groupValue[..^1];
+                }
+
                 if (!double.TryParse(groupValue, out var parsedGroupValue))
                 {
                     return new ValueTask<Result<TimeSpan>>(new ParsingError<TimeSpan>(value));
@@ -121,6 +132,11 @@ public class TimeSpanParser : AbstractTypeParser<TimeSpan>
                     };
                 }
             }
+        }
+
+        if (value[0] == '-')
+        {
+            timeSpan = -timeSpan;
         }
 
         return new ValueTask<Result<TimeSpan>>(timeSpan);
