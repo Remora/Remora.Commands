@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Remora.Commands.Parsers;
+using Remora.Commands.Results;
 using Xunit;
 
 namespace Remora.Commands.Tests.Parsers;
@@ -86,7 +87,23 @@ public class TimeSpanParserTests
 
                 return then - now + TimeSpan.FromMinutes(1);
             })
+        ],
+        [
+            "-1m",
+            new Func<TimeSpan>(() => -TimeSpan.FromMinutes(1))
         ]
+    ];
+
+    /// <summary>
+    /// Gets a set of various test cases that aren't parseable.
+    /// </summary>
+    public static IEnumerable<object?[]> InvalidCases =>
+    [
+        ["x60sx"],
+        ["1m-60s"],
+        ["s"],
+        [string.Empty],
+        [null],
     ];
 
     /// <summary>
@@ -105,5 +122,22 @@ public class TimeSpanParserTests
 
         Assert.True(result.IsSuccess);
         Assert.Equal(expected(), result.Entity);
+    }
+
+    /// <summary>
+    /// Tests whether the parser outputs errors in case of malformed inputs.
+    /// </summary>
+    /// <param name="value">The value to parse.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Theory]
+    [MemberData(nameof(InvalidCases))]
+    public async Task DoesntAcceptInvalidInput(string? value)
+    {
+        var parser = new TimeSpanParser();
+
+        var result = await parser.TryParseAsync(value);
+
+        Assert.False(result.IsSuccess);
+        Assert.IsType<ParsingError<TimeSpan>>(result.Error);
     }
 }
