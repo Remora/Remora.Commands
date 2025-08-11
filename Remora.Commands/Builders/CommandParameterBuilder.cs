@@ -60,10 +60,8 @@ public class CommandParameterBuilder
     {
         _name = string.Empty;
         _builder = builder;
-        _attributes = new();
-        _conditions = new();
-        builder.Parameters.Add(this);
-
+        _attributes = [];
+        _conditions = [];
         _parameterType = type;
     }
 
