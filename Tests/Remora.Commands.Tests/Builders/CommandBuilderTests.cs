@@ -65,11 +65,11 @@ public class CommandBuilderTests
         var commandBuilder = new CommandBuilder()
             .WithName("test")
             .WithInvocation((_, _, _) => default)
-            .WithDescription("A test command.");
-
-        _ = new CommandParameterBuilder(commandBuilder, typeof(string))
-            .WithName("test")
-            .WithDescription("A test parameter.");
+            .WithDescription("A test command.")
+            .AddParameter(typeof(string))
+                .WithName("test")
+                .WithDescription("A test parameter.")
+                .Finish();
 
         var command = commandBuilder.Build(rootNode);
 
@@ -90,15 +90,15 @@ public class CommandBuilderTests
         var commandBuilder = new CommandBuilder()
             .WithName("test")
             .WithInvocation((_, _, _) => default)
-            .WithDescription("A test command.");
-
-        _ = new CommandParameterBuilder(commandBuilder, typeof(string))
-            .WithName("test")
-            .WithDescription("A test parameter.");
-
-        _ = new CommandParameterBuilder(commandBuilder, typeof(int))
-            .WithName("test2")
-            .WithDescription("A second test parameter.");
+            .WithDescription("A test command.")
+            .AddParameter(typeof(string))
+                .WithName("test")
+                .WithDescription("A test parameter.")
+                .Finish()
+            .AddParameter(typeof(int))
+                .WithName("test2")
+                .WithDescription("A second test parameter.")
+                .Finish();
 
         var command = commandBuilder.Build(rootNode);
 
