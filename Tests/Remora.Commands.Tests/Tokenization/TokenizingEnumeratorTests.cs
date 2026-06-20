@@ -56,6 +56,9 @@ public class TokenizingEnumeratorTests
     [InlineData("-xvf=value", new[] { ShortName, ShortName, ShortName, Value }, new[] { "x", "v", "f", "value" })]
     [InlineData("-xvf=\"booga wooga\"", new[] { ShortName, ShortName, ShortName, Value }, new[] { "x", "v", "f", "booga wooga" })]
     [InlineData("--a -10", new[] { LongName, Value }, new[] { "a", "-10" })]
+    [InlineData("1 == 1", new[] { Value, Value, Value }, new[] { "1", "==", "1" })]
+    [InlineData("1==1", new[] { Value }, new[] { "1==1" })]
+    [InlineData("--a==", new[] { LongName, Value }, new[] { "a", "=" })]
     internal void TokenizesStringCorrectly
     (
         string value,
@@ -99,6 +102,8 @@ public class TokenizingEnumeratorTests
     [InlineData("-xvf=value", new[] { ShortName, ShortName, ShortName, Value }, new[] { "x", "v", "f", "value" })]
     [InlineData("-xvf=\"booga wooga\"", new[] { ShortName, ShortName, ShortName, Value }, new[] { "x", "v", "f", "\"booga wooga\"" })]
     [InlineData("--a -10", new[] { LongName, Value }, new[] { "a", "-10" })]
+    [InlineData("1 == 1", new[] { Value, Value, Value }, new[] { "1", "==", "1" })]
+    [InlineData("--a==", new[] { LongName, Value }, new[] { "a", "=" })]
     [InlineData("-a \"\"", new[] { ShortName, Value }, new[] { "a", "\"\"" })]
     internal void RetainsQuotationMarksCorrectly
     (

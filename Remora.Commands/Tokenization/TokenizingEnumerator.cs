@@ -33,6 +33,7 @@ public ref struct TokenizingEnumerator
 {
     private readonly TokenizerOptions _tokenizerOptions;
     private bool _isInCombinedShortNameSegment;
+    private bool _isInAssignmentValueSegment;
     private ReadOnlySpan<char> _segment;
     private SpanSplitEnumerator _splitEnumerator;
 
@@ -51,6 +52,7 @@ public ref struct TokenizingEnumerator
         _tokenizerOptions = tokenizerOptions ?? new TokenizerOptions();
 
         _isInCombinedShortNameSegment = default;
+        _isInAssignmentValueSegment = default;
         _segment = default;
         _splitEnumerator = new SpanSplitEnumerator(value, _tokenizerOptions);
         this.Current = default;
@@ -76,6 +78,7 @@ public ref struct TokenizingEnumerator
             }
 
             _isInCombinedShortNameSegment = false;
+            _isInAssignmentValueSegment = false;
             _segment = _splitEnumerator.Current;
         }
 
@@ -97,9 +100,10 @@ public ref struct TokenizingEnumerator
                 span = span[1..];
             }
         }
-        else if (span.StartsWith("="))
+        else if (_isInAssignmentValueSegment && span.StartsWith("="))
         {
             span = span[1..];
+            _isInAssignmentValueSegment = false;
         }
         else if (_isInCombinedShortNameSegment)
         {
@@ -123,6 +127,7 @@ public ref struct TokenizingEnumerator
             if (assignmentIndex > 0)
             {
                 remainder = span[assignmentIndex..];
+                _isInAssignmentValueSegment = true;
                 span = span[..assignmentIndex];
             }
         }
