@@ -5,10 +5,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <VersionPrefix>11.0.2</VersionPrefix>
+        <VersionPrefix>11.0.3</VersionPrefix>
         <Description>A platform-agnostic command parser and dispatcher.</Description>
         <PackageReleaseNotes>
-            Fix attribute order for command nodes.
+            Fixes Remora#32 Greedy tokenization fix
         </PackageReleaseNotes>
     </PropertyGroup>
 
